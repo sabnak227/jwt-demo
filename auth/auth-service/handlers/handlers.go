@@ -2,15 +2,16 @@ package handlers
 
 import (
 	"context"
-	"crypto/rsa"
+	"github.com/sabnak227/jwt-demo/auth/auth-service/token"
+	"github.com/sabnak227/jwt-demo/scope"
+	user "github.com/sabnak227/jwt-demo/users"
 	"google.golang.org/grpc"
-	"io/ioutil"
 	"log"
-	"time"
+	"os"
 
-	"github.com/dgrijalva/jwt-go"
 	pb "github.com/sabnak227/jwt-demo/auth"
-	uclient "github.com/sabnak227/jwt-demo/users/user-service/svc/client/grpc"
+	scopeClient "github.com/sabnak227/jwt-demo/scope/scope-service/svc/client/grpc"
+	userClient "github.com/sabnak227/jwt-demo/users/user-service/svc/client/grpc"
 )
 
 // NewService returns a naïve, stateless implementation of Service.
@@ -21,86 +22,75 @@ func NewService() pb.AuthServer {
 type authService struct{}
 
 var (
-	verifyKey *rsa.PublicKey
-	signKey   *rsa.PrivateKey
-)
-
-const (
-	privKeyPath = "auth-service/keys/app.rsa"     // openssl genrsa -out app.rsa 2048
-	pubKeyPath  = "auth-service/keys/app.rsa.pub" // openssl rsa -in app.rsa -pubout > app.rsa.pub
+	userSvc  user.UserServer
+	scopeSvc scope.ScopeServer
 )
 
 // read the key files before starting http handlers
 func init() {
-	signBytes, err := ioutil.ReadFile(privKeyPath)
-	if err != nil {
-		log.Printf("error %s", err.Error())
+	var userHost string
+	var scopeHost string
+
+	if addr := os.Getenv("USER_HOST"); addr != "" {
+		userHost = addr
+	}
+	if addr := os.Getenv("SCOPE_HOST"); addr != "" {
+		scopeHost= addr
 	}
 
-	signKey, err = jwt.ParseRSAPrivateKeyFromPEM(signBytes)
-	if err != nil {
-		log.Printf("error %s", err.Error())
-	}
-
-	verifyBytes, err := ioutil.ReadFile(pubKeyPath)
-	if err != nil {
-		log.Printf("error %s", err.Error())
-	}
-
-	verifyKey, err = jwt.ParseRSAPublicKeyFromPEM(verifyBytes)
-	if err != nil {
-		log.Printf("error %s", err.Error())
-	}
-	log.Printf("verifyKey %s", verifyKey)
-
-	uconn, err := grpc.Dial(":5053")
+	uconn, err := grpc.Dial(userHost, grpc.WithInsecure())
 	if err != nil {
 		log.Printf("failed to connect to user svc %s", err.Error())
 	}
-	uclient.New(uconn)
+	userSvc, _ = userClient.New(uconn)
 
-	//sconn, err := grpc.Dial(":5063")
-	//if err != nil {
-	//	log.Printf("failed to connect to user svc %s", err.Error())
-	//}
+	sconn, err := grpc.Dial(scopeHost, grpc.WithInsecure())
+	if err != nil {
+		log.Printf("failed to connect to scope svc %s", err.Error())
+	}
+	scopeSvc, _ = scopeClient.New(sconn)
 }
 
 // Login implements Service.
 func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginResponse, error) {
-	var resp pb.LoginResponse
-	var code int32
-	var msg string
-	user := "jason"
+	res, err := userSvc.AuthUser(ctx, &user.AuthUserRequest{
+		Email:    in.Email,
+		Password: in.Password,
+	})
+	if res == nil || res.Code != 1 {
+		return &pb.LoginResponse{
+			Code:    2,
+			Message: "failed wrong password",
+		}, err
+	}
 
-	// create a signer for rsa 256
-	t := jwt.New(jwt.GetSigningMethod("RS256"))
-	claims := make(jwt.MapClaims)
+	res1, err := scopeSvc.UserScope(ctx, &scope.UserScopeRequest{})
+	if res1 == nil {
+		return &pb.LoginResponse{
+			Code:    2,
+			Message: "failed",
+		}, err
+	}
+	scopes := res1.Scopes
 
-	// set our claims
-	claims["AccessToken"] = "level1"
-	claims["CustomUserInfo"] = struct {
+	u := struct {
 		Name string
-		Kind string
-	}{user, "human"}
+	}{in.Email}
 
-	// set the expire time
-	// see http://tools.ietf.org/html/draft-ietf-oauth-json-web-token-20#section-4.1.4
-	claims["exp"] = time.Now().Add(time.Minute * 1).Unix()
-	t.Claims = claims
+	tokenDetail, err := token.GenToken(scopes, u)
 
-	tokenString, err := t.SignedString(signKey)
 	if err != nil {
 		log.Printf("Failed to sign token %s", err.Error())
-		msg = ""
-		code = 1
-	} else {
-		msg = tokenString
-		code = 2
+		return &pb.LoginResponse{
+			Code:    2,
+			Message: "failed",
+		}, err
 	}
 
-	resp = pb.LoginResponse{
-		Code: code,
-		Message: msg,
-	}
-	return &resp, nil
+	return &pb.LoginResponse{
+		Code:    1,
+		Message: "success",
+		AccessToken: tokenDetail.AccessToken,
+		RefreshToken: tokenDetail.RefreshToken,
+	}, nil
 }

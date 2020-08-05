@@ -1,11 +1,14 @@
 {
   "name": "generate-jwk",
   "version": "1.0.0",
+  "description": "Utility to generate a JWK along with public and private RSA keys.",
   "dependencies": {
     "pem-jwk": "2.0.0"
   },
   "devDependencies": {},
   "scripts": {
     "pem": "pem-jwk"
-  }
+  },
+  "author": "Rahul Rai",
+  "license": "ISC"
 }

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package resource;
+
+import "github.com/metaverse/truss/deftree/googlethirdparty/annotations.proto";
+
+service Resource {
+  rpc GetResource (ResourceRequest) returns (ResourceResponse) {
+    option (google.api.http) = {
+      get: "/resource"
+    };
+  }
+}
+
+message ResourceRequest {}
+message ResourceResponse {
+  int32 code = 1;
+  string message = 2;
+}

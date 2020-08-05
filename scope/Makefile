@@ -3,5 +3,5 @@ all: run
 
 .PHONY: run
 run:
-	go run scope-service/cmd/scope/main.go --debug.addr=:5061 --http.addr=:5062 --grpc.addr=:5063
+	export DEBUG_ADDR=:5061 HTTP_ADDR=:5062 GRPC_ADDR=:5063 && go run scope-service/cmd/scope/main.go
 

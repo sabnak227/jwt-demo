@@ -1,38 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a6f568ad-b704-4e8a-9675-3376603dcbb4" name="Default Changelist" comment="" />
+    <list default="true" id="a6f568ad-b704-4e8a-9675-3376603dcbb4" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth/auth-service/keys/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth/auth-service/keys/keygen.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth/auth-service/keys/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth/auth-service/token/token.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resource/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/resource/resource.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/auth_svc/controllers/auth.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/auth_svc/controllers/controllers.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/auth_svc/go.mod" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/auth_svc/go.sum" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/auth_svc/keys/app.rsa" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/auth_svc/keys/app.rsa.pub" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/auth_svc/keys/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/auth_svc/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/auth_svc/routers/routers.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/user_svc/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/user_svc/config/config.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/user_svc/controllers/controllers.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/user_svc/controllers/user.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/user_svc/go.mod" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/user_svc/go.sum" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/user_svc/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/user_svc/models/user.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/0bak/user_svc/routers/routers.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/auth/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth.proto" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/auth/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/auth/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scope/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/scope/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/users/Makefile" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
   <component name="GOROOT" path="/usr/local/go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
   </component>
   <component name="ProjectId" id="1fgg4yLnNHHGtub8EwX6wKbIaYu" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/auth/auth-service" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/resource" />
+    <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/resource" />
       <recent name="$PROJECT_DIR$/auth/auth-service" />
       <recent name="$PROJECT_DIR$/auth/scope-service" />
       <recent name="$PROJECT_DIR$/auth" />
       <recent name="$PROJECT_DIR$/scope" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/auth/auth-service/token" />
       <recent name="$PROJECT_DIR$/bak" />
     </key>
   </component>

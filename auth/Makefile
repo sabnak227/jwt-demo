@@ -3,5 +3,5 @@ all: run
 
 .PHONY: run
 run:
-	go run auth-service/cmd/auth/main.go --debug.addr=:5071 --http.addr=:5072 --grpc.addr=:5073
+	export USER_HOST=:5053 SCOPE_HOST=:5063 DEBUG_ADDR=:5071 HTTP_ADDR=:5072 GRPC_ADDR=:5073 && go run auth-service/cmd/auth/main.go
 

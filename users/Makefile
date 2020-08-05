@@ -3,5 +3,5 @@ all: run
 
 .PHONY: run
 run:
-	go run user-service/cmd/user/main.go --debug.addr=:5051 --http.addr=:5052 --grpc.addr=:5053
+	export DEBUG_ADDR=:5051 HTTP_ADDR=:5052 GRPC_ADDR=:5053 && go run user-service/cmd/user/main.go
 
