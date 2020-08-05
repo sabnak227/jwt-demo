@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package scope;
+
+import "github.com/metaverse/truss/deftree/googlethirdparty/annotations.proto";
+
+service Scope {
+  rpc UserScope (UserScopeRequest) returns (UserScopeResponse) {
+    option (google.api.http) = {
+      get: "/scope/user/{id}"
+    };
+  }
+}
+
+message UserScopeRequest {
+}
+message UserScopeResponse {
+  int32 code = 1;
+  string message = 2;
+  repeated string scopes = 3;
+}

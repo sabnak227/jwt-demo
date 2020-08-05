@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package user;
+
+import "github.com/metaverse/truss/deftree/googlethirdparty/annotations.proto";
+
+service User {
+  rpc AuthUser (AuthUserRequest) returns (AuthUserResponse) {
+    option (google.api.http) = {
+      custom {
+        kind: "HEAD"
+        path: "/users/auth"
+      }
+      additional_bindings {
+        post: "/users/auth"
+        // All other fields (In) are located in the body of the http/json request
+        body: "*"
+      }
+    };
+  }
+
+}
+
+message AuthUserRequest {
+  string email = 1;
+  string password = 2;
+}
+message AuthUserResponse {
+  int32 code = 1;
+  string message = 2;
+}

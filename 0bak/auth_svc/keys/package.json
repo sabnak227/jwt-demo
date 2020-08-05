@@ -1,0 +1,11 @@
+{
+  "name": "generate-jwk",
+  "version": "1.0.0",
+  "dependencies": {
+    "pem-jwk": "2.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "pem": "pem-jwk"
+  }
+}
