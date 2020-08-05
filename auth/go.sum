@@ -222,7 +222,6 @@ github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6So
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/ryanuber/columnize v0.0.0-20160712163229-9b3edd62028f/go.mod h1:sm1tb6uqfes/u+d4ooFouqFdy9/2g9QGwK3SQygK0Ts=
-github.com/sabnak227/jwt-demo v0.0.0-20200805172839-50002b2b2a46 h1:uyaYkS1pPlgv8sWQDwjpdmkejCpxaYQUXCHflrPvTKg=
 github.com/sabnak227/jwt-demo/scope v0.0.0-20200805172839-50002b2b2a46 h1:P4IMCo26BebzDjn99gV88K2Erh8Kfsbkup/MyAGGEHs=
 github.com/sabnak227/jwt-demo/scope v0.0.0-20200805172839-50002b2b2a46/go.mod h1:bO2AX6xR0UZY1BWmBd4C0mgMKLE19TNtflLsjVPBf0A=
 github.com/sabnak227/jwt-demo/users v0.0.0-20200805172839-50002b2b2a46 h1:zYal3uT3iw8wYxlnaS/hjq+r4ruyL2cQ0YMbkfEdv2E=

@@ -1,15 +1,20 @@
 version: "3"
 services:
-  # servicea:
-  #   build: ./service_a
-  #   depends_on:
-  #     - mysql
-  #   ports:
-  #     - 8080:8080
-  # serviceb:
-  #   build: ./service_b
-  #   ports:
-  #     - 8081:8081
+  user:
+    build: ./users
+  auth:
+    build: ./auth
+    environment:
+      - USER_HOST=user:5040
+      - SCOPE_HOST=scope:5040
+    ports:
+      - 5040:5040
+      - 5050:5050
+      - 5060:5060
+  scope:
+    build: ./scope
+  resource:
+    build: ./resource
   mysql:
     image: mysql:5.7
     restart: always
