@@ -1,0 +1,219 @@
+###################################################################################################
+## user_svc
+###################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-svc
+  labels:
+    app: user-svc
+    service: user-svc
+spec:
+  ports:
+    - port: 5040
+      name: rpc-user
+    - port: 5050
+      name: http-user
+  selector:
+    app: user-svc
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jwt-test-user-svc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-svc-v1
+  labels:
+    app: user-svc
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-svc
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: user-svc
+        version: v1
+    spec:
+      serviceAccountName: jwt-test-user-svc
+      containers:
+        - name: user-svc
+          image: docker.io/jasonheshuai/jwt-demo-user:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5040
+            - containerPort: 5050
+---
+##################################################################################################
+# scope_svc
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: scope-svc
+  labels:
+    app: scope-svc
+    service: scope-svc
+spec:
+  ports:
+    - port: 5040
+      name: rpc-scope
+    - port: 5050
+      name: http-scope
+  selector:
+    app: scope-svc
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jwt-test-scope-svc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scope-svc-v1
+  labels:
+    app: scope-svc
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scope-svc
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: scope-svc
+        version: v1
+    spec:
+      serviceAccountName: jwt-test-scope-svc
+      containers:
+        - name: scope-svc
+          image: docker.io/jasonheshuai/jwt-demo-scope:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5040
+            - containerPort: 5050
+---
+##################################################################################################
+# auth_svc
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-svc
+  labels:
+    app: auth-svc
+    service: auth-svc
+spec:
+  ports:
+    - port: 5040
+      name: rpc-auth
+    - port: 5050
+      name: http-auth
+  selector:
+    app: auth-svc
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jwt-test-auth-svc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-svc-v1
+  labels:
+    app: auth-svc
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-svc
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: auth-svc
+        version: v1
+    spec:
+      serviceAccountName: jwt-test-auth-svc
+      containers:
+        - name: auth-svc
+          image: docker.io/jasonheshuai/jwt-demo-auth:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5040
+            - containerPort: 5050
+          env:
+            - name: USER_HOST
+              value: user-svc.jwt-test.svc.cluster.local:5040
+            - name: SCOPE_HOST
+              value: scope-svc.jwt-test.svc.cluster.local:5040
+            - name: PUB_KEY_PATH
+              value: /app.rsa.pub
+            - name: PRI_KEY_PATH
+              value: /app.rsa
+            - name: JWKS_PATH
+              value: /jwks.json
+---
+##################################################################################################
+# resource_svc
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: resource-svc
+  labels:
+    app: resource-svc
+    service: resource-svc
+spec:
+  ports:
+    - port: 5040
+      name: rpc-resource
+    - port: 5050
+      name: http-resource
+  selector:
+    app: resource-svc
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jwt-test-resource-svc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-svc-v1
+  labels:
+    app: resource-svc
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resource-svc
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: resource-svc
+        version: v1
+    spec:
+      serviceAccountName: jwt-test-resource-svc
+      containers:
+        - name: resource-svc
+          image: docker.io/jasonheshuai/jwt-demo-resource:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5040
+            - containerPort: 5050
+---

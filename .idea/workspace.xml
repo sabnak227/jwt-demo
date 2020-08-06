@@ -2,22 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a6f568ad-b704-4e8a-9675-3376603dcbb4" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/k8s/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/k8s/deploy.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/k8s/gateway.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/k8s/namespace.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/auth/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/keys/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/keys/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/keys/keygen.sh" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/keys/keygen.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/client/grpc/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/client/grpc/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/client/http/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/client/http/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/endpoints.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/endpoints.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/server/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/server/run.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/transport_grpc.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/transport_grpc.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/transport_http.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/transport_http.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/token/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/token/token.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth.proto" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resource/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/resource/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resource/resource-service/handlers/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/resource/resource-service/handlers/handlers.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scope/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/scope/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/users/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/users/Dockerfile" afterDir="false" />
     </list>
@@ -98,10 +90,10 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1596647474594" />
-    <state x="443" y="260" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1596645025963">
+    <state x="443" y="260" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1596732822156">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="443" y="260" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1440.900@0.0.1440.900" timestamp="1596645025963" />
+    <state x="443" y="260" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1440.900@0.0.1440.900" timestamp="1596732822156" />
     <state x="429" y="10" key="#users/Dockerfile" timestamp="1596654513008">
       <screen x="0" y="0" width="1440" height="900" />
     </state>

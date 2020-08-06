@@ -18,7 +18,7 @@ func (s resourceService) GetResource(ctx context.Context, in *pb.ResourceRequest
 	var resp pb.ResourceResponse
 	resp = pb.ResourceResponse{
 		Code: 1,
-		Message: "hola",
+		Message: "hola, Is this going to work?????????????",
 	}
 	return &resp, nil
 }
