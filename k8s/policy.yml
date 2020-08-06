@@ -1,0 +1,30 @@
+apiVersion: "security.istio.io/v1beta1"
+kind: RequestAuthentication
+metadata:
+  name: jwt-authn-policy
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      istio: ingressgateway
+  jwtRules:
+    - issuer: "admin@example.com"
+      jwksUri: "http://jwttest.jasonheshuai.com/auth/jwks"
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: AuthorizationPolicy
+metadata:
+  name: deny-resource
+  namespace: istio-system
+spec:
+  selector:
+    matchLabels:
+      istio: ingressgateway
+  action: DENY
+  rules:
+    - to:
+      - operation:
+          notPaths: ["/auth*"]
+      when:
+        - key: request.auth.claims[iss]
+          notValues: ["admin@example.com"]

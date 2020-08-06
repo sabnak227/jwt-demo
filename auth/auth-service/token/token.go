@@ -91,8 +91,10 @@ func GenToken(scopes []string, userInfo interface{}) (*Details, error) {
 	td.RefreshUuid = uuid.New().String()
 	var err error
 	// create access token
+	// TODO: use NewWithClaims method here
 	at := jwt.New(jwt.GetSigningMethod("RS256"))
 	atClaims := make(jwt.MapClaims)
+	atClaims["iss"] = "admin@example.com"
 	atClaims["authorized"] = true
 	atClaims["access_uuid"] = td.AccessUuid
 	atClaims["scopes"] = scopes

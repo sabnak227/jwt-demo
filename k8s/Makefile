@@ -4,8 +4,12 @@ all: deploy
 
 .PHONY: deploy
 deploy:
-	kubectl apply -n jwt-test -f deploy.yml
+	kubectl apply -n jwt-test -f deploy-auth-svc.yml
+	kubectl apply -n jwt-test -f deploy-resource-svc.yml
+	kubectl apply -n jwt-test -f deploy-scope-svc.yml
+	kubectl apply -n jwt-test -f deploy-user-svc.yml
 	kubectl apply -f gateway.yml
+	kubectl apply -f policy.yml
 
 .PHONY: kiali
 kiali:

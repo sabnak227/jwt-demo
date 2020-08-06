@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: resource-svc
+  labels:
+    app: resource-svc
+    service: resource-svc
+spec:
+  ports:
+    - port: 5040
+      name: rpc-resource
+    - port: 5050
+      name: http-resource
+  selector:
+    app: resource-svc
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jwt-test-resource-svc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resource-svc-v1
+  labels:
+    app: resource-svc
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resource-svc
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: resource-svc
+        version: v1
+    spec:
+      serviceAccountName: jwt-test-resource-svc
+      containers:
+        - name: resource-svc
+          image: docker.io/jasonheshuai/jwt-demo-resource:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5040
+            - containerPort: 5050

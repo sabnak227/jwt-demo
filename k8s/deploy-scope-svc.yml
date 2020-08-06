@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: scope-svc
+  labels:
+    app: scope-svc
+    service: scope-svc
+spec:
+  ports:
+    - port: 5040
+      name: rpc-scope
+    - port: 5050
+      name: http-scope
+  selector:
+    app: scope-svc
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jwt-test-scope-svc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scope-svc-v1
+  labels:
+    app: scope-svc
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scope-svc
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: scope-svc
+        version: v1
+    spec:
+      serviceAccountName: jwt-test-scope-svc
+      containers:
+        - name: scope-svc
+          image: docker.io/jasonheshuai/jwt-demo-scope:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5040
+            - containerPort: 5050

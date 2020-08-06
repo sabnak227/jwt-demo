@@ -2,16 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a6f568ad-b704-4e8a-9675-3376603dcbb4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/k8s/Makefile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/k8s/deploy.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/k8s/gateway.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/k8s/namespace.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/k8s/deploy-auth-svc.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/k8s/deploy-resource-svc.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/k8s/deploy-scope-svc.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/k8s/deploy-user-svc.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/k8s/policy.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/auth/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resource/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/resource/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resource/resource-service/handlers/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/resource/resource-service/handlers/handlers.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scope/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/scope/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/users/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/token/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/token/token.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/k8s/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/k8s/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/k8s/deploy.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/k8s/gateway.yml" beforeDir="false" afterPath="$PROJECT_DIR$/k8s/gateway.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,20 +47,20 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/auth" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/k8s" />
     <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/auth/auth-service/token" />
+      <recent name="$PROJECT_DIR$/bak" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/k8s" />
       <recent name="$PROJECT_DIR$/auth" />
       <recent name="$PROJECT_DIR$/resource" />
       <recent name="$PROJECT_DIR$/scope" />
       <recent name="$PROJECT_DIR$/auth/auth-service" />
-      <recent name="$PROJECT_DIR$/auth/scope-service" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/auth/auth-service/token" />
-      <recent name="$PROJECT_DIR$/bak" />
     </key>
   </component>
   <component name="ServiceViewManager">
