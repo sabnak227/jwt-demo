@@ -36,6 +36,19 @@ func New(conn *grpc.ClientConn, options ...ClientOption) (pb.AuthServer, error) 
 		grpctransport.ClientBefore(
 			contextValuesToGRPCMetadata(cc.headers)),
 	}
+	var jwksEndpoint endpoint.Endpoint
+	{
+		jwksEndpoint = grpctransport.NewClient(
+			conn,
+			"auth.Auth",
+			"JWKS",
+			EncodeGRPCJWKSRequest,
+			DecodeGRPCJWKSResponse,
+			pb.JWKSResponse{},
+			clientOptions...,
+		).Endpoint()
+	}
+
 	var loginEndpoint endpoint.Endpoint
 	{
 		loginEndpoint = grpctransport.NewClient(
@@ -50,11 +63,19 @@ func New(conn *grpc.ClientConn, options ...ClientOption) (pb.AuthServer, error) 
 	}
 
 	return svc.Endpoints{
+		JWKSEndpoint:  jwksEndpoint,
 		LoginEndpoint: loginEndpoint,
 	}, nil
 }
 
 // GRPC Client Decode
+
+// DecodeGRPCJWKSResponse is a transport/grpc.DecodeResponseFunc that converts a
+// gRPC jwks reply to a user-domain jwks response. Primarily useful in a client.
+func DecodeGRPCJWKSResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
+	reply := grpcReply.(*pb.JWKSResponse)
+	return reply, nil
+}
 
 // DecodeGRPCLoginResponse is a transport/grpc.DecodeResponseFunc that converts a
 // gRPC login reply to a user-domain login response. Primarily useful in a client.
@@ -64,6 +85,13 @@ func DecodeGRPCLoginResponse(_ context.Context, grpcReply interface{}) (interfac
 }
 
 // GRPC Client Encode
+
+// EncodeGRPCJWKSRequest is a transport/grpc.EncodeRequestFunc that converts a
+// user-domain jwks request to a gRPC jwks request. Primarily useful in a client.
+func EncodeGRPCJWKSRequest(_ context.Context, request interface{}) (interface{}, error) {
+	req := request.(*pb.JWKSRequest)
+	return req, nil
+}
 
 // EncodeGRPCLoginRequest is a transport/grpc.EncodeRequestFunc that converts a
 // user-domain login request to a gRPC login request. Primarily useful in a client.

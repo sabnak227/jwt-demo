@@ -29,6 +29,12 @@ func MakeGRPCServer(endpoints Endpoints, options ...grpctransport.ServerOption) 
 	return &grpcServer{
 		// auth
 
+		jwks: grpctransport.NewServer(
+			endpoints.JWKSEndpoint,
+			DecodeGRPCJWKSRequest,
+			EncodeGRPCJWKSResponse,
+			serverOptions...,
+		),
 		login: grpctransport.NewServer(
 			endpoints.LoginEndpoint,
 			DecodeGRPCLoginRequest,
@@ -40,10 +46,19 @@ func MakeGRPCServer(endpoints Endpoints, options ...grpctransport.ServerOption) 
 
 // grpcServer implements the AuthServer interface
 type grpcServer struct {
+	jwks  grpctransport.Handler
 	login grpctransport.Handler
 }
 
 // Methods for grpcServer to implement AuthServer interface
+
+func (s *grpcServer) JWKS(ctx context.Context, req *pb.JWKSRequest) (*pb.JWKSResponse, error) {
+	_, rep, err := s.jwks.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.JWKSResponse), nil
+}
 
 func (s *grpcServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
 	_, rep, err := s.login.ServeGRPC(ctx, req)
@@ -55,6 +70,13 @@ func (s *grpcServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Login
 
 // Server Decode
 
+// DecodeGRPCJWKSRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC jwks request to a user-domain jwks request. Primarily useful in a server.
+func DecodeGRPCJWKSRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.JWKSRequest)
+	return req, nil
+}
+
 // DecodeGRPCLoginRequest is a transport/grpc.DecodeRequestFunc that converts a
 // gRPC login request to a user-domain login request. Primarily useful in a server.
 func DecodeGRPCLoginRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
@@ -63,6 +85,13 @@ func DecodeGRPCLoginRequest(_ context.Context, grpcReq interface{}) (interface{}
 }
 
 // Server Encode
+
+// EncodeGRPCJWKSResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain jwks response to a gRPC jwks reply. Primarily useful in a server.
+func EncodeGRPCJWKSResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.JWKSResponse)
+	return resp, nil
+}
 
 // EncodeGRPCLoginResponse is a transport/grpc.EncodeResponseFunc that converts a
 // user-domain login response to a gRPC login reply. Primarily useful in a server.

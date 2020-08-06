@@ -50,6 +50,16 @@ func New(instance string, options ...httptransport.ClientOption) (pb.AuthServer,
 	}
 	_ = u
 
+	var JWKSZeroEndpoint endpoint.Endpoint
+	{
+		JWKSZeroEndpoint = httptransport.NewClient(
+			"GET",
+			copyURL(u, "/auth/jwks"),
+			EncodeHTTPJWKSZeroRequest,
+			DecodeHTTPJWKSResponse,
+			options...,
+		).Endpoint()
+	}
 	var LoginZeroEndpoint endpoint.Endpoint
 	{
 		LoginZeroEndpoint = httptransport.NewClient(
@@ -62,6 +72,7 @@ func New(instance string, options ...httptransport.ClientOption) (pb.AuthServer,
 	}
 
 	return svc.Endpoints{
+		JWKSEndpoint:  JWKSZeroEndpoint,
 		LoginEndpoint: LoginZeroEndpoint,
 	}, nil
 }
@@ -88,6 +99,33 @@ func CtxValuesToSend(keys ...string) httptransport.ClientOption {
 }
 
 // HTTP Client Decode
+
+// DecodeHTTPJWKSResponse is a transport/http.DecodeResponseFunc that decodes
+// a JSON-encoded JWKSResponse response from the HTTP response body.
+// If the response has a non-200 status code, we will interpret that as an
+// error and attempt to decode the specific error message from the response
+// body. Primarily useful in a client.
+func DecodeHTTPJWKSResponse(_ context.Context, r *http.Response) (interface{}, error) {
+	defer r.Body.Close()
+	buf, err := ioutil.ReadAll(r.Body)
+	if err == io.EOF {
+		return nil, errors.New("response http body empty")
+	}
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot read http body")
+	}
+
+	if r.StatusCode != http.StatusOK {
+		return nil, errors.Wrapf(errorDecoder(buf), "status code: '%d'", r.StatusCode)
+	}
+
+	var resp pb.JWKSResponse
+	if err = jsonpb.UnmarshalString(string(buf), &resp); err != nil {
+		return nil, errorDecoder(buf)
+	}
+
+	return &resp, nil
+}
 
 // DecodeHTTPLoginResponse is a transport/http.DecodeResponseFunc that decodes
 // a JSON-encoded LoginResponse response from the HTTP response body.
@@ -117,6 +155,40 @@ func DecodeHTTPLoginResponse(_ context.Context, r *http.Response) (interface{}, 
 }
 
 // HTTP Client Encode
+
+// EncodeHTTPJWKSZeroRequest is a transport/http.EncodeRequestFunc
+// that encodes a jwks request into the various portions of
+// the http request (path, query, and body).
+func EncodeHTTPJWKSZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+	strval := ""
+	_ = strval
+	req := request.(*pb.JWKSRequest)
+	_ = req
+
+	r.Header.Set("transport", "HTTPJSON")
+	r.Header.Set("request-url", r.URL.Path)
+
+	// Set the path parameters
+	path := strings.Join([]string{
+		"",
+		"auth",
+		"jwks",
+	}, "/")
+	u, err := url.Parse(path)
+	if err != nil {
+		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
+	}
+	r.URL.RawPath = u.RawPath
+	r.URL.Path = u.Path
+
+	// Set the query parameters
+	values := r.URL.Query()
+	var tmp []byte
+	_ = tmp
+
+	r.URL.RawQuery = values.Encode()
+	return nil
+}
 
 // EncodeHTTPLoginZeroRequest is a transport/http.EncodeRequestFunc
 // that encodes a login request into the various portions of

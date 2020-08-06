@@ -63,10 +63,12 @@ func NewEndpoints() svc.Endpoints {
 
 	// Endpoint domain.
 	var (
+		jwksEndpoint  = svc.MakeJWKSEndpoint(service)
 		loginEndpoint = svc.MakeLoginEndpoint(service)
 	)
 
 	endpoints := svc.Endpoints{
+		JWKSEndpoint:  jwksEndpoint,
 		LoginEndpoint: loginEndpoint,
 	}
 

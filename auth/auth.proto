@@ -5,6 +5,11 @@ package auth;
 import "github.com/metaverse/truss/deftree/googlethirdparty/annotations.proto";
 
 service Auth {
+  rpc JWKS (JWKSRequest) returns (JWKSResponse) {
+    option (google.api.http) = {
+      get: "/auth/jwks"
+    };
+  }
   rpc Login (LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
       custom {
@@ -18,6 +23,16 @@ service Auth {
       }
     };
   }
+}
+
+message JWKSRequest {}
+message JWKSResponse {
+  message Keys {
+    string kty = 1;
+    string n = 2;
+    string e = 3;
+  }
+  repeated Keys keys = 1;
 }
 
 message LoginRequest {

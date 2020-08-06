@@ -3,3 +3,4 @@ node_modules
 app.rsa
 app.rsa.pub
 private.jwk
+jwks.json

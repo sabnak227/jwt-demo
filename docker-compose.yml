@@ -7,6 +7,9 @@ services:
     environment:
       - USER_HOST=user:5040
       - SCOPE_HOST=scope:5040
+      - PUB_KEY_PATH=/app.rsa.pub
+      - PRI_KEY_PATH=/app.rsa
+      - JWKS_PATH=/jwks.json
     ports:
       - 5040:5040
       - 5050:5050

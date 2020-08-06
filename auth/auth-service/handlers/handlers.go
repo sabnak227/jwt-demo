@@ -35,7 +35,7 @@ func init() {
 		userHost = addr
 	}
 	if addr := os.Getenv("SCOPE_HOST"); addr != "" {
-		scopeHost= addr
+		scopeHost = addr
 	}
 
 	uconn, err := grpc.Dial(userHost, grpc.WithInsecure())
@@ -88,9 +88,24 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 	}
 
 	return &pb.LoginResponse{
-		Code:    1,
-		Message: "success",
-		AccessToken: tokenDetail.AccessToken,
+		Code:         1,
+		Message:      "success",
+		AccessToken:  tokenDetail.AccessToken,
 		RefreshToken: tokenDetail.RefreshToken,
 	}, nil
+}
+
+// JWKS implements Service.
+func (s authService) JWKS(ctx context.Context, in *pb.JWKSRequest) (*pb.JWKSResponse, error) {
+	var resp pb.JWKSResponse
+	jwk := token.GetJWk()
+	res := pb.JWKSResponse_Keys{
+		Kty: jwk.Kty,
+		N: jwk.N,
+		E: jwk.E,
+	}
+	resp = pb.JWKSResponse{
+		Keys: []*pb.JWKSResponse_Keys{&res},
+	}
+	return &resp, nil
 }

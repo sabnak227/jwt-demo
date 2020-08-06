@@ -3,7 +3,7 @@ COPY . /app
 WORKDIR /app
 RUN go mod download
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main scope-service/cmd/scope/main.go
-# or FROM golang:alpine or some other base depending on need
+
 FROM alpine:latest
-WORKDIR /root/
-COPY --from=builder /app/main .
+COPY --from=builder /app/main /bin/app
+ENTRYPOINT ["/bin/app"]

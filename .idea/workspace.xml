@@ -2,24 +2,24 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a6f568ad-b704-4e8a-9675-3376603dcbb4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/auth/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resource/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/scope/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/users/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/auth/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/auth/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/auth-service/keys/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/keys/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/keys/app.rsa" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/keys/app.rsa" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/keys/app.rsa.pub" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/keys/app.rsa.pub" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/auth-service/keys/keygen.sh" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/keys/keygen.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/auth/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/client/grpc/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/client/grpc/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/client/http/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/client/http/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/endpoints.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/endpoints.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/server/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/server/run.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/transport_grpc.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/transport_grpc.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/transport_http.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/transport_http.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/token/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/token/token.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth.proto" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resource/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/resource/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resource/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/resource/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scope/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/scope/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scope/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/scope/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/users/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/users/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resource/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/resource/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scope/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/scope/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/users/Dockerfile" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,9 +106,9 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="429" y="10" key="#users/Dockerfile/0.0.1440.900@0.0.1440.900" timestamp="1596654513008" />
-    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1596658545890">
+    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1596664677755">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1596658545890" />
+    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1596664677755" />
   </component>
 </project>

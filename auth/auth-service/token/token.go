@@ -2,24 +2,41 @@ package token
 
 import (
 	"crypto/rsa"
+	"encoding/json"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"io/ioutil"
+	"os"
 	"time"
 )
 
 var (
 	verifyKey *rsa.PublicKey
 	signKey   *rsa.PrivateKey
+	jwk		  Jwks
 )
 
 const (
-	privKeyPath = "auth-service/keys/app.rsa"
-	pubKeyPath  = "auth-service/keys/app.rsa.pub"
+	pubKeyPathDefault  = "auth-service/keys/app.rsa.pub"
+	privKeyPathDefault = "auth-service/keys/app.rsa"
+	jwksPathDefault = "auth-service/keys/jwks.json"
 )
 
 func init() {
+	pubKeyPath := pubKeyPathDefault
+	privKeyPath := privKeyPathDefault
+	jwksPath := jwksPathDefault
+
+	if addr := os.Getenv("PUB_KEY_PATH"); addr != "" {
+		pubKeyPath = addr
+	}
+	if addr := os.Getenv("PRI_KEY_PATH"); addr != "" {
+		privKeyPath= addr
+	}
+	if addr := os.Getenv("JWKS_PATH"); addr != "" {
+		jwksPath= addr
+	}
 	signBytes, err := ioutil.ReadFile(privKeyPath)
 	if err != nil {
 		panic(fmt.Sprintf("error %s", err.Error()))
@@ -39,6 +56,15 @@ func init() {
 	if err != nil {
 		panic(fmt.Sprintf("error %s", err.Error()))
 	}
+
+	jwkBytes, err := ioutil.ReadFile(jwksPath)
+	if err != nil {
+		panic(fmt.Sprintf("error %s", err.Error()))
+	}
+
+	if err := json.Unmarshal(jwkBytes, &jwk); err != nil {
+		panic(fmt.Sprintf("error %s", err.Error()))
+	}
 }
 
 type Details struct {
@@ -48,6 +74,12 @@ type Details struct {
 	RefreshUuid  string
 	AtExpires    int64
 	RtExpires    int64
+}
+
+type Jwks struct {
+	Kty 	string `json:"kty"`
+	N 		string `json:"n"`
+	E 		string `json:"e"`
 }
 
 func GenToken(scopes []string, userInfo interface{}) (*Details, error) {
@@ -84,4 +116,8 @@ func GenToken(scopes []string, userInfo interface{}) (*Details, error) {
 	}
 
 	return td, nil
+}
+
+func GetJWk() Jwks{
+	return jwk
 }
