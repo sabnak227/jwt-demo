@@ -1,8 +1,12 @@
 package handlers
 
 import (
+	"context"
+	"github.com/go-kit/kit/endpoint"
 	pb "github.com/sabnak227/jwt-demo/auth"
 	"github.com/sabnak227/jwt-demo/auth/auth-service/svc"
+	log "github.com/sirupsen/logrus"
+	"time"
 )
 
 // WrapEndpoints accepts the service's entire collection of endpoints, so that a
@@ -28,9 +32,26 @@ func WrapEndpoints(in svc.Endpoints) svc.Endpoints {
 	// How to apply a middleware to a single endpoint.
 	// in.ExampleEndpoint = authMiddleware(in.ExampleEndpoint)
 
+	in.WrapAllLabeledExcept(timingMiddleware())
 	return in
 }
 
 func WrapService(in pb.AuthServer) pb.AuthServer {
 	return in
+}
+
+func timingMiddleware() svc.LabeledMiddleware {
+	return func(name string, in endpoint.Endpoint) endpoint.Endpoint {
+		return func(ctx context.Context, req interface{}) (rsp interface{}, err error) {
+			defer func(begin time.Time) {
+				logger.WithFields(log.Fields{
+					"input":   req,
+					"output":  rsp,
+					"error":   err,
+					"elapsed": time.Since(begin).String(),
+				}).Infof("Requesting endpoint: %s", name)
+			}(time.Now())
+			return in(ctx, req)
+		}
+	}
 }

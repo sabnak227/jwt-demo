@@ -53,6 +53,7 @@ func init() {
 
 // Login implements Service.
 func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginResponse, error) {
+	logger.Infof("User %s is logging in", in.Email)
 	res, err := userSvc.AuthUser(ctx, &user.AuthUserRequest{
 		Email:    in.Email,
 		Password: in.Password,
