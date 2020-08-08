@@ -13,21 +13,24 @@ func NewService() pb.UserServer {
 
 type userService struct{}
 
-// AuthUser implements Service.
-func (s userService) AuthUser(ctx context.Context, in *pb.AuthUserRequest) (*pb.AuthUserResponse, error) {
-	var resp pb.AuthUserResponse
-	var code int32
-	var msg string
-	if in.Email == "jasonheshuai@gmail.com" && in.Password == "123qwe" {
-		code = 1
-		msg = "success"
-	} else {
-		code = 2
-		msg = "fail"
-	}
-	resp = pb.AuthUserResponse{
-		Code: code,
-		Message: msg,
+// GetUser implements Service.
+func (s userService) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.GetUserResponse, error) {
+	var resp pb.GetUserResponse
+	resp = pb.GetUserResponse{
+		Code: 1,
+		Message: "msg",
+		User: &pb.UserObj{
+			Id:        0,
+			FirstName: "kjn",
+			LastName:  "lkn",
+			Email:     "lknj",
+			Address1:  "lk",
+			Address2:  "",
+			City:      "",
+			State:     "",
+			Country:   "",
+			Phone:     "",
+		},
 	}
 	return &resp, nil
 }

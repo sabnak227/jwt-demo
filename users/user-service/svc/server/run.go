@@ -63,11 +63,11 @@ func NewEndpoints() svc.Endpoints {
 
 	// Endpoint domain.
 	var (
-		authuserEndpoint = svc.MakeAuthUserEndpoint(service)
+		getuserEndpoint = svc.MakeGetUserEndpoint(service)
 	)
 
 	endpoints := svc.Endpoints{
-		AuthUserEndpoint: authuserEndpoint,
+		GetUserEndpoint: getuserEndpoint,
 	}
 
 	// Wrap selected Endpoints with middlewares. See handlers/middlewares.go

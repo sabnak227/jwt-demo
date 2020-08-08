@@ -55,15 +55,9 @@ func MakeHTTPHandler(endpoints Endpoints, options ...httptransport.ServerOption)
 	serverOptions = append(serverOptions, options...)
 	m := mux.NewRouter()
 
-	m.Methods("POST").Path("/users/auth").Handler(httptransport.NewServer(
-		endpoints.AuthUserEndpoint,
-		DecodeHTTPAuthUserZeroRequest,
-		EncodeHTTPGenericResponse,
-		serverOptions...,
-	))
-	m.Methods("HEAD").Path("/users/auth").Handler(httptransport.NewServer(
-		endpoints.AuthUserEndpoint,
-		DecodeHTTPAuthUserOneRequest,
+	m.Methods("GET").Path("/user/{ID}").Handler(httptransport.NewServer(
+		endpoints.GetUserEndpoint,
+		DecodeHTTPGetUserZeroRequest,
 		EncodeHTTPGenericResponse,
 		serverOptions...,
 	))
@@ -120,12 +114,12 @@ func (h httpError) Headers() http.Header {
 
 // Server Decode
 
-// DecodeHTTPAuthUserZeroRequest is a transport/http.DecodeRequestFunc that
-// decodes a JSON-encoded authuser request from the HTTP request
+// DecodeHTTPGetUserZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded getuser request from the HTTP request
 // body. Primarily useful in a server.
-func DecodeHTTPAuthUserZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+func DecodeHTTPGetUserZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	defer r.Body.Close()
-	var req pb.AuthUserRequest
+	var req pb.GetUserRequest
 	buf, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return nil, errors.Wrapf(err, "cannot read body of http request")
@@ -153,53 +147,12 @@ func DecodeHTTPAuthUserZeroRequest(_ context.Context, r *http.Request) (interfac
 	queryParams := r.URL.Query()
 	_ = queryParams
 
-	return &req, err
-}
-
-// DecodeHTTPAuthUserOneRequest is a transport/http.DecodeRequestFunc that
-// decodes a JSON-encoded authuser request from the HTTP request
-// body. Primarily useful in a server.
-func DecodeHTTPAuthUserOneRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	defer r.Body.Close()
-	var req pb.AuthUserRequest
-	buf, err := ioutil.ReadAll(r.Body)
+	IDGetUserStr := pathParams["ID"]
+	IDGetUser, err := strconv.ParseUint(IDGetUserStr, 10, 64)
 	if err != nil {
-		return nil, errors.Wrapf(err, "cannot read body of http request")
+		return nil, errors.Wrap(err, fmt.Sprintf("Error while extracting IDGetUser from path, pathParams: %v", pathParams))
 	}
-	if len(buf) > 0 {
-		// AllowUnknownFields stops the unmarshaler from failing if the JSON contains unknown fields.
-		unmarshaller := jsonpb.Unmarshaler{
-			AllowUnknownFields: true,
-		}
-		if err = unmarshaller.Unmarshal(bytes.NewBuffer(buf), &req); err != nil {
-			const size = 8196
-			if len(buf) > size {
-				buf = buf[:size]
-			}
-			return nil, httpError{errors.Wrapf(err, "request body '%s': cannot parse non-json request body", buf),
-				http.StatusBadRequest,
-				nil,
-			}
-		}
-	}
-
-	pathParams := mux.Vars(r)
-	_ = pathParams
-
-	queryParams := r.URL.Query()
-	_ = queryParams
-
-	if EmailAuthUserStrArr, ok := queryParams["email"]; ok {
-		EmailAuthUserStr := EmailAuthUserStrArr[0]
-		EmailAuthUser := EmailAuthUserStr
-		req.Email = EmailAuthUser
-	}
-
-	if PasswordAuthUserStrArr, ok := queryParams["password"]; ok {
-		PasswordAuthUserStr := PasswordAuthUserStrArr[0]
-		PasswordAuthUser := PasswordAuthUserStr
-		req.Password = PasswordAuthUser
-	}
+	req.ID = IDGetUser
 
 	return &req, err
 }

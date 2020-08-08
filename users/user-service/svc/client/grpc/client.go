@@ -36,39 +36,39 @@ func New(conn *grpc.ClientConn, options ...ClientOption) (pb.UserServer, error) 
 		grpctransport.ClientBefore(
 			contextValuesToGRPCMetadata(cc.headers)),
 	}
-	var authuserEndpoint endpoint.Endpoint
+	var getuserEndpoint endpoint.Endpoint
 	{
-		authuserEndpoint = grpctransport.NewClient(
+		getuserEndpoint = grpctransport.NewClient(
 			conn,
 			"user.User",
-			"AuthUser",
-			EncodeGRPCAuthUserRequest,
-			DecodeGRPCAuthUserResponse,
-			pb.AuthUserResponse{},
+			"GetUser",
+			EncodeGRPCGetUserRequest,
+			DecodeGRPCGetUserResponse,
+			pb.GetUserResponse{},
 			clientOptions...,
 		).Endpoint()
 	}
 
 	return svc.Endpoints{
-		AuthUserEndpoint: authuserEndpoint,
+		GetUserEndpoint: getuserEndpoint,
 	}, nil
 }
 
 // GRPC Client Decode
 
-// DecodeGRPCAuthUserResponse is a transport/grpc.DecodeResponseFunc that converts a
-// gRPC authuser reply to a user-domain authuser response. Primarily useful in a client.
-func DecodeGRPCAuthUserResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
-	reply := grpcReply.(*pb.AuthUserResponse)
+// DecodeGRPCGetUserResponse is a transport/grpc.DecodeResponseFunc that converts a
+// gRPC getuser reply to a user-domain getuser response. Primarily useful in a client.
+func DecodeGRPCGetUserResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
+	reply := grpcReply.(*pb.GetUserResponse)
 	return reply, nil
 }
 
 // GRPC Client Encode
 
-// EncodeGRPCAuthUserRequest is a transport/grpc.EncodeRequestFunc that converts a
-// user-domain authuser request to a gRPC authuser request. Primarily useful in a client.
-func EncodeGRPCAuthUserRequest(_ context.Context, request interface{}) (interface{}, error) {
-	req := request.(*pb.AuthUserRequest)
+// EncodeGRPCGetUserRequest is a transport/grpc.EncodeRequestFunc that converts a
+// user-domain getuser request to a gRPC getuser request. Primarily useful in a client.
+func EncodeGRPCGetUserRequest(_ context.Context, request interface{}) (interface{}, error) {
+	req := request.(*pb.GetUserRequest)
 	return req, nil
 }
 

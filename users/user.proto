@@ -5,27 +5,31 @@ package user;
 import "github.com/metaverse/truss/deftree/googlethirdparty/annotations.proto";
 
 service User {
-  rpc AuthUser (AuthUserRequest) returns (AuthUserResponse) {
+  rpc GetUser (GetUserRequest) returns (GetUserResponse) {
     option (google.api.http) = {
-      custom {
-        kind: "HEAD"
-        path: "/users/auth"
-      }
-      additional_bindings {
-        post: "/users/auth"
-        // All other fields (In) are located in the body of the http/json request
-        body: "*"
-      }
+      get: "/user/{ID}"
     };
   }
-
 }
 
-message AuthUserRequest {
-  string email = 1;
-  string password = 2;
+message UserObj {
+  uint64 id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string email = 4;
+  string address1 = 5;
+  string address2 = 6;
+  string city = 7;
+  string state = 8;
+  string country = 9;
+  string phone = 10;
 }
-message AuthUserResponse {
+
+message GetUserRequest {
+  uint64 ID = 1;
+}
+message GetUserResponse {
   int32 code = 1;
   string message = 2;
+  UserObj user = 3;
 }

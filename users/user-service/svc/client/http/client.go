@@ -50,19 +50,19 @@ func New(instance string, options ...httptransport.ClientOption) (pb.UserServer,
 	}
 	_ = u
 
-	var AuthUserZeroEndpoint endpoint.Endpoint
+	var GetUserZeroEndpoint endpoint.Endpoint
 	{
-		AuthUserZeroEndpoint = httptransport.NewClient(
-			"POST",
-			copyURL(u, "/users/auth"),
-			EncodeHTTPAuthUserZeroRequest,
-			DecodeHTTPAuthUserResponse,
+		GetUserZeroEndpoint = httptransport.NewClient(
+			"GET",
+			copyURL(u, "/user/"),
+			EncodeHTTPGetUserZeroRequest,
+			DecodeHTTPGetUserResponse,
 			options...,
 		).Endpoint()
 	}
 
 	return svc.Endpoints{
-		AuthUserEndpoint: AuthUserZeroEndpoint,
+		GetUserEndpoint: GetUserZeroEndpoint,
 	}, nil
 }
 
@@ -89,12 +89,12 @@ func CtxValuesToSend(keys ...string) httptransport.ClientOption {
 
 // HTTP Client Decode
 
-// DecodeHTTPAuthUserResponse is a transport/http.DecodeResponseFunc that decodes
-// a JSON-encoded AuthUserResponse response from the HTTP response body.
+// DecodeHTTPGetUserResponse is a transport/http.DecodeResponseFunc that decodes
+// a JSON-encoded GetUserResponse response from the HTTP response body.
 // If the response has a non-200 status code, we will interpret that as an
 // error and attempt to decode the specific error message from the response
 // body. Primarily useful in a client.
-func DecodeHTTPAuthUserResponse(_ context.Context, r *http.Response) (interface{}, error) {
+func DecodeHTTPGetUserResponse(_ context.Context, r *http.Response) (interface{}, error) {
 	defer r.Body.Close()
 	buf, err := ioutil.ReadAll(r.Body)
 	if err == io.EOF {
@@ -108,7 +108,7 @@ func DecodeHTTPAuthUserResponse(_ context.Context, r *http.Response) (interface{
 		return nil, errors.Wrapf(errorDecoder(buf), "status code: '%d'", r.StatusCode)
 	}
 
-	var resp pb.AuthUserResponse
+	var resp pb.GetUserResponse
 	if err = jsonpb.UnmarshalString(string(buf), &resp); err != nil {
 		return nil, errorDecoder(buf)
 	}
@@ -118,13 +118,13 @@ func DecodeHTTPAuthUserResponse(_ context.Context, r *http.Response) (interface{
 
 // HTTP Client Encode
 
-// EncodeHTTPAuthUserZeroRequest is a transport/http.EncodeRequestFunc
-// that encodes a authuser request into the various portions of
+// EncodeHTTPGetUserZeroRequest is a transport/http.EncodeRequestFunc
+// that encodes a getuser request into the various portions of
 // the http request (path, query, and body).
-func EncodeHTTPAuthUserZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+func EncodeHTTPGetUserZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
 	strval := ""
 	_ = strval
-	req := request.(*pb.AuthUserRequest)
+	req := request.(*pb.GetUserRequest)
 	_ = req
 
 	r.Header.Set("transport", "HTTPJSON")
@@ -133,8 +133,8 @@ func EncodeHTTPAuthUserZeroRequest(_ context.Context, r *http.Request, request i
 	// Set the path parameters
 	path := strings.Join([]string{
 		"",
-		"users",
-		"auth",
+		"user",
+		fmt.Sprint(req.ID),
 	}, "/")
 	u, err := url.Parse(path)
 	if err != nil {
@@ -149,67 +149,6 @@ func EncodeHTTPAuthUserZeroRequest(_ context.Context, r *http.Request, request i
 	_ = tmp
 
 	r.URL.RawQuery = values.Encode()
-	// Set the body parameters
-	var buf bytes.Buffer
-	toRet := request.(*pb.AuthUserRequest)
-
-	toRet.Email = req.Email
-
-	toRet.Password = req.Password
-
-	encoder := json.NewEncoder(&buf)
-	encoder.SetEscapeHTML(false)
-	if err := encoder.Encode(toRet); err != nil {
-		return errors.Wrapf(err, "couldn't encode body as json %v", toRet)
-	}
-	r.Body = ioutil.NopCloser(&buf)
-	return nil
-}
-
-// EncodeHTTPAuthUserOneRequest is a transport/http.EncodeRequestFunc
-// that encodes a authuser request into the various portions of
-// the http request (path, query, and body).
-func EncodeHTTPAuthUserOneRequest(_ context.Context, r *http.Request, request interface{}) error {
-	strval := ""
-	_ = strval
-	req := request.(*pb.AuthUserRequest)
-	_ = req
-
-	r.Header.Set("transport", "HTTPJSON")
-	r.Header.Set("request-url", r.URL.Path)
-
-	// Set the path parameters
-	path := strings.Join([]string{
-		"",
-		"users",
-		"auth",
-	}, "/")
-	u, err := url.Parse(path)
-	if err != nil {
-		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
-	}
-	r.URL.RawPath = u.RawPath
-	r.URL.Path = u.Path
-
-	// Set the query parameters
-	values := r.URL.Query()
-	var tmp []byte
-	_ = tmp
-
-	values.Add("email", fmt.Sprint(req.Email))
-
-	values.Add("password", fmt.Sprint(req.Password))
-
-	r.URL.RawQuery = values.Encode()
-	// Set the body parameters
-	var buf bytes.Buffer
-	toRet := request.(*pb.AuthUserRequest)
-	encoder := json.NewEncoder(&buf)
-	encoder.SetEscapeHTML(false)
-	if err := encoder.Encode(toRet); err != nil {
-		return errors.Wrapf(err, "couldn't encode body as json %v", toRet)
-	}
-	r.Body = ioutil.NopCloser(&buf)
 	return nil
 }
 

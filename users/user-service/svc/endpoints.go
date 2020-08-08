@@ -33,25 +33,25 @@ import (
 // single type that implements the Service interface. For example, you might
 // construct individual endpoints using transport/http.NewClient, combine them into an Endpoints, and return it to the caller as a Service.
 type Endpoints struct {
-	AuthUserEndpoint endpoint.Endpoint
+	GetUserEndpoint endpoint.Endpoint
 }
 
 // Endpoints
 
-func (e Endpoints) AuthUser(ctx context.Context, in *pb.AuthUserRequest) (*pb.AuthUserResponse, error) {
-	response, err := e.AuthUserEndpoint(ctx, in)
+func (e Endpoints) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.GetUserResponse, error) {
+	response, err := e.GetUserEndpoint(ctx, in)
 	if err != nil {
 		return nil, err
 	}
-	return response.(*pb.AuthUserResponse), nil
+	return response.(*pb.GetUserResponse), nil
 }
 
 // Make Endpoints
 
-func MakeAuthUserEndpoint(s pb.UserServer) endpoint.Endpoint {
+func MakeGetUserEndpoint(s pb.UserServer) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(*pb.AuthUserRequest)
-		v, err := s.AuthUser(ctx, req)
+		req := request.(*pb.GetUserRequest)
+		v, err := s.GetUser(ctx, req)
 		if err != nil {
 			return nil, err
 		}
@@ -66,7 +66,7 @@ func MakeAuthUserEndpoint(s pb.UserServer) endpoint.Endpoint {
 // WrapAllExcept(middleware, "Status", "Ping")
 func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...string) {
 	included := map[string]struct{}{
-		"AuthUser": struct{}{},
+		"GetUser": struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -77,8 +77,8 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 	}
 
 	for inc, _ := range included {
-		if inc == "AuthUser" {
-			e.AuthUserEndpoint = middleware(e.AuthUserEndpoint)
+		if inc == "GetUser" {
+			e.GetUserEndpoint = middleware(e.GetUserEndpoint)
 		}
 	}
 }
@@ -94,7 +94,7 @@ type LabeledMiddleware func(string, endpoint.Endpoint) endpoint.Endpoint
 // functionality.
 func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoint) endpoint.Endpoint, excluded ...string) {
 	included := map[string]struct{}{
-		"AuthUser": struct{}{},
+		"GetUser": struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -105,8 +105,8 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 	}
 
 	for inc, _ := range included {
-		if inc == "AuthUser" {
-			e.AuthUserEndpoint = middleware("AuthUser", e.AuthUserEndpoint)
+		if inc == "GetUser" {
+			e.GetUserEndpoint = middleware("GetUser", e.GetUserEndpoint)
 		}
 	}
 }

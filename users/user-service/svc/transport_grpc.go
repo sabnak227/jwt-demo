@@ -29,10 +29,10 @@ func MakeGRPCServer(endpoints Endpoints, options ...grpctransport.ServerOption) 
 	return &grpcServer{
 		// user
 
-		authuser: grpctransport.NewServer(
-			endpoints.AuthUserEndpoint,
-			DecodeGRPCAuthUserRequest,
-			EncodeGRPCAuthUserResponse,
+		getuser: grpctransport.NewServer(
+			endpoints.GetUserEndpoint,
+			DecodeGRPCGetUserRequest,
+			EncodeGRPCGetUserResponse,
 			serverOptions...,
 		),
 	}
@@ -40,34 +40,34 @@ func MakeGRPCServer(endpoints Endpoints, options ...grpctransport.ServerOption) 
 
 // grpcServer implements the UserServer interface
 type grpcServer struct {
-	authuser grpctransport.Handler
+	getuser grpctransport.Handler
 }
 
 // Methods for grpcServer to implement UserServer interface
 
-func (s *grpcServer) AuthUser(ctx context.Context, req *pb.AuthUserRequest) (*pb.AuthUserResponse, error) {
-	_, rep, err := s.authuser.ServeGRPC(ctx, req)
+func (s *grpcServer) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
+	_, rep, err := s.getuser.ServeGRPC(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	return rep.(*pb.AuthUserResponse), nil
+	return rep.(*pb.GetUserResponse), nil
 }
 
 // Server Decode
 
-// DecodeGRPCAuthUserRequest is a transport/grpc.DecodeRequestFunc that converts a
-// gRPC authuser request to a user-domain authuser request. Primarily useful in a server.
-func DecodeGRPCAuthUserRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
-	req := grpcReq.(*pb.AuthUserRequest)
+// DecodeGRPCGetUserRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC getuser request to a user-domain getuser request. Primarily useful in a server.
+func DecodeGRPCGetUserRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.GetUserRequest)
 	return req, nil
 }
 
 // Server Encode
 
-// EncodeGRPCAuthUserResponse is a transport/grpc.EncodeResponseFunc that converts a
-// user-domain authuser response to a gRPC authuser reply. Primarily useful in a server.
-func EncodeGRPCAuthUserResponse(_ context.Context, response interface{}) (interface{}, error) {
-	resp := response.(*pb.AuthUserResponse)
+// EncodeGRPCGetUserResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain getuser response to a gRPC getuser reply. Primarily useful in a server.
+func EncodeGRPCGetUserResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.GetUserResponse)
 	return resp, nil
 }
 
