@@ -18,6 +18,14 @@ type userService struct{}
 func (s userService) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	logger.Infof("Getting user info for %d", in.ID)
 	var resp pb.GetUserResponse
+	u := repo.GetUser(in.ID)
+	if u == nil {
+		return &pb.GetUserResponse{
+			Code: constant.UserNotFound,
+			Message: "",
+		}, nil
+	}
+
 	resp = pb.GetUserResponse{
 		Code:    constant.SuccessCode,
 		Message: "success",

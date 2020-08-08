@@ -13,8 +13,8 @@ require (
 	github.com/jinzhu/gorm v1.9.15
 	github.com/metaverse/truss v0.1.0
 	github.com/pkg/errors v0.9.1
-	github.com/sabnak227/jwt-demo/scope v0.0.0-20200805172839-50002b2b2a46
-	github.com/sabnak227/jwt-demo/user v0.0.0-20200808161049-d8b51105400a
+	github.com/sabnak227/jwt-demo/scope v0.0.0-20200808201311-ef1f6b76d9a3
+	github.com/sabnak227/jwt-demo/user v0.0.0-20200808201311-ef1f6b76d9a3
 	github.com/sabnak227/jwt-demo/util v0.0.0-20200808193236-c280dbae12ae
 	github.com/sirupsen/logrus v1.4.2
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9

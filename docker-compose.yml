@@ -1,7 +1,7 @@
 version: "3"
 services:
   user:
-    build: ./users
+    build: ./user
   auth:
     build: ./auth
     environment:
