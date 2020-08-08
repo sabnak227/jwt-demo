@@ -9,7 +9,7 @@ import (
 	"flag"
 
 	// This Service
-	"github.com/sabnak227/jwt-demo/users/user-service/svc/server"
+	"github.com/sabnak227/jwt-demo/user/user-service/svc/server"
 )
 
 func main() {

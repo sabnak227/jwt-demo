@@ -262,6 +262,8 @@ github.com/sabnak227/jwt-demo/auth v0.0.0-20200808193236-c280dbae12ae h1:at7wQm9
 github.com/sabnak227/jwt-demo/auth v0.0.0-20200808193236-c280dbae12ae/go.mod h1:3fXxRCbvI5X035JeCEvRMscV6P+2hVd4DYtxLE8fTy0=
 github.com/sabnak227/jwt-demo/scope v0.0.0-20200805172839-50002b2b2a46/go.mod h1:bO2AX6xR0UZY1BWmBd4C0mgMKLE19TNtflLsjVPBf0A=
 github.com/sabnak227/jwt-demo/users v0.0.0-20200808161049-d8b51105400a/go.mod h1:r5js7cs30+nhHinCmO4/6QTwq5fK/AAUmmZ6RnSyhco=
+github.com/sabnak227/jwt-demo/users v0.0.0-20200808193236-c280dbae12ae h1:K4LlskgBEAlmrM1NI+MH2Sj9Ra/6vMJh2e6ddppRzGM=
+github.com/sabnak227/jwt-demo/users v0.0.0-20200808193236-c280dbae12ae/go.mod h1:r5js7cs30+nhHinCmO4/6QTwq5fK/AAUmmZ6RnSyhco=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200808193236-c280dbae12ae h1:E216MouegaiihKXHg491GZL06tDY4BDm5QoSvY0Ju1Q=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200808193236-c280dbae12ae/go.mod h1:4bVIIZwCkmiRDU2O/oqQWRhiT5S6gqMoW+ub3AtboY4=
 github.com/samuel/go-zookeeper v0.0.0-20190923202752-2cc03de413da/go.mod h1:gi+0XIa01GRL2eRQVjQkKGqKF3SF9vZR/HnPullcV2E=

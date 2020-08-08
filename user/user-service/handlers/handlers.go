@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/sabnak227/jwt-demo/util/constant"
 
-	pb "github.com/sabnak227/jwt-demo/users"
+	pb "github.com/sabnak227/jwt-demo/user"
 )
 
 // NewService returns a naïve, stateless implementation of Service.
@@ -16,9 +16,10 @@ type userService struct{}
 
 // GetUser implements Service.
 func (s userService) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.GetUserResponse, error) {
+	logger.Infof("Getting user info for %d", in.ID)
 	var resp pb.GetUserResponse
 	resp = pb.GetUserResponse{
-		Code: constant.SuccessCode,
+		Code:    constant.SuccessCode,
 		Message: "success",
 		User: &pb.UserObj{
 			Id:        0,

@@ -7,7 +7,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"github.com/sabnak227/jwt-demo/scope"
-	user "github.com/sabnak227/jwt-demo/users"
+	user "github.com/sabnak227/jwt-demo/user"
 	"io/ioutil"
 	"os"
 	"time"

@@ -24,8 +24,8 @@ import (
 	"github.com/pkg/errors"
 
 	// This Service
-	pb "github.com/sabnak227/jwt-demo/users"
-	"github.com/sabnak227/jwt-demo/users/user-service/svc"
+	pb "github.com/sabnak227/jwt-demo/user"
+	"github.com/sabnak227/jwt-demo/user/user-service/svc"
 )
 
 var (

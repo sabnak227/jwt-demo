@@ -42,7 +42,7 @@ func (c *MysqlClient) OpenCon(config config.Config, logger *log.Logger) error {
 
 func (c *MysqlClient) Migrate() {
 	if c.config.AutoMigrate {
-		c.conn.AutoMigrate(&Auth{})
+		c.conn.AutoMigrate(&User{})
 	}
 }
 

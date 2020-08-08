@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/sabnak227/jwt-demo/auth/auth-service/token"
 	"github.com/sabnak227/jwt-demo/scope"
-	user "github.com/sabnak227/jwt-demo/users"
+	user "github.com/sabnak227/jwt-demo/user"
 	"google.golang.org/grpc"
 	"log"
 	"os"

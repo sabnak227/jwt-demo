@@ -18,9 +18,9 @@ import (
 	"google.golang.org/grpc"
 
 	// This Service
-	pb "github.com/sabnak227/jwt-demo/users"
-	"github.com/sabnak227/jwt-demo/users/user-service/handlers"
-	"github.com/sabnak227/jwt-demo/users/user-service/svc"
+	pb "github.com/sabnak227/jwt-demo/user"
+	"github.com/sabnak227/jwt-demo/user/user-service/handlers"
+	"github.com/sabnak227/jwt-demo/user/user-service/svc"
 )
 
 var DefaultConfig Config

@@ -28,7 +28,7 @@ import (
 	"github.com/pkg/errors"
 
 	// This service
-	pb "github.com/sabnak227/jwt-demo/users"
+	pb "github.com/sabnak227/jwt-demo/user"
 )
 
 const contentType = "application/json; charset=utf-8"
