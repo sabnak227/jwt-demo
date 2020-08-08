@@ -79,17 +79,18 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 		return nil, err
 	}
 
-	if ok := repo.AuthUser(in.Email, in.Password); !ok {
+	u := repo.AuthUser(in.Email, in.Password)
+	if u == nil {
 		return &pb.LoginResponse{
 			Code:    2,
 			Message: "failed wrong password",
 		}, nil
 	}
 
-	res, err := userSvc.GetUser(ctx, &user.AuthUserRequest{
-		Email:    in.Email,
-		Password: in.Password,
+	res, err := userSvc.GetUser(ctx, &user.GetUserRequest{
+		ID:    uint64(u.ID),
 	})
+
 	if res == nil || res.Code != 1 {
 		return &pb.LoginResponse{
 			Code:    2,
