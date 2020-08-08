@@ -10,6 +10,7 @@ service Auth {
       get: "/auth/jwks"
     };
   }
+
   rpc Login (LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
       custom {

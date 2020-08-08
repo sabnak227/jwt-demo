@@ -6,7 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type User struct {
+type Auth struct {
 	gorm.Model
 	FirstName string `json:"first_name" gorm:"type:varchar(50)"`
 	LastName  string `json:"last_name" gorm:"type:varchar(50)"`
@@ -14,6 +14,6 @@ type User struct {
 	Password  string `json:"password" gorm:"type:varchar(255)"`
 }
 
-func (u User) String() string {
-	return fmt.Sprintf("User Id: %i, first name: %s, last name: %s, email: %s", u.ID, u.FirstName, u.LastName, u.Email)
+func (a Auth) String() string {
+	return fmt.Sprintf("User Id: %i, first name: %s, last name: %s, email: %s", a.ID, a.FirstName, a.LastName, a.Email)
 }

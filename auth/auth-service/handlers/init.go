@@ -9,7 +9,7 @@ import (
 
 var conf config.Config
 var logger *log.Logger
-var dbconn models.DBClient
+var repo models.DBClient
 
 
 func init() {
@@ -26,13 +26,13 @@ func init() {
 
 	{
 		logger.Info("Database Initilizing...")
-		dbconn = &models.MysqlClient{}
-		err := dbconn.OpenCon(conf, logger)
+		repo = &models.MysqlClient{}
+		err := repo.OpenCon(conf, logger)
 		if err != nil {
 			panic("Database initialization failed" + err.Error())
 		}
 		logger.Info("Database initialized")
-		dbconn.Migrate()
+		repo.Migrate()
 		logger.Info("Database migrated")
 	}
 }

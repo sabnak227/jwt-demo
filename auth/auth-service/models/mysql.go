@@ -15,6 +15,7 @@ import (
 type MysqlClient struct {
 	conn *gorm.DB
 	config config.Config
+	logger *log.Logger
 }
 
 // OpenCon opens a connection
@@ -36,12 +37,13 @@ func (c *MysqlClient) OpenCon(config config.Config, logger *log.Logger) error {
 
 	c.conn = db
 	c.config = config
+	c.logger = logger
 	return nil
 }
 
 func (c *MysqlClient) Migrate() {
 	if c.config.AutoMigrate {
-		c.conn.AutoMigrate(&User{})
+		c.conn.AutoMigrate(&Auth{})
 	}
 }
 
@@ -50,24 +52,34 @@ func (c *MysqlClient) Close() error {
 	return err
 }
 
-func (c *MysqlClient) GetUsers() []User {
-	var users []User
-	c.conn.Limit(10).Find(&users)
-	return users
+func (c *MysqlClient) AuthUser(email string, password string) bool {
+	var user Auth
+	c.conn.Select("password").Where("email = ?", email).First(&user)
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)) ; err == nil {
+		return true
+	}
+	return false
 }
 
-func (c *MysqlClient) InsertUser(u User) error {
-	var err error
-	var hash []byte
-	if hash, err = bcrypt.GenerateFromPassword([]byte(u.Password), 0); err != nil {
-		return err
-	}
-
-	u.Password = string(hash)
-
-	if err = c.conn.Create(&u).Error; err != nil {
-		log.Println(err)
-		return err
-	}
-	return nil
-}
+//func (c *MysqlClient) GetUsers() []User {
+//	var users []User
+//	c.conn.Limit(10).Find(&users)
+//	return users
+//}
+//
+//func (c *MysqlClient) InsertUser(u User) error {
+//	var err error
+//	var hash []byte
+//	if hash, err = bcrypt.GenerateFromPassword([]byte(u.Password), 0); err != nil {
+//		return err
+//	}
+//
+//	u.Password = string(hash)
+//
+//	if err = c.conn.Create(&u).Error; err != nil {
+//		log.Println(err)
+//		return err
+//	}
+//	return nil
+//}

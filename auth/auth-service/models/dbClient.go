@@ -10,8 +10,9 @@ type DBClient interface {
 	OpenCon(config config.Config, logger *log.Logger) error
 	Migrate()
 	Close() error
-	GetUsers() []User
-	InsertUser(User) error
+	AuthUser(email string, password string) bool
+	//GetUsers() []User
+	//InsertUser(User) error
 }
 
 // GormLogger struct

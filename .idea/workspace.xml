@@ -2,21 +2,53 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a6f568ad-b704-4e8a-9675-3376603dcbb4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/k8s/deploy-auth-svc.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/k8s/deploy-resource-svc.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/k8s/deploy-scope-svc.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/k8s/deploy-user-svc.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/k8s/policy.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/token/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/token/token.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/k8s/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/k8s/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/k8s/deploy.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/k8s/gateway.yml" beforeDir="false" afterPath="$PROJECT_DIR$/k8s/gateway.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/handlers/init.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/handlers/init.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/handlers/middlewares.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/handlers/middlewares.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/handlers/validation.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/handlers/validation.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/models/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/models/auth.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/models/dbClient.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/models/dbClient.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/models/mysql.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/models/mysql.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth.proto" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/auth/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/auth/go.sum" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="local" type="feb32156:DbDataSourceImpl" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="local" type="feb32156:DbDataSourceImpl" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="local" type="feb32156:DbDataSourceImpl" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="users: schema" type="76f4a085:MysqlImplModel$Schema" />
+      </path>
+    </expand>
+    <select />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -40,6 +72,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="DatabaseDriversLRU" value="mysql" />
     <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
@@ -47,20 +80,20 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/k8s" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/auth/auth-service" />
     <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/auth/auth-service/token" />
-      <recent name="$PROJECT_DIR$/bak" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/auth/auth-service" />
       <recent name="$PROJECT_DIR$/k8s" />
       <recent name="$PROJECT_DIR$/auth" />
       <recent name="$PROJECT_DIR$/resource" />
       <recent name="$PROJECT_DIR$/scope" />
-      <recent name="$PROJECT_DIR$/auth/auth-service" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/auth/auth-service/token" />
+      <recent name="$PROJECT_DIR$/bak" />
     </key>
   </component>
   <component name="ServiceViewManager">
@@ -68,7 +101,17 @@
       <list>
         <serviceView>
           <treeState>
-            <expand />
+            <expand>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="root:local" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+              </path>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="root:local" type="7427dc5b:ServiceModel$ServiceGroupNode" />
+                <item name="com.intellij.database.console.session.MessageBusSession@1f36f1a7" type="9fbbdea:ServiceModel$ServiceNode" />
+              </path>
+            </expand>
             <select />
           </treeState>
         </serviceView>
@@ -86,10 +129,10 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="320" y="115" key="#Go_Modules_(vgo)/0.0.1440.900@0.0.1440.900" timestamp="1596646908736" />
-    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1596647474594">
+    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1596831963288">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1596647474594" />
+    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1596831963288" />
     <state x="443" y="260" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1596732822156">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
@@ -98,9 +141,17 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="429" y="10" key="#users/Dockerfile/0.0.1440.900@0.0.1440.900" timestamp="1596654513008" />
+    <state x="386" y="207" width="667" height="486" key="find.popup" timestamp="1596832638622">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="386" y="207" width="667" height="486" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1596832638622" />
     <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1596664677755">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1596664677755" />
+    <state x="450" y="294" key="vcs.readOnlyHandler.ReadOnlyStatusDialog" timestamp="1596902780398">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="450" y="294" key="vcs.readOnlyHandler.ReadOnlyStatusDialog/0.0.1440.900@0.0.1440.900" timestamp="1596902780398" />
   </component>
 </project>

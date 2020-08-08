@@ -51,10 +51,42 @@ func init() {
 	scopeSvc, _ = scopeClient.New(sconn)
 }
 
+// JWKS implements Service.
+func (s authService) JWKS(ctx context.Context, in *pb.JWKSRequest) (*pb.JWKSResponse, error) {
+	var resp pb.JWKSResponse
+	jwk := token.GetJWk()
+	res := pb.JWKSResponse_Keys{
+		Kty: jwk.Kty,
+		N:   jwk.N,
+		E:   jwk.E,
+	}
+	resp = pb.JWKSResponse{
+		Keys: []*pb.JWKSResponse_Keys{&res},
+	}
+	return &resp, nil
+}
+
+// AuthUser implements Service.
+
 // Login implements Service.
 func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginResponse, error) {
 	logger.Infof("User %s is logging in", in.Email)
-	res, err := userSvc.AuthUser(ctx, &user.AuthUserRequest{
+	i := loginRequest{
+		req: *in,
+	}
+
+	if err := i.Validate(); err != nil {
+		return nil, err
+	}
+
+	if ok := repo.AuthUser(in.Email, in.Password); !ok {
+		return &pb.LoginResponse{
+			Code:    2,
+			Message: "failed wrong password",
+		}, nil
+	}
+
+	res, err := userSvc.GetUser(ctx, &user.AuthUserRequest{
 		Email:    in.Email,
 		Password: in.Password,
 	})
@@ -69,7 +101,7 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 	if res1 == nil {
 		return &pb.LoginResponse{
 			Code:    2,
-			Message: "failed",
+			Message: "failed getting scope",
 		}, err
 	}
 	scopes := res1.Scopes
@@ -94,19 +126,4 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 		AccessToken:  tokenDetail.AccessToken,
 		RefreshToken: tokenDetail.RefreshToken,
 	}, nil
-}
-
-// JWKS implements Service.
-func (s authService) JWKS(ctx context.Context, in *pb.JWKSRequest) (*pb.JWKSResponse, error) {
-	var resp pb.JWKSResponse
-	jwk := token.GetJWk()
-	res := pb.JWKSResponse_Keys{
-		Kty: jwk.Kty,
-		N: jwk.N,
-		E: jwk.E,
-	}
-	resp = pb.JWKSResponse{
-		Keys: []*pb.JWKSResponse_Keys{&res},
-	}
-	return &resp, nil
 }
