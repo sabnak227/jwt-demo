@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/sabnak227/jwt-demo/auth/auth-service/token"
 	"github.com/sabnak227/jwt-demo/scope"
-	user "github.com/sabnak227/jwt-demo/user"
+	"github.com/sabnak227/jwt-demo/user"
 	"google.golang.org/grpc"
 	"log"
 	"os"
@@ -94,7 +94,7 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 
 	if u == nil || u.Code != constant.SuccessCode {
 		return &pb.LoginResponse{
-			Code:    constant.FailCode,
+			Code:    constant.UserNotFound,
 			Message: "Failed retrieving user info",
 		}, err
 	}
@@ -102,7 +102,7 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 	sc, err := scopeSvc.UserScope(ctx, &scope.UserScopeRequest{})
 	if sc == nil {
 		return &pb.LoginResponse{
-			Code:    constant.FailCode,
+			Code:    constant.ScopeNotFound,
 			Message: "Failed retrieving user scope",
 		}, err
 	}
@@ -113,7 +113,7 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 	if err != nil {
 		log.Printf("Failed to sign token %s", err.Error())
 		return &pb.LoginResponse{
-			Code:    constant.FailCode,
+			Code:    constant.FailedGeneratingToken,
 			Message: "Failed generating auth token",
 		}, err
 	}

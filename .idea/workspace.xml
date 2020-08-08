@@ -3,26 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="a6f568ad-b704-4e8a-9675-3376603dcbb4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/Makefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/go.mod" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/user-service/cmd/user/main.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/user-service/config/config.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/user-service/handlers/handlers.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/user-service/handlers/hooks.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/user-service/handlers/middlewares.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/user-service/models/dbClient.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/user-service/models/mysql.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/user-service/models/user.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/user-service/svc/client/grpc/client.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/user-service/svc/client/http/client.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/user-service/svc/endpoints.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/user-service/svc/server/run.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/user-service/svc/transport_grpc.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/user-service/svc/transport_http.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/0bak/users/user.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/auth/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/auth/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/user/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/user/go.sum" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/user/user-service/handlers/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/user/user-service/handlers/handlers.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/util/constant/response.go" beforeDir="false" afterPath="$PROJECT_DIR$/util/constant/response.go" afterDir="false" />
     </list>
@@ -153,14 +137,18 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="429" y="10" key="#users/Dockerfile/0.0.1440.900@0.0.1440.900" timestamp="1596654513008" />
+    <state x="70" y="56" key="FileDocumentManager.FileCacheConflict" timestamp="1596918291829">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="70" y="56" key="FileDocumentManager.FileCacheConflict/0.0.1440.900@0.0.1440.900" timestamp="1596918291829" />
     <state x="386" y="207" width="667" height="486" key="find.popup" timestamp="1596917720792">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="386" y="207" width="667" height="486" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1596917720792" />
-    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1596917912332">
+    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1596918527748">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1596917912332" />
+    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1596918527748" />
     <state x="450" y="294" key="vcs.readOnlyHandler.ReadOnlyStatusDialog" timestamp="1596902780398">
       <screen x="0" y="0" width="1440" height="900" />
     </state>

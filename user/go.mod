@@ -2,6 +2,8 @@ module github.com/sabnak227/jwt-demo/user
 
 go 1.13
 
+replace github.com/sabnak227/jwt-demo/util => ../util
+
 require (
 	github.com/go-kit/kit v0.10.0
 	github.com/gogo/protobuf v1.3.1

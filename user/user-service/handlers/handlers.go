@@ -22,7 +22,7 @@ func (s userService) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.Ge
 	if u == nil {
 		return &pb.GetUserResponse{
 			Code: constant.UserNotFound,
-			Message: "",
+			Message: "User not found",
 		}, nil
 	}
 
@@ -30,16 +30,16 @@ func (s userService) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.Ge
 		Code:    constant.SuccessCode,
 		Message: "success",
 		User: &pb.UserObj{
-			Id:        0,
-			FirstName: "kjn",
-			LastName:  "lkn",
-			Email:     "lknj",
-			Address1:  "lk",
-			Address2:  "",
-			City:      "",
-			State:     "",
-			Country:   "",
-			Phone:     "",
+			Id:        uint64(u.ID),
+			FirstName: u.FirstName,
+			LastName:  u.LastName,
+			Email:     u.Email,
+			Address1:  u.Address1,
+			Address2:  u.Address2,
+			City:      u.City,
+			State:     u.State,
+			Country:   u.Country,
+			Phone:     u.Phone,
 		},
 	}
 	return &resp, nil

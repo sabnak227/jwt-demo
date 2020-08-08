@@ -2,6 +2,12 @@ module github.com/sabnak227/jwt-demo/auth
 
 go 1.13
 
+replace github.com/sabnak227/jwt-demo/scope => ../scope
+
+replace github.com/sabnak227/jwt-demo/user => ../user
+
+replace github.com/sabnak227/jwt-demo/util => ../util
+
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-kit/kit v0.10.0
