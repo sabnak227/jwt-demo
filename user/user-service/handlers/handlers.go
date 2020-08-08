@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"github.com/sabnak227/jwt-demo/util/constant"
 
 	pb "github.com/sabnak227/jwt-demo/users"
 )
@@ -17,8 +18,8 @@ type userService struct{}
 func (s userService) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	var resp pb.GetUserResponse
 	resp = pb.GetUserResponse{
-		Code: 1,
-		Message: "msg",
+		Code: constant.SuccessCode,
+		Message: "success",
 		User: &pb.UserObj{
 			Id:        0,
 			FirstName: "kjn",

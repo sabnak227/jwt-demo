@@ -11,7 +11,8 @@ import (
 
 	pb "github.com/sabnak227/jwt-demo/auth"
 	scopeClient "github.com/sabnak227/jwt-demo/scope/scope-service/svc/client/grpc"
-	userClient "github.com/sabnak227/jwt-demo/users/user-service/svc/client/grpc"
+	userClient "github.com/sabnak227/jwt-demo/user/user-service/svc/client/grpc"
+	"github.com/sabnak227/jwt-demo/util/constant"
 )
 
 // NewService returns a naïve, stateless implementation of Service.
@@ -79,51 +80,47 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 		return nil, err
 	}
 
-	u := repo.AuthUser(in.Email, in.Password)
-	if u == nil {
+	a := repo.AuthUser(in.Email, in.Password)
+	if a == nil {
 		return &pb.LoginResponse{
-			Code:    2,
-			Message: "failed wrong password",
+			Code: constant.WrongPasswordCode,
+			Message: "Wrong email and password combination",
 		}, nil
 	}
 
-	res, err := userSvc.GetUser(ctx, &user.GetUserRequest{
-		ID:    uint64(u.ID),
+	u, err := userSvc.GetUser(ctx, &user.GetUserRequest{
+		ID:    uint64(a.ID),
 	})
 
-	if res == nil || res.Code != 1 {
+	if u == nil || u.Code != constant.SuccessCode {
 		return &pb.LoginResponse{
-			Code:    2,
-			Message: "failed wrong password",
+			Code:    constant.FailCode,
+			Message: "Failed retrieving user info",
 		}, err
 	}
 
-	res1, err := scopeSvc.UserScope(ctx, &scope.UserScopeRequest{})
-	if res1 == nil {
+	sc, err := scopeSvc.UserScope(ctx, &scope.UserScopeRequest{})
+	if sc == nil {
 		return &pb.LoginResponse{
-			Code:    2,
-			Message: "failed getting scope",
+			Code:    constant.FailCode,
+			Message: "Failed retrieving user scope",
 		}, err
 	}
-	scopes := res1.Scopes
+	scopes := sc.Scopes
 
-	u := struct {
-		Name string
-	}{in.Email}
-
-	tokenDetail, err := token.GenToken(scopes, u)
+	tokenDetail, err := token.GenToken(scopes, u, sc)
 
 	if err != nil {
 		log.Printf("Failed to sign token %s", err.Error())
 		return &pb.LoginResponse{
-			Code:    2,
-			Message: "failed",
+			Code:    constant.FailCode,
+			Message: "Failed generating auth token",
 		}, err
 	}
 
 	return &pb.LoginResponse{
-		Code:         1,
-		Message:      "success",
+		Code:         constant.SuccessCode,
+		Message:      "Success",
 		AccessToken:  tokenDetail.AccessToken,
 		RefreshToken: tokenDetail.RefreshToken,
 	}, nil

@@ -2,13 +2,33 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a6f568ad-b704-4e8a-9675-3376603dcbb4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/util/constant/response.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user/user-service/config/config.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user/user-service/handlers/init.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user/user-service/models/dbClient.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user/user-service/models/mysql.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/user/user-service/models/user.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/models/dbClient.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/models/dbClient.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/models/mysql.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/models/mysql.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/token/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/token/token.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/auth/go.mod" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/auth/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/user/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/user/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/user/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/user/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/user-service/cmd/user/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/user/user-service/cmd/user/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/user-service/handlers/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/user/user-service/handlers/handlers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/user-service/handlers/hooks.go" beforeDir="false" afterPath="$PROJECT_DIR$/user/user-service/handlers/hooks.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/user-service/handlers/middlewares.go" beforeDir="false" afterPath="$PROJECT_DIR$/user/user-service/handlers/middlewares.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/user-service/svc/client/grpc/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/user/user-service/svc/client/grpc/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/user-service/svc/client/http/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/user/user-service/svc/client/http/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/user-service/svc/endpoints.go" beforeDir="false" afterPath="$PROJECT_DIR$/user/user-service/svc/endpoints.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/user-service/svc/server/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/user/user-service/svc/server/run.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/user-service/svc/transport_grpc.go" beforeDir="false" afterPath="$PROJECT_DIR$/user/user-service/svc/transport_grpc.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/user-service/svc/transport_http.go" beforeDir="false" afterPath="$PROJECT_DIR$/user/user-service/svc/transport_http.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/user.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/user/user.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users/user.proto" beforeDir="false" afterPath="$PROJECT_DIR$/user/user.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/constant/response.go" beforeDir="false" afterPath="$PROJECT_DIR$/util/constant/response.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,20 +95,21 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/util/constant" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/user/user-service/models" />
     <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/users/user-service" />
       <recent name="$PROJECT_DIR$/auth/auth-service/token" />
       <recent name="$PROJECT_DIR$/bak" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/user/user-service/models" />
+      <recent name="$PROJECT_DIR$/users/user-service/handlers" />
+      <recent name="$PROJECT_DIR$/users" />
+      <recent name="$PROJECT_DIR$/users/user-service" />
       <recent name="$PROJECT_DIR$/util/constant" />
-      <recent name="$PROJECT_DIR$/auth/auth-service" />
-      <recent name="$PROJECT_DIR$/k8s" />
-      <recent name="$PROJECT_DIR$/auth" />
-      <recent name="$PROJECT_DIR$/resource" />
     </key>
   </component>
   <component name="ServiceViewManager">

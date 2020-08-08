@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
+	"github.com/sabnak227/jwt-demo/scope"
+	user "github.com/sabnak227/jwt-demo/users"
 	"io/ioutil"
 	"os"
 	"time"
@@ -82,7 +84,7 @@ type Jwks struct {
 	E 		string `json:"e"`
 }
 
-func GenToken(scopes []string, userInfo interface{}) (*Details, error) {
+func GenToken(scopes []string, user *user.GetUserResponse, scope *scope.UserScopeResponse) (*Details, error) {
 	td := &Details{}
 	td.AtExpires = time.Now().Add(time.Minute * 15).Unix()
 	td.AccessUuid = uuid.New().String()
@@ -99,7 +101,8 @@ func GenToken(scopes []string, userInfo interface{}) (*Details, error) {
 	atClaims["access_uuid"] = td.AccessUuid
 	atClaims["scopes"] = scopes
 	atClaims["exp"] = td.AtExpires
-	atClaims["user_info"] = userInfo
+	atClaims["user_info"] = user
+	atClaims["scope"] = scope
 	at.Claims = atClaims
 	td.AccessToken, err = at.SignedString(signKey)
 	if err != nil {

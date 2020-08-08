@@ -6,18 +6,3 @@ const (
 	WrongPasswordCode = int32(123123)
 )
 
-type Response struct {
-	Code int32
-	Message string
-}
-
-var Success Response = Response{
-	Code:    SuccessCode,
-	Message: "success",
-}
-
-var Fail Response = Response{
-	Code:    FailCode,
-	Message: "fail",
-}
-
