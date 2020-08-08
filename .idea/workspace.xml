@@ -3,12 +3,21 @@
   <component name="ChangeListManager">
     <list default="true" id="a6f568ad-b704-4e8a-9675-3376603dcbb4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/config/config.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/handlers/init.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/handlers/init.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/client/grpc/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/client/grpc/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/client/http/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/client/http/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/endpoints.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/endpoints.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/server/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/server/run.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/transport_grpc.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/transport_grpc.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/transport_http.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/transport_http.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/token/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/token/token.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth.proto" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/auth/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/user/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/user/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/user-service/handlers/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/user/user-service/handlers/handlers.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/constant/response.go" beforeDir="false" afterPath="$PROJECT_DIR$/util/constant/response.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/auth/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

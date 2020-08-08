@@ -17,6 +17,8 @@ var (
 	verifyKey *rsa.PublicKey
 	signKey   *rsa.PrivateKey
 	jwk		  Jwks
+	accessExp = time.Minute * 15
+	refreshExp = time.Hour * 24 * 7
 )
 
 const (
@@ -86,10 +88,10 @@ type Jwks struct {
 
 func GenToken(scopes []string, user *user.GetUserResponse, scope *scope.UserScopeResponse) (*Details, error) {
 	td := &Details{}
-	td.AtExpires = time.Now().Add(time.Minute * 15).Unix()
+	td.AtExpires = time.Now().Add(accessExp).Unix()
 	td.AccessUuid = uuid.New().String()
 
-	td.RtExpires = time.Now().Add(time.Hour * 24 * 7).Unix()
+	td.RtExpires = time.Now().Add(refreshExp).Unix()
 	td.RefreshUuid = uuid.New().String()
 	var err error
 	// create access token

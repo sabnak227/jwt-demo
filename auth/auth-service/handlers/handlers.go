@@ -2,17 +2,12 @@ package handlers
 
 import (
 	"context"
+	pb "github.com/sabnak227/jwt-demo/auth"
 	"github.com/sabnak227/jwt-demo/auth/auth-service/token"
 	"github.com/sabnak227/jwt-demo/scope"
 	"github.com/sabnak227/jwt-demo/user"
-	"google.golang.org/grpc"
-	"log"
-	"os"
-
-	pb "github.com/sabnak227/jwt-demo/auth"
-	scopeClient "github.com/sabnak227/jwt-demo/scope/scope-service/svc/client/grpc"
-	userClient "github.com/sabnak227/jwt-demo/user/user-service/svc/client/grpc"
 	"github.com/sabnak227/jwt-demo/util/constant"
+	"log"
 )
 
 // NewService returns a naïve, stateless implementation of Service.
@@ -21,36 +16,6 @@ func NewService() pb.AuthServer {
 }
 
 type authService struct{}
-
-var (
-	userSvc  user.UserServer
-	scopeSvc scope.ScopeServer
-)
-
-// read the key files before starting http handlers
-func init() {
-	var userHost string
-	var scopeHost string
-
-	if addr := os.Getenv("USER_HOST"); addr != "" {
-		userHost = addr
-	}
-	if addr := os.Getenv("SCOPE_HOST"); addr != "" {
-		scopeHost = addr
-	}
-
-	uconn, err := grpc.Dial(userHost, grpc.WithInsecure())
-	if err != nil {
-		log.Printf("failed to connect to user svc %s", err.Error())
-	}
-	userSvc, _ = userClient.New(uconn)
-
-	sconn, err := grpc.Dial(scopeHost, grpc.WithInsecure())
-	if err != nil {
-		log.Printf("failed to connect to scope svc %s", err.Error())
-	}
-	scopeSvc, _ = scopeClient.New(sconn)
-}
 
 // JWKS implements Service.
 func (s authService) JWKS(ctx context.Context, in *pb.JWKSRequest) (*pb.JWKSResponse, error) {
@@ -67,8 +32,6 @@ func (s authService) JWKS(ctx context.Context, in *pb.JWKSRequest) (*pb.JWKSResp
 	return &resp, nil
 }
 
-// AuthUser implements Service.
-
 // Login implements Service.
 func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginResponse, error) {
 	logger.Infof("User %s is logging in", in.Email)
@@ -83,13 +46,13 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 	a := repo.AuthUser(in.Email, in.Password)
 	if a == nil {
 		return &pb.LoginResponse{
-			Code: constant.WrongPasswordCode,
+			Code:    constant.WrongPasswordCode,
 			Message: "Wrong email and password combination",
 		}, nil
 	}
 
 	u, err := userSvc.GetUser(ctx, &user.GetUserRequest{
-		ID:    uint64(a.ID),
+		ID: uint64(a.ID),
 	})
 
 	if u == nil || u.Code != constant.SuccessCode {
@@ -124,4 +87,26 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 		AccessToken:  tokenDetail.AccessToken,
 		RefreshToken: tokenDetail.RefreshToken,
 	}, nil
+}
+
+// Refresh implements Service.
+func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.RefreshResponse, error) {
+	var resp pb.RefreshResponse
+	resp = pb.RefreshResponse{
+		// Code:
+		// Message:
+		// AccessToken:
+		// RefreshToken:
+	}
+	return &resp, nil
+}
+
+// Logout implements Service.
+func (s authService) Logout(ctx context.Context, in *pb.LogoutRequest) (*pb.LogoutResponse, error) {
+	var resp pb.LogoutResponse
+	resp = pb.LogoutResponse{
+		// Code:
+		// Message:
+	}
+	return &resp, nil
 }

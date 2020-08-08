@@ -63,13 +63,17 @@ func NewEndpoints() svc.Endpoints {
 
 	// Endpoint domain.
 	var (
-		jwksEndpoint  = svc.MakeJWKSEndpoint(service)
-		loginEndpoint = svc.MakeLoginEndpoint(service)
+		jwksEndpoint    = svc.MakeJWKSEndpoint(service)
+		loginEndpoint   = svc.MakeLoginEndpoint(service)
+		refreshEndpoint = svc.MakeRefreshEndpoint(service)
+		logoutEndpoint  = svc.MakeLogoutEndpoint(service)
 	)
 
 	endpoints := svc.Endpoints{
-		JWKSEndpoint:  jwksEndpoint,
-		LoginEndpoint: loginEndpoint,
+		JWKSEndpoint:    jwksEndpoint,
+		LoginEndpoint:   loginEndpoint,
+		RefreshEndpoint: refreshEndpoint,
+		LogoutEndpoint:  logoutEndpoint,
 	}
 
 	// Wrap selected Endpoints with middlewares. See handlers/middlewares.go

@@ -41,13 +41,27 @@ func MakeGRPCServer(endpoints Endpoints, options ...grpctransport.ServerOption) 
 			EncodeGRPCLoginResponse,
 			serverOptions...,
 		),
+		refresh: grpctransport.NewServer(
+			endpoints.RefreshEndpoint,
+			DecodeGRPCRefreshRequest,
+			EncodeGRPCRefreshResponse,
+			serverOptions...,
+		),
+		logout: grpctransport.NewServer(
+			endpoints.LogoutEndpoint,
+			DecodeGRPCLogoutRequest,
+			EncodeGRPCLogoutResponse,
+			serverOptions...,
+		),
 	}
 }
 
 // grpcServer implements the AuthServer interface
 type grpcServer struct {
-	jwks  grpctransport.Handler
-	login grpctransport.Handler
+	jwks    grpctransport.Handler
+	login   grpctransport.Handler
+	refresh grpctransport.Handler
+	logout  grpctransport.Handler
 }
 
 // Methods for grpcServer to implement AuthServer interface
@@ -68,6 +82,22 @@ func (s *grpcServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Login
 	return rep.(*pb.LoginResponse), nil
 }
 
+func (s *grpcServer) Refresh(ctx context.Context, req *pb.RefreshRequest) (*pb.RefreshResponse, error) {
+	_, rep, err := s.refresh.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.RefreshResponse), nil
+}
+
+func (s *grpcServer) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutResponse, error) {
+	_, rep, err := s.logout.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.LogoutResponse), nil
+}
+
 // Server Decode
 
 // DecodeGRPCJWKSRequest is a transport/grpc.DecodeRequestFunc that converts a
@@ -84,6 +114,20 @@ func DecodeGRPCLoginRequest(_ context.Context, grpcReq interface{}) (interface{}
 	return req, nil
 }
 
+// DecodeGRPCRefreshRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC refresh request to a user-domain refresh request. Primarily useful in a server.
+func DecodeGRPCRefreshRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.RefreshRequest)
+	return req, nil
+}
+
+// DecodeGRPCLogoutRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC logout request to a user-domain logout request. Primarily useful in a server.
+func DecodeGRPCLogoutRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.LogoutRequest)
+	return req, nil
+}
+
 // Server Encode
 
 // EncodeGRPCJWKSResponse is a transport/grpc.EncodeResponseFunc that converts a
@@ -97,6 +141,20 @@ func EncodeGRPCJWKSResponse(_ context.Context, response interface{}) (interface{
 // user-domain login response to a gRPC login reply. Primarily useful in a server.
 func EncodeGRPCLoginResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(*pb.LoginResponse)
+	return resp, nil
+}
+
+// EncodeGRPCRefreshResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain refresh response to a gRPC refresh reply. Primarily useful in a server.
+func EncodeGRPCRefreshResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.RefreshResponse)
+	return resp, nil
+}
+
+// EncodeGRPCLogoutResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain logout response to a gRPC logout reply. Primarily useful in a server.
+func EncodeGRPCLogoutResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.LogoutResponse)
 	return resp, nil
 }
 

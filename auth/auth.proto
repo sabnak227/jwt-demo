@@ -24,6 +24,34 @@ service Auth {
       }
     };
   }
+
+  rpc Refresh (RefreshRequest) returns (RefreshResponse) {
+    option (google.api.http) = {
+      custom {
+        kind: "HEAD"
+        path: "/auth/refresh"
+      }
+      additional_bindings {
+        post: "/auth/refresh"
+        // All other fields (In) are located in the body of the http/json request
+        body: "*"
+      }
+    };
+  }
+
+  rpc Logout (LogoutRequest) returns (LogoutResponse) {
+    option (google.api.http) = {
+      custom {
+        kind: "HEAD"
+        path: "/auth/logout"
+      }
+      additional_bindings {
+        post: "/auth/logout"
+        // All other fields (In) are located in the body of the http/json request
+        body: "*"
+      }
+    };
+  }
 }
 
 message JWKSRequest {}
@@ -45,4 +73,22 @@ message LoginResponse {
   string message = 2;
   string access_token = 3;
   string refresh_token = 4;
+}
+
+message RefreshRequest {
+  string refresh_token = 1;
+}
+message RefreshResponse {
+  int32 code = 1;
+  string message = 2;
+  string access_token = 3;
+  string refresh_token = 4;
+}
+
+message LogoutRequest {
+  string access_token = 1;
+}
+message LogoutResponse {
+  int32 code = 1;
+  string message = 2;
 }
