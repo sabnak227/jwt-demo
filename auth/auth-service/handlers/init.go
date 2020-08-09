@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"context"
-	"github.com/go-redis/redis/v8"
 	"github.com/sabnak227/jwt-demo/auth/auth-service/config"
 	"github.com/sabnak227/jwt-demo/auth/auth-service/models"
 	"github.com/sabnak227/jwt-demo/scope"
@@ -20,7 +18,6 @@ var (
 	conf config.Config
 	logger *log.Logger
 	repo models.DBClient
-	redisClient *redis.Client
 )
 
 func init() {
@@ -32,15 +29,11 @@ func init() {
 		DBName: getConfigFromEnv("DB_NAME", "users").(string),
 		DBUser: getConfigFromEnv("DB_USER", "users").(string),
 		DBPassword: getConfigFromEnv("DB_PASSWORD", "users").(string),
-		RedisHost: getConfigFromEnv("REDIS_HOST", "localhost:6379").(string),
-		RedisPassword: getConfigFromEnv("REDIS_PASSWORD", "").(string),
-		RedisDB: getConfigFromEnv("REDIS_DB", 0).(int),
 		AutoMigrate: getConfigFromEnv("AUTO_MIGRATE", true).(bool),
-		UserSvcHost: getConfigFromEnv("USER_SVC_HOST", true).(string),
-		ScopeSvcHost: getConfigFromEnv("SCOPE_SVC_HOST", true).(string),
+		UserSvcHost: getConfigFromEnv("USER_SVC_HOST", "user:5040").(string),
+		ScopeSvcHost: getConfigFromEnv("SCOPE_SVC_HOST", "scope:5040").(string),
 	}
 	setupDb()
-	setupRedis()
 	setupGrpcClient()
 }
 
@@ -70,21 +63,6 @@ func setupDb() {
 	logger.Info("Database initialized")
 	repo.Migrate()
 	logger.Info("Database migrated")
-}
-
-// read the key files before starting http handlers
-func setupRedis() {
-	logger.Info("Redis Initializing...")
-	redisClient = redis.NewClient(&redis.Options{
-		Addr:     conf.RedisHost,
-		Password: conf.RedisPassword,
-		DB:       conf.RedisDB,
-	})
-
-	_, err := redisClient.Ping(context.Background()).Result()
-	if err != nil {
-		panic("Redis initialization failed" + err.Error())
-	}
 }
 
 func getConfigFromEnv(key string, defaultVal interface{}) interface{} {

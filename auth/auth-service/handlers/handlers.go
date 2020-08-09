@@ -7,7 +7,6 @@ import (
 	"github.com/sabnak227/jwt-demo/scope"
 	"github.com/sabnak227/jwt-demo/user"
 	"github.com/sabnak227/jwt-demo/util/constant"
-	"log"
 )
 
 // NewService returns a naïve, stateless implementation of Service.
@@ -74,12 +73,13 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 	tokenDetail, err := token.GenToken(scopes, u, sc)
 
 	if err != nil {
-		log.Printf("Failed to sign token %s", err.Error())
 		return &pb.LoginResponse{
 			Code:    constant.FailedGeneratingToken,
 			Message: "Failed generating auth token",
 		}, err
 	}
+
+	logger.Infof("Failed to sign token %v", tokenDetail)
 
 	return &pb.LoginResponse{
 		Code:         constant.SuccessCode,

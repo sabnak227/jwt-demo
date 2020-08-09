@@ -13,7 +13,6 @@ type loginRequest struct {
 
 func (l loginRequest) Validate() error {
 	s := l.req
-	logger.Infof("what the hell %v", s)
 	return validation.ValidateStruct(&s,
 		validation.Field(&s.Email, is.Email),
 		validation.Field(&s.Password, validation.Required),

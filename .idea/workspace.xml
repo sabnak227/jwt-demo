@@ -3,21 +3,13 @@
   <component name="ChangeListManager">
     <list default="true" id="a6f568ad-b704-4e8a-9675-3376603dcbb4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/auth/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/auth-service/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/config/config.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/handlers/handlers.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/auth-service/handlers/init.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/handlers/init.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/client/grpc/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/client/grpc/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/client/http/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/client/http/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/endpoints.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/endpoints.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/server/run.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/server/run.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/transport_grpc.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/transport_grpc.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/svc/transport_http.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/svc/transport_http.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth-service/token/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/token/token.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/auth.proto" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/auth-service/handlers/validation.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth-service/handlers/validation.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/auth/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/auth/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/constant/response.go" beforeDir="false" afterPath="$PROJECT_DIR$/util/constant/response.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,8 +76,9 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/user/user-service/models" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/auth/auth-service/models" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="restartRequiresConfirmation" value="false" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -94,12 +87,36 @@
       <recent name="$PROJECT_DIR$/bak" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/auth/auth-service/models" />
       <recent name="$PROJECT_DIR$/user/user-service/models" />
       <recent name="$PROJECT_DIR$/users/user-service/handlers" />
       <recent name="$PROJECT_DIR$/users" />
       <recent name="$PROJECT_DIR$/users/user-service" />
-      <recent name="$PROJECT_DIR$/util/constant" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="auth" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true">
+      <module name="jwt-demo" />
+      <working_directory value="$PROJECT_DIR$/auth" />
+      <envs>
+        <env name="DB_HOST" value="localhost" />
+        <env name="USER_SVC_HOST" value=":5053" />
+        <env name="SCOPE_SVC_HOST" value=":5063" />
+        <env name="DEBUG_ADDR" value=":5071" />
+        <env name="HTTP_ADDR" value=":5072" />
+        <env name="GRPC_ADDR" value=":5073" />
+      </envs>
+      <kind value="FILE" />
+      <filePath value="$PROJECT_DIR$/auth/auth-service/cmd/auth/main.go" />
+      <package value="github.com/sabnak227/jwt-demo" />
+      <directory value="$PROJECT_DIR$/" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.auth" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="ServiceViewManager">
     <option name="viewStates">
@@ -134,10 +151,10 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="320" y="115" key="#Go_Modules_(vgo)/0.0.1440.900@0.0.1440.900" timestamp="1596646908736" />
-    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1596831963288">
+    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1596934812725">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1596831963288" />
+    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1596934812725" />
     <state x="443" y="260" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1596732822156">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
@@ -146,21 +163,61 @@
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="429" y="10" key="#users/Dockerfile/0.0.1440.900@0.0.1440.900" timestamp="1596654513008" />
+    <state x="474" y="222" key="EnvironmentVariablesDialog" timestamp="1596934798261">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="474" y="222" key="EnvironmentVariablesDialog/0.0.1440.900@0.0.1440.900" timestamp="1596934798261" />
     <state x="70" y="56" key="FileDocumentManager.FileCacheConflict" timestamp="1596918291829">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="70" y="56" key="FileDocumentManager.FileCacheConflict/0.0.1440.900@0.0.1440.900" timestamp="1596918291829" />
-    <state x="386" y="207" width="667" height="486" key="find.popup" timestamp="1596917720792">
+    <state width="1398" height="303" key="GridCell.Tab.0.bottom" timestamp="1596935914147">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="386" y="207" width="667" height="486" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1596917720792" />
+    <state width="1398" height="303" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1596935914147" />
+    <state width="1398" height="303" key="GridCell.Tab.0.center" timestamp="1596935914145">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="303" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1596935914145" />
+    <state width="1398" height="303" key="GridCell.Tab.0.left" timestamp="1596935914144">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="303" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1596935914144" />
+    <state width="1398" height="303" key="GridCell.Tab.0.right" timestamp="1596935914146">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="303" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1596935914146" />
+    <state width="1398" height="303" key="GridCell.Tab.1.bottom" timestamp="1596935914149">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="303" key="GridCell.Tab.1.bottom/0.0.1440.900@0.0.1440.900" timestamp="1596935914149" />
+    <state width="1398" height="303" key="GridCell.Tab.1.bottom/0.23.1440.806@0.23.1440.806" timestamp="1596935752297" />
+    <state width="1398" height="303" key="GridCell.Tab.1.center" timestamp="1596935914148">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="303" key="GridCell.Tab.1.center/0.0.1440.900@0.0.1440.900" timestamp="1596935914148" />
+    <state width="1398" height="303" key="GridCell.Tab.1.center/0.23.1440.806@0.23.1440.806" timestamp="1596935752296" />
+    <state width="1398" height="303" key="GridCell.Tab.1.left" timestamp="1596935914147">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="303" key="GridCell.Tab.1.left/0.0.1440.900@0.0.1440.900" timestamp="1596935914147" />
+    <state width="1398" height="303" key="GridCell.Tab.1.left/0.23.1440.806@0.23.1440.806" timestamp="1596935752295" />
+    <state width="1398" height="303" key="GridCell.Tab.1.right" timestamp="1596935914148">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state width="1398" height="303" key="GridCell.Tab.1.right/0.0.1440.900@0.0.1440.900" timestamp="1596935914148" />
+    <state width="1398" height="303" key="GridCell.Tab.1.right/0.23.1440.806@0.23.1440.806" timestamp="1596935752296" />
+    <state x="386" y="207" width="667" height="486" key="find.popup" timestamp="1596932782422">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="386" y="207" width="667" height="486" key="find.popup/0.0.1440.900@0.0.1440.900" timestamp="1596932782422" />
     <state x="385" y="196" width="670" height="676" key="search.everywhere.popup" timestamp="1596918527748">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1596918527748" />
-    <state x="450" y="294" key="vcs.readOnlyHandler.ReadOnlyStatusDialog" timestamp="1596902780398">
+    <state x="450" y="294" key="vcs.readOnlyHandler.ReadOnlyStatusDialog" timestamp="1596936470560">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="450" y="294" key="vcs.readOnlyHandler.ReadOnlyStatusDialog/0.0.1440.900@0.0.1440.900" timestamp="1596902780398" />
+    <state x="450" y="294" key="vcs.readOnlyHandler.ReadOnlyStatusDialog/0.0.1440.900@0.0.1440.900" timestamp="1596936470560" />
   </component>
 </project>

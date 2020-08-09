@@ -7,5 +7,6 @@ const (
 	UserNotFound = int32(12324)
 	FailedGeneratingToken = int32(123123)
 	ScopeNotFound = int32(1345345)
+	FailedStoringSession = int32(123123)
 )
 
