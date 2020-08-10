@@ -1,9 +1,15 @@
 version: "3"
 services:
   user:
+    image: jasonheshuai/jwt-demo-user
     build: ./user
+    volumes:
+      - go-modules:/go/pkg/mod
   auth:
+    image: jasonheshuai/jwt-demo-auth
     build: ./auth
+    volumes:
+      - go-modules:/go/pkg/mod
     environment:
       - USER_HOST=user:5040
       - SCOPE_HOST=scope:5040
@@ -15,9 +21,15 @@ services:
       - 5050:5050
       - 5060:5060
   scope:
+    image: jasonheshuai/jwt-demo-scope
     build: ./scope
+    volumes:
+      - go-modules:/go/pkg/mod
   resource:
+    image: jasonheshuai/jwt-demo-resource
     build: ./resource
+    volumes:
+      - go-modules:/go/pkg/mod
   mysql:
     image: mysql:5.7
     restart: always
@@ -32,3 +44,5 @@ services:
     image: redis:alpine
     ports:
       - 6379:6379
+volumes:
+  go-modules:
