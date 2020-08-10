@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	pb "github.com/sabnak227/jwt-demo/auth"
-	"github.com/sabnak227/jwt-demo/auth/auth-service/token"
 	"github.com/sabnak227/jwt-demo/scope"
 	"github.com/sabnak227/jwt-demo/user"
 	"github.com/sabnak227/jwt-demo/util/constant"
@@ -19,7 +19,7 @@ type authService struct{}
 // JWKS implements Service.
 func (s authService) JWKS(ctx context.Context, in *pb.JWKSRequest) (*pb.JWKSResponse, error) {
 	var resp pb.JWKSResponse
-	jwk := token.GetJWk()
+	jwk := tokenAdapter.GetJWk()
 	res := pb.JWKSResponse_Keys{
 		Kty: jwk.Kty,
 		N:   jwk.N,
@@ -70,7 +70,7 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 	}
 	scopes := sc.Scopes
 
-	tokenDetail, err := token.GenToken(scopes, u, sc)
+	tokenDetail, err := tokenAdapter.GenToken(scopes, u, sc)
 
 	if err != nil {
 		return &pb.LoginResponse{
@@ -92,21 +92,20 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 // Refresh implements Service.
 func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.RefreshResponse, error) {
 	var resp pb.RefreshResponse
-	resp = pb.RefreshResponse{
-		// Code:
-		// Message:
-		// AccessToken:
-		// RefreshToken:
-	}
-	return &resp, nil
-}
+	tokenDetail, err := tokenAdapter.RefreshToken(in.RefreshToken)
 
-// Logout implements Service.
-func (s authService) Logout(ctx context.Context, in *pb.LogoutRequest) (*pb.LogoutResponse, error) {
-	var resp pb.LogoutResponse
-	resp = pb.LogoutResponse{
-		// Code:
-		// Message:
+	if err != nil {
+		return &pb.RefreshResponse{
+			Code: constant.FailCode,
+			Message: fmt.Sprintf("Failed refresh token, %s", err),
+		}, nil
+	}
+
+	resp = pb.RefreshResponse{
+		Code: constant.SuccessCode,
+		Message: "New access token granted",
+		AccessToken:  tokenDetail.AccessToken,
+		RefreshToken: tokenDetail.RefreshToken,
 	}
 	return &resp, nil
 }

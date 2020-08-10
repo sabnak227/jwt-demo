@@ -9,6 +9,9 @@ type Config struct {
 	DBUser     string
 	DBPassword string
 	AutoMigrate bool
+	RedisHost   string
+	RedisPassword   string
+	RedisDB   int
 	UserSvcHost string
 	ScopeSvcHost string
 }

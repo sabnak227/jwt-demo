@@ -5,31 +5,58 @@ services:
     build: ./user
     volumes:
       - go-modules:/go/pkg/mod
+    environment:
+      - DEBUG_ADDR=:5051
+      - HTTP_ADDR=:5052
+      - GRPC_ADDR=:5053
+    ports:
+      - 5051:5051
+      - 5052:5052
+      - 5053:5053
   auth:
     image: jasonheshuai/jwt-demo-auth
     build: ./auth
     volumes:
       - go-modules:/go/pkg/mod
     environment:
-      - USER_HOST=user:5040
-      - SCOPE_HOST=scope:5040
+      - USER_HOST=user:5053
+      - SCOPE_HOST=scope:5063
       - PUB_KEY_PATH=/app.rsa.pub
       - PRI_KEY_PATH=/app.rsa
       - JWKS_PATH=/jwks.json
+      - DEBUG_ADDR=:5071
+      - HTTP_ADDR=:5072
+      - GRPC_ADDR=:5073
     ports:
-      - 5040:5040
-      - 5050:5050
-      - 5060:5060
+      - 5071:5071
+      - 5072:5072
+      - 5073:5073
   scope:
     image: jasonheshuai/jwt-demo-scope
     build: ./scope
     volumes:
       - go-modules:/go/pkg/mod
+    environment:
+      - DEBUG_ADDR=:5061
+      - HTTP_ADDR=:5062
+      - GRPC_ADDR=:5063
+    ports:
+      - 5061:5061
+      - 5062:5062
+      - 5063:5063
   resource:
     image: jasonheshuai/jwt-demo-resource
     build: ./resource
     volumes:
       - go-modules:/go/pkg/mod
+    environment:
+      - DEBUG_ADDR=:5081
+      - HTTP_ADDR=:5082
+      - GRPC_ADDR=:5083
+    ports:
+      - 5081:5081
+      - 5082:5082
+      - 5083:5083
   mysql:
     image: mysql:5.7
     restart: always

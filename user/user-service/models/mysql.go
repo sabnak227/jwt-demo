@@ -10,7 +10,7 @@ import (
 	"github.com/sabnak227/jwt-demo/user/user-service/config"
 )
 
-// CassandraClient cassandra client
+// MysqlClient mysql client
 type MysqlClient struct {
 	conn *gorm.DB
 	config config.Config

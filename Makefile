@@ -3,7 +3,8 @@ all: run
 
 .PHONY: run
 run:
-	docker-compose up -d --build
+	docker-compose up -d --build user auth resource scope
+	docker-compose up -d mysql
 
 .PHONY: build
 build:

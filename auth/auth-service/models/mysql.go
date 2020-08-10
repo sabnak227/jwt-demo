@@ -11,7 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// CassandraClient cassandra client
+// MysqlClient mysql client
 type MysqlClient struct {
 	conn *gorm.DB
 	config config.Config

@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
+	"github.com/sabnak227/jwt-demo/auth/auth-service/config"
+	"github.com/sabnak227/jwt-demo/auth/auth-service/models"
 	"github.com/sabnak227/jwt-demo/scope"
-	user "github.com/sabnak227/jwt-demo/user"
+	"github.com/sabnak227/jwt-demo/user"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"time"
@@ -16,7 +19,7 @@ import (
 var (
 	verifyKey *rsa.PublicKey
 	signKey   *rsa.PrivateKey
-	jwk		  Jwks
+	jwks		  Jwks
 	accessExp = time.Minute * 15
 	refreshExp = time.Hour * 24 * 7
 )
@@ -66,7 +69,7 @@ func init() {
 		panic(fmt.Sprintf("error %s", err.Error()))
 	}
 
-	if err := json.Unmarshal(jwkBytes, &jwk); err != nil {
+	if err := json.Unmarshal(jwkBytes, &jwks); err != nil {
 		panic(fmt.Sprintf("error %s", err.Error()))
 	}
 }
@@ -86,7 +89,21 @@ type Jwks struct {
 	E 		string `json:"e"`
 }
 
-func GenToken(scopes []string, user *user.GetUserResponse, scope *scope.UserScopeResponse) (*Details, error) {
+type Token struct {
+	Conf config.Config
+	Logger *log.Logger
+	Session models.SessionClient
+}
+
+func NewToken(conf config.Config, logger *log.Logger, session models.SessionClient) *Token {
+	return &Token{
+		Conf: conf,
+		Logger: logger,
+		Session: session,
+	}
+}
+
+func (t *Token)GenToken(scopes []string, user *user.GetUserResponse, scope *scope.UserScopeResponse) (*Details, error) {
 	td := &Details{}
 	td.AtExpires = time.Now().Add(accessExp).Unix()
 	td.AccessUuid = uuid.New().String()
@@ -125,6 +142,29 @@ func GenToken(scopes []string, user *user.GetUserResponse, scope *scope.UserScop
 	return td, nil
 }
 
-func GetJWk() Jwks{
-	return jwk
+
+func (t *Token)RefreshToken(refreshToken string) (*Details, error) {
+	_, err := t.verifyToken(refreshToken)
+	if err != nil {
+		return nil, err
+	}
+
+	td := &Details{
+	}
+	return td, err
+}
+
+func (t *Token)verifyToken(refreshToken string) (interface{}, error) {
+	token, err := jwt.Parse(refreshToken, func(token *jwt.Token) (interface{}, error) {
+		return verifyKey, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return token, nil
+}
+
+func (t *Token)GetJWk() Jwks{
+	return jwks
 }

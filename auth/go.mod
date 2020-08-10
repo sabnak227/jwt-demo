@@ -6,12 +6,14 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-kit/kit v0.10.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.2.1
+	github.com/go-redis/redis/v8 v8.0.0-beta.7
 	github.com/gogo/protobuf v1.3.1
-	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/google/uuid v1.0.0
 	github.com/gorilla/mux v1.7.4
 	github.com/jinzhu/gorm v1.9.15
+	github.com/lestrrat-go/jwx v1.0.3
 	github.com/metaverse/truss v0.1.0
+	github.com/pact-foundation/pact-go v1.0.4
 	github.com/pkg/errors v0.9.1
 	github.com/sabnak227/jwt-demo/scope v0.0.0-20200810164103-11c7042f5bb0
 	github.com/sabnak227/jwt-demo/user v0.0.0-20200810164103-11c7042f5bb0

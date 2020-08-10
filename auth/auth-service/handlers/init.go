@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/sabnak227/jwt-demo/auth/auth-service/config"
 	"github.com/sabnak227/jwt-demo/auth/auth-service/models"
+	"github.com/sabnak227/jwt-demo/auth/auth-service/token"
 	"github.com/sabnak227/jwt-demo/scope"
 	scopeClient "github.com/sabnak227/jwt-demo/scope/scope-service/svc/client/grpc"
 	"github.com/sabnak227/jwt-demo/user"
@@ -18,10 +19,13 @@ var (
 	conf config.Config
 	logger *log.Logger
 	repo models.DBClient
+	session models.SessionClient
+	tokenAdapter *token.Token
 )
 
 func init() {
 	logger = log.New()
+
 	conf = config.Config{
 		DBDriver: getConfigFromEnv("DB_DRIVER", "mysql").(string),
 		DBHost: getConfigFromEnv("DB_HOST", "mysql").(string),
@@ -30,11 +34,16 @@ func init() {
 		DBUser: getConfigFromEnv("DB_USER", "users").(string),
 		DBPassword: getConfigFromEnv("DB_PASSWORD", "users").(string),
 		AutoMigrate: getConfigFromEnv("AUTO_MIGRATE", true).(bool),
+		RedisHost: getConfigFromEnv("REDIS_HOST", "localhost:6379").(string),
+		RedisPassword: getConfigFromEnv("REDIS_PASSWORD", "").(string),
+		RedisDB: getConfigFromEnv("REDIS_DB", 0).(int),
 		UserSvcHost: getConfigFromEnv("USER_SVC_HOST", "user:5040").(string),
 		ScopeSvcHost: getConfigFromEnv("SCOPE_SVC_HOST", "scope:5040").(string),
 	}
 	setupDb()
+	setupRedis()
 	setupGrpcClient()
+	setUpTokenAdapter()
 }
 
 func setupGrpcClient() {
@@ -63,6 +72,21 @@ func setupDb() {
 	logger.Info("Database initialized")
 	repo.Migrate()
 	logger.Info("Database migrated")
+}
+
+func setupRedis() {
+	logger.Info("Redis Initializing...")
+
+	session = &models.RedisClient{}
+	err := session.OpenCon(conf, logger)
+	if err != nil {
+		panic("Redis initialization failed" + err.Error())
+	}
+	logger.Info("Redis initialized")
+}
+
+func setUpTokenAdapter() {
+	tokenAdapter = token.NewToken(conf, logger, session)
 }
 
 func getConfigFromEnv(key string, defaultVal interface{}) interface{} {

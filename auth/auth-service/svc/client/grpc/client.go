@@ -75,24 +75,10 @@ func New(conn *grpc.ClientConn, options ...ClientOption) (pb.AuthServer, error) 
 		).Endpoint()
 	}
 
-	var logoutEndpoint endpoint.Endpoint
-	{
-		logoutEndpoint = grpctransport.NewClient(
-			conn,
-			"auth.Auth",
-			"Logout",
-			EncodeGRPCLogoutRequest,
-			DecodeGRPCLogoutResponse,
-			pb.LogoutResponse{},
-			clientOptions...,
-		).Endpoint()
-	}
-
 	return svc.Endpoints{
 		JWKSEndpoint:    jwksEndpoint,
 		LoginEndpoint:   loginEndpoint,
 		RefreshEndpoint: refreshEndpoint,
-		LogoutEndpoint:  logoutEndpoint,
 	}, nil
 }
 
@@ -119,13 +105,6 @@ func DecodeGRPCRefreshResponse(_ context.Context, grpcReply interface{}) (interf
 	return reply, nil
 }
 
-// DecodeGRPCLogoutResponse is a transport/grpc.DecodeResponseFunc that converts a
-// gRPC logout reply to a user-domain logout response. Primarily useful in a client.
-func DecodeGRPCLogoutResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
-	reply := grpcReply.(*pb.LogoutResponse)
-	return reply, nil
-}
-
 // GRPC Client Encode
 
 // EncodeGRPCJWKSRequest is a transport/grpc.EncodeRequestFunc that converts a
@@ -146,13 +125,6 @@ func EncodeGRPCLoginRequest(_ context.Context, request interface{}) (interface{}
 // user-domain refresh request to a gRPC refresh request. Primarily useful in a client.
 func EncodeGRPCRefreshRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(*pb.RefreshRequest)
-	return req, nil
-}
-
-// EncodeGRPCLogoutRequest is a transport/grpc.EncodeRequestFunc that converts a
-// user-domain logout request to a gRPC logout request. Primarily useful in a client.
-func EncodeGRPCLogoutRequest(_ context.Context, request interface{}) (interface{}, error) {
-	req := request.(*pb.LogoutRequest)
 	return req, nil
 }
 

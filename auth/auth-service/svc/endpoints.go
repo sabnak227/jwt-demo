@@ -36,7 +36,6 @@ type Endpoints struct {
 	JWKSEndpoint    endpoint.Endpoint
 	LoginEndpoint   endpoint.Endpoint
 	RefreshEndpoint endpoint.Endpoint
-	LogoutEndpoint  endpoint.Endpoint
 }
 
 // Endpoints
@@ -63,14 +62,6 @@ func (e Endpoints) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.Refr
 		return nil, err
 	}
 	return response.(*pb.RefreshResponse), nil
-}
-
-func (e Endpoints) Logout(ctx context.Context, in *pb.LogoutRequest) (*pb.LogoutResponse, error) {
-	response, err := e.LogoutEndpoint(ctx, in)
-	if err != nil {
-		return nil, err
-	}
-	return response.(*pb.LogoutResponse), nil
 }
 
 // Make Endpoints
@@ -108,17 +99,6 @@ func MakeRefreshEndpoint(s pb.AuthServer) endpoint.Endpoint {
 	}
 }
 
-func MakeLogoutEndpoint(s pb.AuthServer) endpoint.Endpoint {
-	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(*pb.LogoutRequest)
-		v, err := s.Logout(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-		return v, nil
-	}
-}
-
 // WrapAllExcept wraps each Endpoint field of struct Endpoints with a
 // go-kit/kit/endpoint.Middleware.
 // Use this for applying a set of middlewares to every endpoint in the service.
@@ -129,7 +109,6 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 		"JWKS":    struct{}{},
 		"Login":   struct{}{},
 		"Refresh": struct{}{},
-		"Logout":  struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -149,9 +128,6 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 		if inc == "Refresh" {
 			e.RefreshEndpoint = middleware(e.RefreshEndpoint)
 		}
-		if inc == "Logout" {
-			e.LogoutEndpoint = middleware(e.LogoutEndpoint)
-		}
 	}
 }
 
@@ -169,7 +145,6 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 		"JWKS":    struct{}{},
 		"Login":   struct{}{},
 		"Refresh": struct{}{},
-		"Logout":  struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -188,9 +163,6 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 		}
 		if inc == "Refresh" {
 			e.RefreshEndpoint = middleware("Refresh", e.RefreshEndpoint)
-		}
-		if inc == "Logout" {
-			e.LogoutEndpoint = middleware("Logout", e.LogoutEndpoint)
 		}
 	}
 }

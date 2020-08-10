@@ -80,22 +80,11 @@ func New(instance string, options ...httptransport.ClientOption) (pb.AuthServer,
 			options...,
 		).Endpoint()
 	}
-	var LogoutZeroEndpoint endpoint.Endpoint
-	{
-		LogoutZeroEndpoint = httptransport.NewClient(
-			"POST",
-			copyURL(u, "/auth/logout"),
-			EncodeHTTPLogoutZeroRequest,
-			DecodeHTTPLogoutResponse,
-			options...,
-		).Endpoint()
-	}
 
 	return svc.Endpoints{
 		JWKSEndpoint:    JWKSZeroEndpoint,
 		LoginEndpoint:   LoginZeroEndpoint,
 		RefreshEndpoint: RefreshZeroEndpoint,
-		LogoutEndpoint:  LogoutZeroEndpoint,
 	}, nil
 }
 
@@ -196,33 +185,6 @@ func DecodeHTTPRefreshResponse(_ context.Context, r *http.Response) (interface{}
 	}
 
 	var resp pb.RefreshResponse
-	if err = jsonpb.UnmarshalString(string(buf), &resp); err != nil {
-		return nil, errorDecoder(buf)
-	}
-
-	return &resp, nil
-}
-
-// DecodeHTTPLogoutResponse is a transport/http.DecodeResponseFunc that decodes
-// a JSON-encoded LogoutResponse response from the HTTP response body.
-// If the response has a non-200 status code, we will interpret that as an
-// error and attempt to decode the specific error message from the response
-// body. Primarily useful in a client.
-func DecodeHTTPLogoutResponse(_ context.Context, r *http.Response) (interface{}, error) {
-	defer r.Body.Close()
-	buf, err := ioutil.ReadAll(r.Body)
-	if err == io.EOF {
-		return nil, errors.New("response http body empty")
-	}
-	if err != nil {
-		return nil, errors.Wrap(err, "cannot read http body")
-	}
-
-	if r.StatusCode != http.StatusOK {
-		return nil, errors.Wrapf(errorDecoder(buf), "status code: '%d'", r.StatusCode)
-	}
-
-	var resp pb.LogoutResponse
 	if err = jsonpb.UnmarshalString(string(buf), &resp); err != nil {
 		return nil, errorDecoder(buf)
 	}
@@ -443,97 +405,6 @@ func EncodeHTTPRefreshOneRequest(_ context.Context, r *http.Request, request int
 	// Set the body parameters
 	var buf bytes.Buffer
 	toRet := request.(*pb.RefreshRequest)
-	encoder := json.NewEncoder(&buf)
-	encoder.SetEscapeHTML(false)
-	if err := encoder.Encode(toRet); err != nil {
-		return errors.Wrapf(err, "couldn't encode body as json %v", toRet)
-	}
-	r.Body = ioutil.NopCloser(&buf)
-	return nil
-}
-
-// EncodeHTTPLogoutZeroRequest is a transport/http.EncodeRequestFunc
-// that encodes a logout request into the various portions of
-// the http request (path, query, and body).
-func EncodeHTTPLogoutZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
-	strval := ""
-	_ = strval
-	req := request.(*pb.LogoutRequest)
-	_ = req
-
-	r.Header.Set("transport", "HTTPJSON")
-	r.Header.Set("request-url", r.URL.Path)
-
-	// Set the path parameters
-	path := strings.Join([]string{
-		"",
-		"auth",
-		"logout",
-	}, "/")
-	u, err := url.Parse(path)
-	if err != nil {
-		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
-	}
-	r.URL.RawPath = u.RawPath
-	r.URL.Path = u.Path
-
-	// Set the query parameters
-	values := r.URL.Query()
-	var tmp []byte
-	_ = tmp
-
-	r.URL.RawQuery = values.Encode()
-	// Set the body parameters
-	var buf bytes.Buffer
-	toRet := request.(*pb.LogoutRequest)
-
-	toRet.AccessToken = req.AccessToken
-
-	encoder := json.NewEncoder(&buf)
-	encoder.SetEscapeHTML(false)
-	if err := encoder.Encode(toRet); err != nil {
-		return errors.Wrapf(err, "couldn't encode body as json %v", toRet)
-	}
-	r.Body = ioutil.NopCloser(&buf)
-	return nil
-}
-
-// EncodeHTTPLogoutOneRequest is a transport/http.EncodeRequestFunc
-// that encodes a logout request into the various portions of
-// the http request (path, query, and body).
-func EncodeHTTPLogoutOneRequest(_ context.Context, r *http.Request, request interface{}) error {
-	strval := ""
-	_ = strval
-	req := request.(*pb.LogoutRequest)
-	_ = req
-
-	r.Header.Set("transport", "HTTPJSON")
-	r.Header.Set("request-url", r.URL.Path)
-
-	// Set the path parameters
-	path := strings.Join([]string{
-		"",
-		"auth",
-		"logout",
-	}, "/")
-	u, err := url.Parse(path)
-	if err != nil {
-		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
-	}
-	r.URL.RawPath = u.RawPath
-	r.URL.Path = u.Path
-
-	// Set the query parameters
-	values := r.URL.Query()
-	var tmp []byte
-	_ = tmp
-
-	values.Add("access_token", fmt.Sprint(req.AccessToken))
-
-	r.URL.RawQuery = values.Encode()
-	// Set the body parameters
-	var buf bytes.Buffer
-	toRet := request.(*pb.LogoutRequest)
 	encoder := json.NewEncoder(&buf)
 	encoder.SetEscapeHTML(false)
 	if err := encoder.Encode(toRet); err != nil {
