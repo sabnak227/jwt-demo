@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"github.com/sabnak227/jwt-demo/auth"
+	authClient "github.com/sabnak227/jwt-demo/auth/auth-service/svc/client/grpc"
 	"github.com/sabnak227/jwt-demo/user/user-service/config"
 	"github.com/sabnak227/jwt-demo/user/user-service/models"
-	authClient "github.com/sabnak227/jwt-demo/auth/auth-service/svc/client/grpc"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"os"
@@ -42,7 +42,7 @@ func setupGrpcClient() {
 	if err != nil {
 		panic("failed to connect to auth svc " + err.Error())
 	}
-	auth, _ = authClient.New(uconn)
+	authSvc, _ = authClient.New(uconn)
 }
 
 func setupDb() {

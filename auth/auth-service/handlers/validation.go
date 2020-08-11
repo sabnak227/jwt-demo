@@ -29,8 +29,8 @@ func (l createAuthRequest) Validate() error {
 		validation.Field(&s.UserId, validation.Required),
 		validation.Field(&s.Email, validation.Required, is.Email),
 		validation.Field(&s.Password, validation.Required, validation.Length(6,50)),
-		validation.Field(&s.FirstName, validation.Required, validation.Length(3, 50)),
-		validation.Field(&s.LastName, validation.Required, validation.Length(3,50)),
+		validation.Field(&s.FirstName, validation.Required, validation.Length(1, 50)),
+		validation.Field(&s.LastName, validation.Required, validation.Length(1,50)),
 	)
 }
 

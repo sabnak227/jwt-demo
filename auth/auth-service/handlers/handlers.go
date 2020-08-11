@@ -77,7 +77,7 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 	}
 
 	// set session info
-	if err := session.SetToken(tokenDetail, u, sc); err != nil {
+	if err := session.SetToken(a.UserID, tokenDetail, u, sc); err != nil {
 		return &pb.LoginResponse{
 			Code:    constant.FailCode,
 			Message: fmt.Sprintf("Failed to create session, err: %s", err),
@@ -191,7 +191,7 @@ func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.Re
 	}
 
 	// set session info
-	if err := session.SetToken(tokenDetail, u, sc); err != nil {
+	if err := session.SetToken(userID, tokenDetail, u, sc); err != nil {
 		return &pb.RefreshResponse{
 			Code:    constant.FailCode,
 			Message: "Failed to create session",
@@ -212,11 +212,13 @@ func getUserInfo(ctx context.Context, userID uint64) (*user.GetUserResponse, *sc
 	})
 
 	if u == nil || u.Code != constant.SuccessCode {
+		logger.Error(u)
 		return nil, nil, fmt.Errorf("failed retrieving user info")
 	}
 
 	sc, _ := scopeSvc.UserScope(ctx, &scope.UserScopeRequest{})
 	if sc == nil || sc.Code != constant.SuccessCode {
+		logger.Error(u)
 		return nil, nil, fmt.Errorf("failed retrieving user scope")
 	}
 	return u, sc, nil

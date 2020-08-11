@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"github.com/sabnak227/jwt-demo/auth"
 	"github.com/sabnak227/jwt-demo/user/user-service/models"
 	"github.com/sabnak227/jwt-demo/util/constant"
 	"github.com/sabnak227/jwt-demo/util/helper"
@@ -22,6 +23,7 @@ func (s userService) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.Ge
 	var resp pb.GetUserResponse
 	u, err := repo.GetUser(in.ID)
 	if err != nil {
+		logger.Error(err)
 		return &pb.GetUserResponse{
 			Code:    constant.UserNotFound,
 			Message: "User not found",
@@ -63,8 +65,8 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 	}
 
 	// verify if user already exists
-	a, err := repo.CheckEmailExists(in.Email)
-	if err != nil && a != nil {
+	exist, err := repo.CheckEmailExists(in.Email)
+	if err == nil && exist != nil {
 		return &pb.CreateUserResponse{
 			Code:    constant.ValidationError,
 			Message: "user already exist",
@@ -73,7 +75,7 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 	logger.Infof("creating user: %s", in.Email)
 
 	// create user
-	user := models.User{
+	u := models.User{
 		FirstName: in.FirstName,
 		LastName:  in.LastName,
 		Email:     in.Email,
@@ -85,10 +87,29 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 		Phone:     in.Phone,
 	}
 
-	if err := repo.CreateUser(user); err != nil {
+
+	user, err := repo.CreateUser(u)
+	if err != nil {
 		return &pb.CreateUserResponse{
 			Code:    constant.FailCode,
 			Message: "Failed to create user",
+		}, nil
+	}
+
+	// create authentication entry
+	res, err := authSvc.CreateAuth(ctx, &auth.CreateAuthRequest{
+		UserId: uint64(user.ID),
+		Password: in.Password,
+		Email: user.Email,
+		FirstName: user.FirstName,
+		LastName: user.LastName,
+	})
+
+	if res == nil || res.Code != constant.SuccessCode {
+		// failed, rollback
+		return &pb.CreateUserResponse{
+			Code:    constant.FailCode,
+			Message: "Failed to create authentication entry",
 		}, nil
 	}
 

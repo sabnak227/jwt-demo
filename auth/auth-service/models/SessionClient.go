@@ -12,7 +12,7 @@ import (
 type SessionClient interface {
 	OpenCon(config config.Config, logger *log.Logger) error
 	Close() error
-	SetToken(*token.Details, *user.GetUserResponse, *scope.UserScopeResponse) error
+	SetToken(uint64, *token.Details, *user.GetUserResponse, *scope.UserScopeResponse) error
 	GetUserIdByRefreshUUID(string) (uint64, error)
 	GetUserInfo(uint64) (*user.GetUserResponse, *scope.UserScopeResponse, error)
 	SetUserInfo(uint64, *user.GetUserResponse, *scope.UserScopeResponse) error

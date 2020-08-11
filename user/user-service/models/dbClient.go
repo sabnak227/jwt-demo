@@ -12,7 +12,7 @@ type DBClient interface {
 	Close() error
 	GetUser(id uint64) (*User, error)
 	CheckEmailExists(email string) (*User, error)
-	CreateUser(user User) error
+	CreateUser(user User) (*User, error)
 }
 
 // GormLogger struct

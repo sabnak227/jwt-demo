@@ -14,8 +14,8 @@ type createUserRequest struct {
 func (l createUserRequest) Validate() error {
 	s := l.req
 	return validation.ValidateStruct(&s,
-		validation.Field(&s.FirstName, validation.Required, validation.Length(3, 50)),
-		validation.Field(&s.LastName, validation.Required, validation.Length(3,50)),
+		validation.Field(&s.FirstName, validation.Required, validation.Length(1, 50)),
+		validation.Field(&s.LastName, validation.Required, validation.Length(1,50)),
 		validation.Field(&s.Email, validation.Required, is.Email),
 		validation.Field(&s.Password, validation.Required, validation.Length(6,50)),
 		validation.Field(&s.Address1, validation.Length(0,255)),

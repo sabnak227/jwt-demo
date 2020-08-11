@@ -63,6 +63,7 @@ func (c *MysqlClient) CheckEmailExists(email string) (*User, error) {
 	return &user, err
 }
 
-func (c *MysqlClient) CreateUser(user User) error {
-	return c.conn.Create(&user).Error
+func (c *MysqlClient) CreateUser(user User) (*User, error) {
+	err := c.conn.Create(&user).Error
+	return &user, err
 }

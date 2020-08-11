@@ -45,16 +45,16 @@ func (c *RedisClient) Close() error {
 	return err
 }
 
-func (c *RedisClient) SetToken(td *token.Details, user *user.GetUserResponse, scope *scope.UserScopeResponse) error {
+func (c *RedisClient) SetToken(userId uint64, td *token.Details, user *user.GetUserResponse, scope *scope.UserScopeResponse) error {
 	at := time.Unix(td.AtExpires, 0)
 	rt := time.Unix(td.RtExpires, 0)
 	now := time.Now()
 
-	errAccess := c.conn.Set(ctx, td.AccessUuid, user.User.Id, at.Sub(now)).Err()
+	errAccess := c.conn.Set(ctx, td.AccessUuid, userId, at.Sub(now)).Err()
 	if errAccess != nil {
 		return errAccess
 	}
-	errRefresh := c.conn.Set(ctx, td.RefreshUuid, user.User.Id, rt.Sub(now)).Err()
+	errRefresh := c.conn.Set(ctx, td.RefreshUuid, userId, rt.Sub(now)).Err()
 	if errRefresh != nil {
 		return errRefresh
 	}
