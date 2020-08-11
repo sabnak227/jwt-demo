@@ -120,6 +120,8 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 
 // DeleteUser implements Service.
 func (s userService) DeleteUser(ctx context.Context, in *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
+	logger.Infof("deleting user: %d", in.ID)
+
 	if err := repo.Delete(in.ID); err != nil {
 		return &pb.DeleteUserResponse{
 			Code:    constant.FailCode,
@@ -128,9 +130,13 @@ func (s userService) DeleteUser(ctx context.Context, in *pb.DeleteUserRequest) (
 	}
 
 	// delete authentication entry
-	_, _ := authSvc.CreateAuth(ctx, &auth.CreateAuthRequest{
-		UserId:    uint64(user.ID),
+	// no need to check the response anyways
+	res, _ := authSvc.DeleteAuth(ctx, &auth.DeleteAuthRequest{
+		UserId:    in.ID,
 	})
+	if res.Code != constant.SuccessCode {
+		logger.Errorf("deleting auth entity for user %d failed", in.ID)
+	}
 
 	return &pb.DeleteUserResponse{
 		Code:    constant.SuccessCode,

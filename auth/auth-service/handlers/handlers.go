@@ -135,6 +135,7 @@ func (s authService) CreateAuth(ctx context.Context, in *pb.CreateAuthRequest) (
 
 // DeleteAuth implements Service.
 func (s authService) DeleteAuth(ctx context.Context, in *pb.DeleteAuthRequest) (*pb.DeleteAuthResponse, error) {
+	logger.Infof("deleting auth for user %d", in.UserId)
 	err := repo.DeleteAuth(in.UserId)
 	if err != nil {
 		return &pb.DeleteAuthResponse{
