@@ -49,8 +49,22 @@ func New(conn *grpc.ClientConn, options ...ClientOption) (pb.UserServer, error) 
 		).Endpoint()
 	}
 
+	var createuserEndpoint endpoint.Endpoint
+	{
+		createuserEndpoint = grpctransport.NewClient(
+			conn,
+			"user.User",
+			"CreateUser",
+			EncodeGRPCCreateUserRequest,
+			DecodeGRPCCreateUserResponse,
+			pb.CreateUserResponse{},
+			clientOptions...,
+		).Endpoint()
+	}
+
 	return svc.Endpoints{
-		GetUserEndpoint: getuserEndpoint,
+		GetUserEndpoint:    getuserEndpoint,
+		CreateUserEndpoint: createuserEndpoint,
 	}, nil
 }
 
@@ -63,12 +77,26 @@ func DecodeGRPCGetUserResponse(_ context.Context, grpcReply interface{}) (interf
 	return reply, nil
 }
 
+// DecodeGRPCCreateUserResponse is a transport/grpc.DecodeResponseFunc that converts a
+// gRPC createuser reply to a user-domain createuser response. Primarily useful in a client.
+func DecodeGRPCCreateUserResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
+	reply := grpcReply.(*pb.CreateUserResponse)
+	return reply, nil
+}
+
 // GRPC Client Encode
 
 // EncodeGRPCGetUserRequest is a transport/grpc.EncodeRequestFunc that converts a
 // user-domain getuser request to a gRPC getuser request. Primarily useful in a client.
 func EncodeGRPCGetUserRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(*pb.GetUserRequest)
+	return req, nil
+}
+
+// EncodeGRPCCreateUserRequest is a transport/grpc.EncodeRequestFunc that converts a
+// user-domain createuser request to a gRPC createuser request. Primarily useful in a client.
+func EncodeGRPCCreateUserRequest(_ context.Context, request interface{}) (interface{}, error) {
+	req := request.(*pb.CreateUserRequest)
 	return req, nil
 }
 

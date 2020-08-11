@@ -290,6 +290,7 @@ github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6So
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/ryanuber/columnize v0.0.0-20160712163229-9b3edd62028f/go.mod h1:sm1tb6uqfes/u+d4ooFouqFdy9/2g9QGwK3SQygK0Ts=
+github.com/sabnak227/jwt-demo v0.0.0-20200811004440-54a0fb6ac2fc h1:fVQdi+iVkvCfITPGahcVQtUlykopEZwxg+erTbaflYs=
 github.com/sabnak227/jwt-demo/scope v0.0.0-20200810164103-11c7042f5bb0 h1:0tyauJTQ7/WpseiXckMan6JxSiVxnzBc/eQO77WgxD0=
 github.com/sabnak227/jwt-demo/scope v0.0.0-20200810164103-11c7042f5bb0/go.mod h1:bO2AX6xR0UZY1BWmBd4C0mgMKLE19TNtflLsjVPBf0A=
 github.com/sabnak227/jwt-demo/scope v0.0.0-20200811001231-a7a6709a1174 h1:/Y2zISpVi66osHRgIr4dGRZgetzi71laWdwwbDXC2L4=
@@ -298,6 +299,8 @@ github.com/sabnak227/jwt-demo/user v0.0.0-20200810164103-11c7042f5bb0 h1:XkfBvM8
 github.com/sabnak227/jwt-demo/user v0.0.0-20200810164103-11c7042f5bb0/go.mod h1:n2W1qrOlDa8VNj5Zjt/lECjzrCvYby4RYSMao6g3CV8=
 github.com/sabnak227/jwt-demo/user v0.0.0-20200811001231-a7a6709a1174 h1:NFQSPjTiqwI4AdhMLD7wcC9Sf4IAQQDp/obgtTjF7as=
 github.com/sabnak227/jwt-demo/user v0.0.0-20200811001231-a7a6709a1174/go.mod h1:NAZfun1i/a9WA41ykZfM1bi4AxyWVPJjd+ugOfRa5QU=
+github.com/sabnak227/jwt-demo/user v0.0.0-20200811004440-54a0fb6ac2fc h1:cPwbeKZQIGf2GMFovX6IYH9+SOo+fSTPWKFtjIU7JH8=
+github.com/sabnak227/jwt-demo/user v0.0.0-20200811004440-54a0fb6ac2fc/go.mod h1:NAZfun1i/a9WA41ykZfM1bi4AxyWVPJjd+ugOfRa5QU=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200808193236-c280dbae12ae h1:E216MouegaiihKXHg491GZL06tDY4BDm5QoSvY0Ju1Q=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200808193236-c280dbae12ae/go.mod h1:4bVIIZwCkmiRDU2O/oqQWRhiT5S6gqMoW+ub3AtboY4=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200810164103-11c7042f5bb0 h1:AdGkoyt2DSw7yl2/U3xo/dqBrORBLFdKxzlOzAMGmiY=
@@ -305,6 +308,8 @@ github.com/sabnak227/jwt-demo/util v0.0.0-20200810164103-11c7042f5bb0/go.mod h1:
 github.com/sabnak227/jwt-demo/util v0.0.0-20200810212511-960ee5dbe0e7/go.mod h1:4bVIIZwCkmiRDU2O/oqQWRhiT5S6gqMoW+ub3AtboY4=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200811001231-a7a6709a1174 h1:iEbfPDl8s6tGz4jlfhprkqh8RU8KQOGEWmsYXqnMlPQ=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200811001231-a7a6709a1174/go.mod h1:4bVIIZwCkmiRDU2O/oqQWRhiT5S6gqMoW+ub3AtboY4=
+github.com/sabnak227/jwt-demo/util v0.0.0-20200811004440-54a0fb6ac2fc h1:rdRrkP8xkb6UsjRzRiwENoTdnET6ZhbORGsHQEEQSqw=
+github.com/sabnak227/jwt-demo/util v0.0.0-20200811004440-54a0fb6ac2fc/go.mod h1:4bVIIZwCkmiRDU2O/oqQWRhiT5S6gqMoW+ub3AtboY4=
 github.com/samuel/go-zookeeper v0.0.0-20190923202752-2cc03de413da/go.mod h1:gi+0XIa01GRL2eRQVjQkKGqKF3SF9vZR/HnPullcV2E=
 github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg65j358z/aeFdxmN0P9QXhEzd20vsDc=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=

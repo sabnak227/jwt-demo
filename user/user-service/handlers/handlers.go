@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"github.com/sabnak227/jwt-demo/util/constant"
+	"github.com/sabnak227/jwt-demo/util/helper"
 
 	pb "github.com/sabnak227/jwt-demo/user"
 )
@@ -18,10 +19,10 @@ type userService struct{}
 func (s userService) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	logger.Infof("Getting user info for %d", in.ID)
 	var resp pb.GetUserResponse
-	u := repo.GetUser(in.ID)
-	if u == nil {
+	u, err := repo.GetUser(in.ID)
+	if err != nil {
 		return &pb.GetUserResponse{
-			Code: constant.UserNotFound,
+			Code:    constant.UserNotFound,
 			Message: "User not found",
 		}, nil
 	}
@@ -41,6 +42,41 @@ func (s userService) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.Ge
 			Country:   u.Country,
 			Phone:     u.Phone,
 		},
+	}
+	return &resp, nil
+}
+
+// CreateUser implements Service.
+func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+	var resp pb.CreateUserResponse
+	i := createUserRequest{
+		req: *in,
+	}
+	// request body validation
+	if err := i.Validate(); err != nil {
+		errors, _ := helper.BuildErrorResponse(err)
+		return &pb.CreateUserResponse{
+			Code:    constant.ValidationError,
+			Message: "Validation error",
+			User:    nil,
+			Errors:  errors,
+		}, nil
+	}
+
+	// verify user credentials in database
+	a, err := repo.CheckEmailExists(in.Email)
+	if err != nil && a != nil {
+		return &pb.CreateUserResponse{
+			Code:    constant.ValidationError,
+			Message: "user already exist",
+		}, nil
+	}
+	logger.Infof("creating user: %s", in.Email)
+
+	resp = pb.CreateUserResponse{
+		// Code:
+		// Message:
+		// User:
 	}
 	return &resp, nil
 }

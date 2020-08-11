@@ -35,12 +35,19 @@ func MakeGRPCServer(endpoints Endpoints, options ...grpctransport.ServerOption) 
 			EncodeGRPCGetUserResponse,
 			serverOptions...,
 		),
+		createuser: grpctransport.NewServer(
+			endpoints.CreateUserEndpoint,
+			DecodeGRPCCreateUserRequest,
+			EncodeGRPCCreateUserResponse,
+			serverOptions...,
+		),
 	}
 }
 
 // grpcServer implements the UserServer interface
 type grpcServer struct {
-	getuser grpctransport.Handler
+	getuser    grpctransport.Handler
+	createuser grpctransport.Handler
 }
 
 // Methods for grpcServer to implement UserServer interface
@@ -53,6 +60,14 @@ func (s *grpcServer) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.G
 	return rep.(*pb.GetUserResponse), nil
 }
 
+func (s *grpcServer) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+	_, rep, err := s.createuser.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.CreateUserResponse), nil
+}
+
 // Server Decode
 
 // DecodeGRPCGetUserRequest is a transport/grpc.DecodeRequestFunc that converts a
@@ -62,12 +77,26 @@ func DecodeGRPCGetUserRequest(_ context.Context, grpcReq interface{}) (interface
 	return req, nil
 }
 
+// DecodeGRPCCreateUserRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC createuser request to a user-domain createuser request. Primarily useful in a server.
+func DecodeGRPCCreateUserRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.CreateUserRequest)
+	return req, nil
+}
+
 // Server Encode
 
 // EncodeGRPCGetUserResponse is a transport/grpc.EncodeResponseFunc that converts a
 // user-domain getuser response to a gRPC getuser reply. Primarily useful in a server.
 func EncodeGRPCGetUserResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(*pb.GetUserResponse)
+	return resp, nil
+}
+
+// EncodeGRPCCreateUserResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain createuser response to a gRPC createuser reply. Primarily useful in a server.
+func EncodeGRPCCreateUserResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.CreateUserResponse)
 	return resp, nil
 }
 

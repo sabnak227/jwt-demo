@@ -52,12 +52,12 @@ func (c *MysqlClient) Close() error {
 	return err
 }
 
-func (c *MysqlClient) AuthUser(email string, password string) *Auth {
-	var user Auth
-	c.conn.Where("email = ?", email).First(&user)
-
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)) ; err == nil {
-		return &user
+func (c *MysqlClient) AuthUser(email string, password string)  (auth *Auth, err error) {
+	if err := c.conn.Where("email = ?", email).First(&auth).Error; err != nil {
+		return nil, err
 	}
-	return nil
+	if err := bcrypt.CompareHashAndPassword([]byte(auth.Password), []byte(password)) ; err != nil {
+		return nil, err
+	}
+	return auth, nil
 }

@@ -57,8 +57,9 @@ message LoginRequest {
 message LoginResponse {
   int32 code = 1;
   string message = 2;
-  string access_token = 3;
-  string refresh_token = 4;
+  map<string, int32> errors = 3;
+  string access_token = 4;
+  string refresh_token = 5;
 }
 
 message RefreshRequest {
@@ -67,6 +68,7 @@ message RefreshRequest {
 message RefreshResponse {
   int32 code = 1;
   string message = 2;
-  string access_token = 3;
-  string refresh_token = 4;
+  map<string, int32> errors = 3;
+  string access_token = 4;
+  string refresh_token = 5;
 }

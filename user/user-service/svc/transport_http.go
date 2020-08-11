@@ -61,6 +61,19 @@ func MakeHTTPHandler(endpoints Endpoints, options ...httptransport.ServerOption)
 		EncodeHTTPGenericResponse,
 		serverOptions...,
 	))
+
+	m.Methods("POST").Path("/user/register").Handler(httptransport.NewServer(
+		endpoints.CreateUserEndpoint,
+		DecodeHTTPCreateUserZeroRequest,
+		EncodeHTTPGenericResponse,
+		serverOptions...,
+	))
+	m.Methods("HEAD").Path("/user/register").Handler(httptransport.NewServer(
+		endpoints.CreateUserEndpoint,
+		DecodeHTTPCreateUserOneRequest,
+		EncodeHTTPGenericResponse,
+		serverOptions...,
+	))
 	return m
 }
 
@@ -153,6 +166,138 @@ func DecodeHTTPGetUserZeroRequest(_ context.Context, r *http.Request) (interface
 		return nil, errors.Wrap(err, fmt.Sprintf("Error while extracting IDGetUser from path, pathParams: %v", pathParams))
 	}
 	req.ID = IDGetUser
+
+	return &req, err
+}
+
+// DecodeHTTPCreateUserZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded createuser request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPCreateUserZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	defer r.Body.Close()
+	var req pb.CreateUserRequest
+	buf, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		// AllowUnknownFields stops the unmarshaler from failing if the JSON contains unknown fields.
+		unmarshaller := jsonpb.Unmarshaler{
+			AllowUnknownFields: true,
+		}
+		if err = unmarshaller.Unmarshal(bytes.NewBuffer(buf), &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, httpError{errors.Wrapf(err, "request body '%s': cannot parse non-json request body", buf),
+				http.StatusBadRequest,
+				nil,
+			}
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := r.URL.Query()
+	_ = queryParams
+
+	return &req, err
+}
+
+// DecodeHTTPCreateUserOneRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded createuser request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPCreateUserOneRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	defer r.Body.Close()
+	var req pb.CreateUserRequest
+	buf, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		// AllowUnknownFields stops the unmarshaler from failing if the JSON contains unknown fields.
+		unmarshaller := jsonpb.Unmarshaler{
+			AllowUnknownFields: true,
+		}
+		if err = unmarshaller.Unmarshal(bytes.NewBuffer(buf), &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, httpError{errors.Wrapf(err, "request body '%s': cannot parse non-json request body", buf),
+				http.StatusBadRequest,
+				nil,
+			}
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := r.URL.Query()
+	_ = queryParams
+
+	if PasswordCreateUserStrArr, ok := queryParams["password"]; ok {
+		PasswordCreateUserStr := PasswordCreateUserStrArr[0]
+		PasswordCreateUser := PasswordCreateUserStr
+		req.Password = PasswordCreateUser
+	}
+
+	if FirstNameCreateUserStrArr, ok := queryParams["first_name"]; ok {
+		FirstNameCreateUserStr := FirstNameCreateUserStrArr[0]
+		FirstNameCreateUser := FirstNameCreateUserStr
+		req.FirstName = FirstNameCreateUser
+	}
+
+	if LastNameCreateUserStrArr, ok := queryParams["last_name"]; ok {
+		LastNameCreateUserStr := LastNameCreateUserStrArr[0]
+		LastNameCreateUser := LastNameCreateUserStr
+		req.LastName = LastNameCreateUser
+	}
+
+	if EmailCreateUserStrArr, ok := queryParams["email"]; ok {
+		EmailCreateUserStr := EmailCreateUserStrArr[0]
+		EmailCreateUser := EmailCreateUserStr
+		req.Email = EmailCreateUser
+	}
+
+	if Address1CreateUserStrArr, ok := queryParams["address1"]; ok {
+		Address1CreateUserStr := Address1CreateUserStrArr[0]
+		Address1CreateUser := Address1CreateUserStr
+		req.Address1 = Address1CreateUser
+	}
+
+	if Address2CreateUserStrArr, ok := queryParams["address2"]; ok {
+		Address2CreateUserStr := Address2CreateUserStrArr[0]
+		Address2CreateUser := Address2CreateUserStr
+		req.Address2 = Address2CreateUser
+	}
+
+	if CityCreateUserStrArr, ok := queryParams["city"]; ok {
+		CityCreateUserStr := CityCreateUserStrArr[0]
+		CityCreateUser := CityCreateUserStr
+		req.City = CityCreateUser
+	}
+
+	if StateCreateUserStrArr, ok := queryParams["state"]; ok {
+		StateCreateUserStr := StateCreateUserStrArr[0]
+		StateCreateUser := StateCreateUserStr
+		req.State = StateCreateUser
+	}
+
+	if CountryCreateUserStrArr, ok := queryParams["country"]; ok {
+		CountryCreateUserStr := CountryCreateUserStrArr[0]
+		CountryCreateUser := CountryCreateUserStr
+		req.Country = CountryCreateUser
+	}
+
+	if PhoneCreateUserStrArr, ok := queryParams["phone"]; ok {
+		PhoneCreateUserStr := PhoneCreateUserStrArr[0]
+		PhoneCreateUser := PhoneCreateUserStr
+		req.Phone = PhoneCreateUser
+	}
 
 	return &req, err
 }

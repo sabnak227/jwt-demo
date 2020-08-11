@@ -51,8 +51,16 @@ func (c *MysqlClient) Close() error {
 	return err
 }
 
-func (c *MysqlClient) GetUser(id uint64) *User {
-	var user User
-	c.conn.Where("id = ?", id).Find(&user)
-	return &user
+func (c *MysqlClient) GetUser(id uint64) (user *User, err error) {
+	err = c.conn.Where("id = ?", id).Find(&user).Error
+	return user, err
+}
+
+func (c *MysqlClient) CheckEmailExists(email string) (user *User, err error) {
+	err = c.conn.Where("email = ?", email).Find(&user).Error
+	return user, err
+}
+
+func (c *MysqlClient) CreateUser(user User) error {
+	return c.conn.Create(&user).Error
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/sabnak227/jwt-demo/scope"
 	"github.com/sabnak227/jwt-demo/user"
 	"github.com/sabnak227/jwt-demo/util/constant"
+	"github.com/sabnak227/jwt-demo/util/helper"
 )
 
 // NewService returns a naïve, stateless implementation of Service.
@@ -37,15 +38,19 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 	i := loginRequest{
 		req: *in,
 	}
-
 	// request body validation
 	if err := i.Validate(); err != nil {
-		return nil, err
+		errors, _ := helper.BuildErrorResponse(err)
+		return &pb.LoginResponse{
+			Code:    constant.ValidationError,
+			Message: "Validation error",
+			Errors:  errors,
+		}, nil
 	}
 
 	// verify user credentials in database
-	a := repo.AuthUser(in.Email, in.Password)
-	if a == nil {
+	a, err := repo.AuthUser(in.Email, in.Password)
+	if err != nil {
 		return &pb.LoginResponse{
 			Code:    constant.WrongPasswordCode,
 			Message: "Wrong email and password combination",
@@ -78,7 +83,6 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 		}, nil
 	}
 
-
 	return &pb.LoginResponse{
 		Code:         constant.SuccessCode,
 		Message:      "Success",
@@ -90,21 +94,34 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 // Refresh implements Service.
 func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.RefreshResponse, error) {
 	var resp pb.RefreshResponse
+	i := refreshRequest{
+		req: *in,
+	}
+	// request body validation
+	if err := i.Validate(); err != nil {
+		errors, _ := helper.BuildErrorResponse(err)
+		return &pb.RefreshResponse{
+			Code:    constant.ValidationError,
+			Message: "Validation error",
+			Errors:  errors,
+		}, nil
+	}
+
 	// verify if token is valid or not
 	refreshUUID, err := tokenAdapter.VerifyToken(in.RefreshToken)
 	if err != nil {
 		return &pb.RefreshResponse{
-			Code: constant.FailCode,
+			Code:    constant.FailCode,
 			Message: fmt.Sprintf("Failed refresh token, %s", err),
 		}, nil
 	}
 
 	// get userid from session using uuid returned previously
-	userID , err := session.GetUserIdByRefreshUUID(refreshUUID)
+	userID, err := session.GetUserIdByRefreshUUID(refreshUUID)
 	if err != nil {
 		logger.Infof("err %s", err)
 		return &pb.RefreshResponse{
-			Code: constant.FailCode,
+			Code:    constant.FailCode,
 			Message: "Session expiried, please login again",
 		}, nil
 	}
@@ -117,7 +134,7 @@ func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.Re
 		u, sc, infoErr = getUserInfo(ctx, userID)
 		if infoErr != nil {
 			return &pb.RefreshResponse{
-				Code: constant.FailCode,
+				Code:    constant.FailCode,
 				Message: infoErr.Error(),
 			}, nil
 		}
@@ -141,14 +158,13 @@ func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.Re
 	}
 
 	resp = pb.RefreshResponse{
-		Code: constant.SuccessCode,
-		Message: "New access token granted",
+		Code:         constant.SuccessCode,
+		Message:      "New access token granted",
 		AccessToken:  tokenDetail.AccessToken,
 		RefreshToken: tokenDetail.RefreshToken,
 	}
 	return &resp, nil
 }
-
 
 func getUserInfo(ctx context.Context, userID uint64) (*user.GetUserResponse, *scope.UserScopeResponse, error) {
 	u, _ := userSvc.GetUser(ctx, &user.GetUserRequest{

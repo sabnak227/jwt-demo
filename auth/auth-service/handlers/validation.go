@@ -18,3 +18,15 @@ func (l loginRequest) Validate() error {
 		validation.Field(&s.Password, validation.Required),
 	)
 }
+
+
+type refreshRequest struct {
+	req pb.RefreshRequest
+}
+
+func (l refreshRequest) Validate() error {
+	s := l.req
+	return validation.ValidateStruct(&s,
+		validation.Field(&s.RefreshToken, validation.Required),
+	)
+}

@@ -60,9 +60,20 @@ func New(instance string, options ...httptransport.ClientOption) (pb.UserServer,
 			options...,
 		).Endpoint()
 	}
+	var CreateUserZeroEndpoint endpoint.Endpoint
+	{
+		CreateUserZeroEndpoint = httptransport.NewClient(
+			"POST",
+			copyURL(u, "/user/register"),
+			EncodeHTTPCreateUserZeroRequest,
+			DecodeHTTPCreateUserResponse,
+			options...,
+		).Endpoint()
+	}
 
 	return svc.Endpoints{
-		GetUserEndpoint: GetUserZeroEndpoint,
+		GetUserEndpoint:    GetUserZeroEndpoint,
+		CreateUserEndpoint: CreateUserZeroEndpoint,
 	}, nil
 }
 
@@ -116,6 +127,33 @@ func DecodeHTTPGetUserResponse(_ context.Context, r *http.Response) (interface{}
 	return &resp, nil
 }
 
+// DecodeHTTPCreateUserResponse is a transport/http.DecodeResponseFunc that decodes
+// a JSON-encoded CreateUserResponse response from the HTTP response body.
+// If the response has a non-200 status code, we will interpret that as an
+// error and attempt to decode the specific error message from the response
+// body. Primarily useful in a client.
+func DecodeHTTPCreateUserResponse(_ context.Context, r *http.Response) (interface{}, error) {
+	defer r.Body.Close()
+	buf, err := ioutil.ReadAll(r.Body)
+	if err == io.EOF {
+		return nil, errors.New("response http body empty")
+	}
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot read http body")
+	}
+
+	if r.StatusCode != http.StatusOK {
+		return nil, errors.Wrapf(errorDecoder(buf), "status code: '%d'", r.StatusCode)
+	}
+
+	var resp pb.CreateUserResponse
+	if err = jsonpb.UnmarshalString(string(buf), &resp); err != nil {
+		return nil, errorDecoder(buf)
+	}
+
+	return &resp, nil
+}
+
 // HTTP Client Encode
 
 // EncodeHTTPGetUserZeroRequest is a transport/http.EncodeRequestFunc
@@ -149,6 +187,133 @@ func EncodeHTTPGetUserZeroRequest(_ context.Context, r *http.Request, request in
 	_ = tmp
 
 	r.URL.RawQuery = values.Encode()
+	return nil
+}
+
+// EncodeHTTPCreateUserZeroRequest is a transport/http.EncodeRequestFunc
+// that encodes a createuser request into the various portions of
+// the http request (path, query, and body).
+func EncodeHTTPCreateUserZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+	strval := ""
+	_ = strval
+	req := request.(*pb.CreateUserRequest)
+	_ = req
+
+	r.Header.Set("transport", "HTTPJSON")
+	r.Header.Set("request-url", r.URL.Path)
+
+	// Set the path parameters
+	path := strings.Join([]string{
+		"",
+		"user",
+		"register",
+	}, "/")
+	u, err := url.Parse(path)
+	if err != nil {
+		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
+	}
+	r.URL.RawPath = u.RawPath
+	r.URL.Path = u.Path
+
+	// Set the query parameters
+	values := r.URL.Query()
+	var tmp []byte
+	_ = tmp
+
+	r.URL.RawQuery = values.Encode()
+	// Set the body parameters
+	var buf bytes.Buffer
+	toRet := request.(*pb.CreateUserRequest)
+
+	toRet.Password = req.Password
+
+	toRet.FirstName = req.FirstName
+
+	toRet.LastName = req.LastName
+
+	toRet.Email = req.Email
+
+	toRet.Address1 = req.Address1
+
+	toRet.Address2 = req.Address2
+
+	toRet.City = req.City
+
+	toRet.State = req.State
+
+	toRet.Country = req.Country
+
+	toRet.Phone = req.Phone
+
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(toRet); err != nil {
+		return errors.Wrapf(err, "couldn't encode body as json %v", toRet)
+	}
+	r.Body = ioutil.NopCloser(&buf)
+	return nil
+}
+
+// EncodeHTTPCreateUserOneRequest is a transport/http.EncodeRequestFunc
+// that encodes a createuser request into the various portions of
+// the http request (path, query, and body).
+func EncodeHTTPCreateUserOneRequest(_ context.Context, r *http.Request, request interface{}) error {
+	strval := ""
+	_ = strval
+	req := request.(*pb.CreateUserRequest)
+	_ = req
+
+	r.Header.Set("transport", "HTTPJSON")
+	r.Header.Set("request-url", r.URL.Path)
+
+	// Set the path parameters
+	path := strings.Join([]string{
+		"",
+		"user",
+		"register",
+	}, "/")
+	u, err := url.Parse(path)
+	if err != nil {
+		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
+	}
+	r.URL.RawPath = u.RawPath
+	r.URL.Path = u.Path
+
+	// Set the query parameters
+	values := r.URL.Query()
+	var tmp []byte
+	_ = tmp
+
+	values.Add("password", fmt.Sprint(req.Password))
+
+	values.Add("first_name", fmt.Sprint(req.FirstName))
+
+	values.Add("last_name", fmt.Sprint(req.LastName))
+
+	values.Add("email", fmt.Sprint(req.Email))
+
+	values.Add("address1", fmt.Sprint(req.Address1))
+
+	values.Add("address2", fmt.Sprint(req.Address2))
+
+	values.Add("city", fmt.Sprint(req.City))
+
+	values.Add("state", fmt.Sprint(req.State))
+
+	values.Add("country", fmt.Sprint(req.Country))
+
+	values.Add("phone", fmt.Sprint(req.Phone))
+
+	r.URL.RawQuery = values.Encode()
+	// Set the body parameters
+	var buf bytes.Buffer
+	toRet := request.(*pb.CreateUserRequest)
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(toRet); err != nil {
+		return errors.Wrapf(err, "couldn't encode body as json %v", toRet)
+	}
+	r.Body = ioutil.NopCloser(&buf)
 	return nil
 }
 

@@ -10,6 +10,19 @@ service User {
       get: "/user/{ID}"
     };
   }
+  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {
+    option (google.api.http) = {
+      custom {
+        kind: "HEAD"
+        path: "/user/register"
+      }
+      additional_bindings {
+        post: "/user/register"
+        // All other fields (In) are located in the body of the http/json request
+        body: "*"
+      }
+    };
+  }
 }
 
 message UserObj {
@@ -28,8 +41,29 @@ message UserObj {
 message GetUserRequest {
   uint64 ID = 1;
 }
+
 message GetUserResponse {
   int32 code = 1;
   string message = 2;
   UserObj user = 3;
+}
+
+message CreateUserRequest {
+  string password = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string email = 4;
+  string address1 = 5;
+  string address2 = 6;
+  string city = 7;
+  string state = 8;
+  string country = 9;
+  string phone = 10;
+}
+
+message CreateUserResponse {
+  int32 code = 1;
+  string message = 2;
+  UserObj user = 3;
+  map<string, int32> errors = 4;
 }
