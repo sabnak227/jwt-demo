@@ -24,22 +24,7 @@ spec:
   rules:
     - to:
       - operation:
-          notPaths: ["/auth*"]
+          notPaths: ["/auth*", "/user/register"]
       when:
         - key: request.auth.claims[iss]
           notValues: ["admin@example.com"]
----
-apiVersion: "security.istio.io/v1beta1"
-kind: AuthorizationPolicy
-metadata:
-  name: allow-user-register
-  namespace: istio-system
-spec:
-  selector:
-    matchLabels:
-      istio: ingressgateway
-  action: ALLOW
-  rules:
-    - to:
-        - operation:
-            notPaths: ["/user/register"]

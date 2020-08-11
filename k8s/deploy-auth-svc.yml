@@ -47,9 +47,9 @@ spec:
             - containerPort: 5040
             - containerPort: 5050
           env:
-            - name: USER_HOST
+            - name: USER_SVC_HOST
               value: user-svc.jwt-test.svc.cluster.local:5040
-            - name: SCOPE_HOST
+            - name: SCOPE_SVC_HOST
               value: scope-svc.jwt-test.svc.cluster.local:5040
             - name: PUB_KEY_PATH
               value: /app.rsa.pub

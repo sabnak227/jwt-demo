@@ -33,6 +33,14 @@ spec:
               number: 5050
     - match:
         - uri:
+            prefix: "/user"
+      route:
+        - destination:
+            host: user-svc.jwt-test.svc.cluster.local
+            port:
+              number: 5050
+    - match:
+        - uri:
             prefix: "/resource"
       route:
         - destination:
