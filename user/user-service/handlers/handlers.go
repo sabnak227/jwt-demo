@@ -87,7 +87,6 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 		Phone:     in.Phone,
 	}
 
-
 	user, err := repo.CreateUser(u)
 	if err != nil {
 		return &pb.CreateUserResponse{
@@ -98,11 +97,11 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 
 	// create authentication entry
 	res, err := authSvc.CreateAuth(ctx, &auth.CreateAuthRequest{
-		UserId: uint64(user.ID),
-		Password: in.Password,
-		Email: user.Email,
+		UserId:    uint64(user.ID),
+		Password:  in.Password,
+		Email:     user.Email,
 		FirstName: user.FirstName,
-		LastName: user.LastName,
+		LastName:  user.LastName,
 	})
 
 	if res == nil || res.Code != constant.SuccessCode {
@@ -114,6 +113,26 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 	}
 
 	return &pb.CreateUserResponse{
+		Code:    constant.SuccessCode,
+		Message: "success",
+	}, nil
+}
+
+// DeleteUser implements Service.
+func (s userService) DeleteUser(ctx context.Context, in *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
+	if err := repo.Delete(in.ID); err != nil {
+		return &pb.DeleteUserResponse{
+			Code:    constant.FailCode,
+			Message: "Failed to delete user",
+		}, nil
+	}
+
+	// delete authentication entry
+	_, _ := authSvc.CreateAuth(ctx, &auth.CreateAuthRequest{
+		UserId:    uint64(user.ID),
+	})
+
+	return &pb.DeleteUserResponse{
 		Code:    constant.SuccessCode,
 		Message: "success",
 	}, nil

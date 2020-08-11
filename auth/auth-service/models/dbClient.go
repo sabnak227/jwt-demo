@@ -12,6 +12,7 @@ type DBClient interface {
 	Close() error
 	AuthUser(email string, password string) (*Auth, error)
 	CreateAuth(Auth) error
+	DeleteAuth(userID uint64) error
 }
 
 // GormLogger struct

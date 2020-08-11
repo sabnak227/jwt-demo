@@ -35,6 +35,7 @@ import (
 type Endpoints struct {
 	GetUserEndpoint    endpoint.Endpoint
 	CreateUserEndpoint endpoint.Endpoint
+	DeleteUserEndpoint endpoint.Endpoint
 }
 
 // Endpoints
@@ -53,6 +54,14 @@ func (e Endpoints) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*p
 		return nil, err
 	}
 	return response.(*pb.CreateUserResponse), nil
+}
+
+func (e Endpoints) DeleteUser(ctx context.Context, in *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
+	response, err := e.DeleteUserEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*pb.DeleteUserResponse), nil
 }
 
 // Make Endpoints
@@ -79,6 +88,17 @@ func MakeCreateUserEndpoint(s pb.UserServer) endpoint.Endpoint {
 	}
 }
 
+func MakeDeleteUserEndpoint(s pb.UserServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.DeleteUserRequest)
+		v, err := s.DeleteUser(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
 // WrapAllExcept wraps each Endpoint field of struct Endpoints with a
 // go-kit/kit/endpoint.Middleware.
 // Use this for applying a set of middlewares to every endpoint in the service.
@@ -88,6 +108,7 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 	included := map[string]struct{}{
 		"GetUser":    struct{}{},
 		"CreateUser": struct{}{},
+		"DeleteUser": struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -103,6 +124,9 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 		}
 		if inc == "CreateUser" {
 			e.CreateUserEndpoint = middleware(e.CreateUserEndpoint)
+		}
+		if inc == "DeleteUser" {
+			e.DeleteUserEndpoint = middleware(e.DeleteUserEndpoint)
 		}
 	}
 }
@@ -120,6 +144,7 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 	included := map[string]struct{}{
 		"GetUser":    struct{}{},
 		"CreateUser": struct{}{},
+		"DeleteUser": struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -135,6 +160,9 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 		}
 		if inc == "CreateUser" {
 			e.CreateUserEndpoint = middleware("CreateUser", e.CreateUserEndpoint)
+		}
+		if inc == "DeleteUser" {
+			e.DeleteUserEndpoint = middleware("DeleteUser", e.DeleteUserEndpoint)
 		}
 	}
 }

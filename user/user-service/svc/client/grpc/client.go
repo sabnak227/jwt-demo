@@ -62,9 +62,23 @@ func New(conn *grpc.ClientConn, options ...ClientOption) (pb.UserServer, error) 
 		).Endpoint()
 	}
 
+	var deleteuserEndpoint endpoint.Endpoint
+	{
+		deleteuserEndpoint = grpctransport.NewClient(
+			conn,
+			"user.User",
+			"DeleteUser",
+			EncodeGRPCDeleteUserRequest,
+			DecodeGRPCDeleteUserResponse,
+			pb.DeleteUserResponse{},
+			clientOptions...,
+		).Endpoint()
+	}
+
 	return svc.Endpoints{
 		GetUserEndpoint:    getuserEndpoint,
 		CreateUserEndpoint: createuserEndpoint,
+		DeleteUserEndpoint: deleteuserEndpoint,
 	}, nil
 }
 
@@ -84,6 +98,13 @@ func DecodeGRPCCreateUserResponse(_ context.Context, grpcReply interface{}) (int
 	return reply, nil
 }
 
+// DecodeGRPCDeleteUserResponse is a transport/grpc.DecodeResponseFunc that converts a
+// gRPC deleteuser reply to a user-domain deleteuser response. Primarily useful in a client.
+func DecodeGRPCDeleteUserResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
+	reply := grpcReply.(*pb.DeleteUserResponse)
+	return reply, nil
+}
+
 // GRPC Client Encode
 
 // EncodeGRPCGetUserRequest is a transport/grpc.EncodeRequestFunc that converts a
@@ -97,6 +118,13 @@ func EncodeGRPCGetUserRequest(_ context.Context, request interface{}) (interface
 // user-domain createuser request to a gRPC createuser request. Primarily useful in a client.
 func EncodeGRPCCreateUserRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(*pb.CreateUserRequest)
+	return req, nil
+}
+
+// EncodeGRPCDeleteUserRequest is a transport/grpc.EncodeRequestFunc that converts a
+// user-domain deleteuser request to a gRPC deleteuser request. Primarily useful in a client.
+func EncodeGRPCDeleteUserRequest(_ context.Context, request interface{}) (interface{}, error) {
+	req := request.(*pb.DeleteUserRequest)
 	return req, nil
 }
 

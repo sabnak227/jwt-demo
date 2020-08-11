@@ -36,6 +36,7 @@ type Endpoints struct {
 	JWKSEndpoint       endpoint.Endpoint
 	LoginEndpoint      endpoint.Endpoint
 	CreateAuthEndpoint endpoint.Endpoint
+	DeleteAuthEndpoint endpoint.Endpoint
 	RefreshEndpoint    endpoint.Endpoint
 }
 
@@ -63,6 +64,14 @@ func (e Endpoints) CreateAuth(ctx context.Context, in *pb.CreateAuthRequest) (*p
 		return nil, err
 	}
 	return response.(*pb.CreateAuthResponse), nil
+}
+
+func (e Endpoints) DeleteAuth(ctx context.Context, in *pb.DeleteAuthRequest) (*pb.DeleteAuthResponse, error) {
+	response, err := e.DeleteAuthEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*pb.DeleteAuthResponse), nil
 }
 
 func (e Endpoints) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.RefreshResponse, error) {
@@ -108,6 +117,17 @@ func MakeCreateAuthEndpoint(s pb.AuthServer) endpoint.Endpoint {
 	}
 }
 
+func MakeDeleteAuthEndpoint(s pb.AuthServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.DeleteAuthRequest)
+		v, err := s.DeleteAuth(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
 func MakeRefreshEndpoint(s pb.AuthServer) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*pb.RefreshRequest)
@@ -129,6 +149,7 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 		"JWKS":       struct{}{},
 		"Login":      struct{}{},
 		"CreateAuth": struct{}{},
+		"DeleteAuth": struct{}{},
 		"Refresh":    struct{}{},
 	}
 
@@ -148,6 +169,9 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 		}
 		if inc == "CreateAuth" {
 			e.CreateAuthEndpoint = middleware(e.CreateAuthEndpoint)
+		}
+		if inc == "DeleteAuth" {
+			e.DeleteAuthEndpoint = middleware(e.DeleteAuthEndpoint)
 		}
 		if inc == "Refresh" {
 			e.RefreshEndpoint = middleware(e.RefreshEndpoint)
@@ -169,6 +193,7 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 		"JWKS":       struct{}{},
 		"Login":      struct{}{},
 		"CreateAuth": struct{}{},
+		"DeleteAuth": struct{}{},
 		"Refresh":    struct{}{},
 	}
 
@@ -188,6 +213,9 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 		}
 		if inc == "CreateAuth" {
 			e.CreateAuthEndpoint = middleware("CreateAuth", e.CreateAuthEndpoint)
+		}
+		if inc == "DeleteAuth" {
+			e.DeleteAuthEndpoint = middleware("DeleteAuth", e.DeleteAuthEndpoint)
 		}
 		if inc == "Refresh" {
 			e.RefreshEndpoint = middleware("Refresh", e.RefreshEndpoint)

@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-
 	log "github.com/sirupsen/logrus"
 
 	"github.com/jinzhu/gorm"
@@ -66,4 +65,10 @@ func (c *MysqlClient) CheckEmailExists(email string) (*User, error) {
 func (c *MysqlClient) CreateUser(user User) (*User, error) {
 	err := c.conn.Create(&user).Error
 	return &user, err
+}
+
+func (c *MysqlClient) Delete(id uint64) error {
+	user := User{}
+	user.ID = uint(id)
+	return c.conn.Delete(&user).Error
 }

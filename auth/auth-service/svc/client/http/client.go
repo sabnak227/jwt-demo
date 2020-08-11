@@ -74,9 +74,19 @@ func New(instance string, options ...httptransport.ClientOption) (pb.AuthServer,
 	{
 		CreateAuthZeroEndpoint = httptransport.NewClient(
 			"POST",
-			copyURL(u, "/auth/register"),
+			copyURL(u, "/auth"),
 			EncodeHTTPCreateAuthZeroRequest,
 			DecodeHTTPCreateAuthResponse,
+			options...,
+		).Endpoint()
+	}
+	var DeleteAuthZeroEndpoint endpoint.Endpoint
+	{
+		DeleteAuthZeroEndpoint = httptransport.NewClient(
+			"DELETE",
+			copyURL(u, "/auth/"),
+			EncodeHTTPDeleteAuthZeroRequest,
+			DecodeHTTPDeleteAuthResponse,
 			options...,
 		).Endpoint()
 	}
@@ -95,6 +105,7 @@ func New(instance string, options ...httptransport.ClientOption) (pb.AuthServer,
 		JWKSEndpoint:       JWKSZeroEndpoint,
 		LoginEndpoint:      LoginZeroEndpoint,
 		CreateAuthEndpoint: CreateAuthZeroEndpoint,
+		DeleteAuthEndpoint: DeleteAuthZeroEndpoint,
 		RefreshEndpoint:    RefreshZeroEndpoint,
 	}, nil
 }
@@ -196,6 +207,33 @@ func DecodeHTTPCreateAuthResponse(_ context.Context, r *http.Response) (interfac
 	}
 
 	var resp pb.CreateAuthResponse
+	if err = jsonpb.UnmarshalString(string(buf), &resp); err != nil {
+		return nil, errorDecoder(buf)
+	}
+
+	return &resp, nil
+}
+
+// DecodeHTTPDeleteAuthResponse is a transport/http.DecodeResponseFunc that decodes
+// a JSON-encoded DeleteAuthResponse response from the HTTP response body.
+// If the response has a non-200 status code, we will interpret that as an
+// error and attempt to decode the specific error message from the response
+// body. Primarily useful in a client.
+func DecodeHTTPDeleteAuthResponse(_ context.Context, r *http.Response) (interface{}, error) {
+	defer r.Body.Close()
+	buf, err := ioutil.ReadAll(r.Body)
+	if err == io.EOF {
+		return nil, errors.New("response http body empty")
+	}
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot read http body")
+	}
+
+	if r.StatusCode != http.StatusOK {
+		return nil, errors.Wrapf(errorDecoder(buf), "status code: '%d'", r.StatusCode)
+	}
+
+	var resp pb.DeleteAuthResponse
 	if err = jsonpb.UnmarshalString(string(buf), &resp); err != nil {
 		return nil, errorDecoder(buf)
 	}
@@ -377,7 +415,6 @@ func EncodeHTTPCreateAuthZeroRequest(_ context.Context, r *http.Request, request
 	path := strings.Join([]string{
 		"",
 		"auth",
-		"register",
 	}, "/")
 	u, err := url.Parse(path)
 	if err != nil {
@@ -431,7 +468,6 @@ func EncodeHTTPCreateAuthOneRequest(_ context.Context, r *http.Request, request 
 	path := strings.Join([]string{
 		"",
 		"auth",
-		"register",
 	}, "/")
 	u, err := url.Parse(path)
 	if err != nil {
@@ -459,6 +495,97 @@ func EncodeHTTPCreateAuthOneRequest(_ context.Context, r *http.Request, request 
 	// Set the body parameters
 	var buf bytes.Buffer
 	toRet := request.(*pb.CreateAuthRequest)
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(toRet); err != nil {
+		return errors.Wrapf(err, "couldn't encode body as json %v", toRet)
+	}
+	r.Body = ioutil.NopCloser(&buf)
+	return nil
+}
+
+// EncodeHTTPDeleteAuthZeroRequest is a transport/http.EncodeRequestFunc
+// that encodes a deleteauth request into the various portions of
+// the http request (path, query, and body).
+func EncodeHTTPDeleteAuthZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+	strval := ""
+	_ = strval
+	req := request.(*pb.DeleteAuthRequest)
+	_ = req
+
+	r.Header.Set("transport", "HTTPJSON")
+	r.Header.Set("request-url", r.URL.Path)
+
+	// Set the path parameters
+	path := strings.Join([]string{
+		"",
+		"auth",
+		fmt.Sprint(req.USER_ID),
+	}, "/")
+	u, err := url.Parse(path)
+	if err != nil {
+		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
+	}
+	r.URL.RawPath = u.RawPath
+	r.URL.Path = u.Path
+
+	// Set the query parameters
+	values := r.URL.Query()
+	var tmp []byte
+	_ = tmp
+
+	r.URL.RawQuery = values.Encode()
+	// Set the body parameters
+	var buf bytes.Buffer
+	toRet := request.(*pb.DeleteAuthRequest)
+
+	toRet.UserId = req.UserId
+
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(toRet); err != nil {
+		return errors.Wrapf(err, "couldn't encode body as json %v", toRet)
+	}
+	r.Body = ioutil.NopCloser(&buf)
+	return nil
+}
+
+// EncodeHTTPDeleteAuthOneRequest is a transport/http.EncodeRequestFunc
+// that encodes a deleteauth request into the various portions of
+// the http request (path, query, and body).
+func EncodeHTTPDeleteAuthOneRequest(_ context.Context, r *http.Request, request interface{}) error {
+	strval := ""
+	_ = strval
+	req := request.(*pb.DeleteAuthRequest)
+	_ = req
+
+	r.Header.Set("transport", "HTTPJSON")
+	r.Header.Set("request-url", r.URL.Path)
+
+	// Set the path parameters
+	path := strings.Join([]string{
+		"",
+		"auth",
+		fmt.Sprint(req.USER_ID),
+	}, "/")
+	u, err := url.Parse(path)
+	if err != nil {
+		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
+	}
+	r.URL.RawPath = u.RawPath
+	r.URL.Path = u.Path
+
+	// Set the query parameters
+	values := r.URL.Query()
+	var tmp []byte
+	_ = tmp
+
+	values.Add("user_id", fmt.Sprint(req.UserId))
+
+	r.URL.RawQuery = values.Encode()
+	// Set the body parameters
+	var buf bytes.Buffer
+	toRet := request.(*pb.DeleteAuthRequest)
 	encoder := json.NewEncoder(&buf)
 	encoder.SetEscapeHTML(false)
 	if err := encoder.Encode(toRet); err != nil {

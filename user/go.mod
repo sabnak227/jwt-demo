@@ -9,6 +9,7 @@ require (
 	github.com/gorilla/mux v1.7.4
 	github.com/jinzhu/gorm v1.9.15
 	github.com/metaverse/truss v0.1.0
+	github.com/openzipkin/zipkin-go v0.2.2
 	github.com/pkg/errors v0.9.1
 	github.com/sabnak227/jwt-demo/auth v0.0.0-20200811033049-db36cadf0fc6
 	github.com/sabnak227/jwt-demo/util v0.0.0-20200811033049-db36cadf0fc6

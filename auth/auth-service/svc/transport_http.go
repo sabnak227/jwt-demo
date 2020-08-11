@@ -75,15 +75,28 @@ func MakeHTTPHandler(endpoints Endpoints, options ...httptransport.ServerOption)
 		serverOptions...,
 	))
 
-	m.Methods("POST").Path("/auth/register").Handler(httptransport.NewServer(
+	m.Methods("POST").Path("/auth").Handler(httptransport.NewServer(
 		endpoints.CreateAuthEndpoint,
 		DecodeHTTPCreateAuthZeroRequest,
 		EncodeHTTPGenericResponse,
 		serverOptions...,
 	))
-	m.Methods("HEAD").Path("/auth/register").Handler(httptransport.NewServer(
+	m.Methods("HEAD").Path("/auth").Handler(httptransport.NewServer(
 		endpoints.CreateAuthEndpoint,
 		DecodeHTTPCreateAuthOneRequest,
+		EncodeHTTPGenericResponse,
+		serverOptions...,
+	))
+
+	m.Methods("DELETE").Path("/auth/{USER_ID}").Handler(httptransport.NewServer(
+		endpoints.DeleteAuthEndpoint,
+		DecodeHTTPDeleteAuthZeroRequest,
+		EncodeHTTPGenericResponse,
+		serverOptions...,
+	))
+	m.Methods("HEAD").Path("/auth/{USER_ID}").Handler(httptransport.NewServer(
+		endpoints.DeleteAuthEndpoint,
+		DecodeHTTPDeleteAuthOneRequest,
 		EncodeHTTPGenericResponse,
 		serverOptions...,
 	))
@@ -373,6 +386,87 @@ func DecodeHTTPCreateAuthOneRequest(_ context.Context, r *http.Request) (interfa
 		LastNameCreateAuthStr := LastNameCreateAuthStrArr[0]
 		LastNameCreateAuth := LastNameCreateAuthStr
 		req.LastName = LastNameCreateAuth
+	}
+
+	return &req, err
+}
+
+// DecodeHTTPDeleteAuthZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded deleteauth request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPDeleteAuthZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	defer r.Body.Close()
+	var req pb.DeleteAuthRequest
+	buf, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		// AllowUnknownFields stops the unmarshaler from failing if the JSON contains unknown fields.
+		unmarshaller := jsonpb.Unmarshaler{
+			AllowUnknownFields: true,
+		}
+		if err = unmarshaller.Unmarshal(bytes.NewBuffer(buf), &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, httpError{errors.Wrapf(err, "request body '%s': cannot parse non-json request body", buf),
+				http.StatusBadRequest,
+				nil,
+			}
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := r.URL.Query()
+	_ = queryParams
+
+	return &req, err
+}
+
+// DecodeHTTPDeleteAuthOneRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded deleteauth request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPDeleteAuthOneRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	defer r.Body.Close()
+	var req pb.DeleteAuthRequest
+	buf, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		// AllowUnknownFields stops the unmarshaler from failing if the JSON contains unknown fields.
+		unmarshaller := jsonpb.Unmarshaler{
+			AllowUnknownFields: true,
+		}
+		if err = unmarshaller.Unmarshal(bytes.NewBuffer(buf), &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, httpError{errors.Wrapf(err, "request body '%s': cannot parse non-json request body", buf),
+				http.StatusBadRequest,
+				nil,
+			}
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := r.URL.Query()
+	_ = queryParams
+
+	if UserIdDeleteAuthStrArr, ok := queryParams["user_id"]; ok {
+		UserIdDeleteAuthStr := UserIdDeleteAuthStrArr[0]
+		UserIdDeleteAuth, err := strconv.ParseUint(UserIdDeleteAuthStr, 10, 64)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("Error while extracting UserIdDeleteAuth from query, queryParams: %v", queryParams))
+		}
+		req.UserId = UserIdDeleteAuth
 	}
 
 	return &req, err

@@ -71,3 +71,9 @@ func (c *MysqlClient) CreateAuth(auth Auth) error {
 	auth.Password = string(hash)
 	return c.conn.Create(&auth).Error
 }
+
+func (c *MysqlClient) DeleteAuth(userID uint64) error {
+	auth := Auth{}
+	auth.UserID = userID
+	return c.conn.Delete(&auth).Error
+}

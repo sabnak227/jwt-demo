@@ -41,6 +41,12 @@ func MakeGRPCServer(endpoints Endpoints, options ...grpctransport.ServerOption) 
 			EncodeGRPCCreateUserResponse,
 			serverOptions...,
 		),
+		deleteuser: grpctransport.NewServer(
+			endpoints.DeleteUserEndpoint,
+			DecodeGRPCDeleteUserRequest,
+			EncodeGRPCDeleteUserResponse,
+			serverOptions...,
+		),
 	}
 }
 
@@ -48,6 +54,7 @@ func MakeGRPCServer(endpoints Endpoints, options ...grpctransport.ServerOption) 
 type grpcServer struct {
 	getuser    grpctransport.Handler
 	createuser grpctransport.Handler
+	deleteuser grpctransport.Handler
 }
 
 // Methods for grpcServer to implement UserServer interface
@@ -68,6 +75,14 @@ func (s *grpcServer) CreateUser(ctx context.Context, req *pb.CreateUserRequest) 
 	return rep.(*pb.CreateUserResponse), nil
 }
 
+func (s *grpcServer) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
+	_, rep, err := s.deleteuser.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.DeleteUserResponse), nil
+}
+
 // Server Decode
 
 // DecodeGRPCGetUserRequest is a transport/grpc.DecodeRequestFunc that converts a
@@ -84,6 +99,13 @@ func DecodeGRPCCreateUserRequest(_ context.Context, grpcReq interface{}) (interf
 	return req, nil
 }
 
+// DecodeGRPCDeleteUserRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC deleteuser request to a user-domain deleteuser request. Primarily useful in a server.
+func DecodeGRPCDeleteUserRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.DeleteUserRequest)
+	return req, nil
+}
+
 // Server Encode
 
 // EncodeGRPCGetUserResponse is a transport/grpc.EncodeResponseFunc that converts a
@@ -97,6 +119,13 @@ func EncodeGRPCGetUserResponse(_ context.Context, response interface{}) (interfa
 // user-domain createuser response to a gRPC createuser reply. Primarily useful in a server.
 func EncodeGRPCCreateUserResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(*pb.CreateUserResponse)
+	return resp, nil
+}
+
+// EncodeGRPCDeleteUserResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain deleteuser response to a gRPC deleteuser reply. Primarily useful in a server.
+func EncodeGRPCDeleteUserResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.DeleteUserResponse)
 	return resp, nil
 }
 

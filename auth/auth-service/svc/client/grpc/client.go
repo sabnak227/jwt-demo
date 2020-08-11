@@ -75,6 +75,19 @@ func New(conn *grpc.ClientConn, options ...ClientOption) (pb.AuthServer, error) 
 		).Endpoint()
 	}
 
+	var deleteauthEndpoint endpoint.Endpoint
+	{
+		deleteauthEndpoint = grpctransport.NewClient(
+			conn,
+			"auth.Auth",
+			"DeleteAuth",
+			EncodeGRPCDeleteAuthRequest,
+			DecodeGRPCDeleteAuthResponse,
+			pb.DeleteAuthResponse{},
+			clientOptions...,
+		).Endpoint()
+	}
+
 	var refreshEndpoint endpoint.Endpoint
 	{
 		refreshEndpoint = grpctransport.NewClient(
@@ -92,6 +105,7 @@ func New(conn *grpc.ClientConn, options ...ClientOption) (pb.AuthServer, error) 
 		JWKSEndpoint:       jwksEndpoint,
 		LoginEndpoint:      loginEndpoint,
 		CreateAuthEndpoint: createauthEndpoint,
+		DeleteAuthEndpoint: deleteauthEndpoint,
 		RefreshEndpoint:    refreshEndpoint,
 	}, nil
 }
@@ -116,6 +130,13 @@ func DecodeGRPCLoginResponse(_ context.Context, grpcReply interface{}) (interfac
 // gRPC createauth reply to a user-domain createauth response. Primarily useful in a client.
 func DecodeGRPCCreateAuthResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
 	reply := grpcReply.(*pb.CreateAuthResponse)
+	return reply, nil
+}
+
+// DecodeGRPCDeleteAuthResponse is a transport/grpc.DecodeResponseFunc that converts a
+// gRPC deleteauth reply to a user-domain deleteauth response. Primarily useful in a client.
+func DecodeGRPCDeleteAuthResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
+	reply := grpcReply.(*pb.DeleteAuthResponse)
 	return reply, nil
 }
 
@@ -146,6 +167,13 @@ func EncodeGRPCLoginRequest(_ context.Context, request interface{}) (interface{}
 // user-domain createauth request to a gRPC createauth request. Primarily useful in a client.
 func EncodeGRPCCreateAuthRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(*pb.CreateAuthRequest)
+	return req, nil
+}
+
+// EncodeGRPCDeleteAuthRequest is a transport/grpc.EncodeRequestFunc that converts a
+// user-domain deleteauth request to a gRPC deleteauth request. Primarily useful in a client.
+func EncodeGRPCDeleteAuthRequest(_ context.Context, request interface{}) (interface{}, error) {
+	req := request.(*pb.DeleteAuthRequest)
 	return req, nil
 }
 

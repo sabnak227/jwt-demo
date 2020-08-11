@@ -29,10 +29,24 @@ service Auth {
     option (google.api.http) = {
       custom {
         kind: "HEAD"
-        path: "/auth/register"
+        path: "/auth"
       }
       additional_bindings {
-        post: "/auth/register"
+        post: "/auth"
+        // All other fields (In) are located in the body of the http/json request
+        body: "*"
+      }
+    };
+  }
+
+  rpc DeleteAuth (DeleteAuthRequest) returns (DeleteAuthResponse) {
+    option (google.api.http) = {
+      custom {
+        kind: "HEAD"
+        path: "/auth/{USER_ID}"
+      }
+      additional_bindings {
+        delete: "/auth/{USER_ID}"
         // All other fields (In) are located in the body of the http/json request
         body: "*"
       }
@@ -90,6 +104,15 @@ message CreateAuthResponse {
   map<string, int32> errors = 3;
   string access_token = 4;
   string refresh_token = 5;
+}
+
+message DeleteAuthRequest {
+  uint64 user_id = 1;
+}
+
+message DeleteAuthResponse {
+  int32 code = 1;
+  string message = 2;
 }
 
 message RefreshRequest {

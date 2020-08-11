@@ -65,11 +65,13 @@ func NewEndpoints() svc.Endpoints {
 	var (
 		getuserEndpoint    = svc.MakeGetUserEndpoint(service)
 		createuserEndpoint = svc.MakeCreateUserEndpoint(service)
+		deleteuserEndpoint = svc.MakeDeleteUserEndpoint(service)
 	)
 
 	endpoints := svc.Endpoints{
 		GetUserEndpoint:    getuserEndpoint,
 		CreateUserEndpoint: createuserEndpoint,
+		DeleteUserEndpoint: deleteuserEndpoint,
 	}
 
 	// Wrap selected Endpoints with middlewares. See handlers/middlewares.go

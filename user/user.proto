@@ -23,6 +23,19 @@ service User {
       }
     };
   }
+  rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse) {
+    option (google.api.http) = {
+      custom {
+        kind: "HEAD"
+        path: "/user/{ID}"
+      }
+      additional_bindings {
+        delete: "/user/{ID}"
+        // All other fields (In) are located in the body of the http/json request
+        body: "*"
+      }
+    };
+  }
 }
 
 message UserObj {
@@ -65,4 +78,12 @@ message CreateUserResponse {
   int32 code = 1;
   string message = 2;
   map<string, int32> errors = 3;
+}
+
+message DeleteUserRequest {
+  uint64 ID = 1;
+}
+message DeleteUserResponse {
+  int32 code = 1;
+  string message = 2;
 }
