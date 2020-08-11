@@ -8,5 +8,6 @@ require (
 	github.com/gorilla/mux v1.7.4
 	github.com/metaverse/truss v0.1.0
 	github.com/pkg/errors v0.9.1
+	github.com/sabnak227/jwt-demo/util v0.0.0-20200810212511-960ee5dbe0e7
 	google.golang.org/grpc v1.31.0
 )

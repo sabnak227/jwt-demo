@@ -7,7 +7,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"github.com/sabnak227/jwt-demo/auth/auth-service/config"
-	"github.com/sabnak227/jwt-demo/auth/auth-service/models"
 	"github.com/sabnak227/jwt-demo/scope"
 	"github.com/sabnak227/jwt-demo/user"
 	log "github.com/sirupsen/logrus"
@@ -21,7 +20,7 @@ var (
 	signKey   *rsa.PrivateKey
 	jwks		  Jwks
 	accessExp = time.Minute * 15
-	refreshExp = time.Hour * 24 * 7
+	refreshExp = time.Hour * 24
 )
 
 const (
@@ -92,14 +91,12 @@ type Jwks struct {
 type Token struct {
 	Conf config.Config
 	Logger *log.Logger
-	Session models.SessionClient
 }
 
-func NewToken(conf config.Config, logger *log.Logger, session models.SessionClient) *Token {
+func NewToken(conf config.Config, logger *log.Logger) *Token {
 	return &Token{
 		Conf: conf,
 		Logger: logger,
-		Session: session,
 	}
 }
 
@@ -112,7 +109,6 @@ func (t *Token)GenToken(scopes []string, user *user.GetUserResponse, scope *scop
 	td.RefreshUuid = uuid.New().String()
 	var err error
 	// create access token
-	// TODO: use NewWithClaims method here
 	at := jwt.New(jwt.GetSigningMethod("RS256"))
 	atClaims := make(jwt.MapClaims)
 	atClaims["iss"] = "admin@example.com"
@@ -143,26 +139,24 @@ func (t *Token)GenToken(scopes []string, user *user.GetUserResponse, scope *scop
 }
 
 
-func (t *Token)RefreshToken(refreshToken string) (*Details, error) {
-	_, err := t.verifyToken(refreshToken)
-	if err != nil {
-		return nil, err
-	}
-
-	td := &Details{
-	}
-	return td, err
-}
-
-func (t *Token)verifyToken(refreshToken string) (interface{}, error) {
+func (t *Token)VerifyToken(refreshToken string) (string, error) {
 	token, err := jwt.Parse(refreshToken, func(token *jwt.Token) (interface{}, error) {
 		return verifyKey, nil
 	})
-	if err != nil {
-		return nil, err
+	if token == nil {
+		return "", fmt.Errorf("cannot verify token, %s", err)
 	}
 
-	return token, nil
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return "", fmt.Errorf("token is not valid")
+	}
+
+	refreshUuid, ok := claims["refresh_uuid"].(string)
+	if !ok {
+		return "", fmt.Errorf("malformated refresh token, refreshUuid is missing")
+	}
+	return refreshUuid, nil
 }
 
 func (t *Token)GetJWk() Jwks{

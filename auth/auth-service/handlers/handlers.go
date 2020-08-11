@@ -38,10 +38,12 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 		req: *in,
 	}
 
+	// request body validation
 	if err := i.Validate(); err != nil {
 		return nil, err
 	}
 
+	// verify user credentials in database
 	a := repo.AuthUser(in.Email, in.Password)
 	if a == nil {
 		return &pb.LoginResponse{
@@ -50,36 +52,32 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 		}, nil
 	}
 
-	u, err := userSvc.GetUser(ctx, &user.GetUserRequest{
-		ID: uint64(a.ID),
-	})
-
-	if u == nil || u.Code != constant.SuccessCode {
-		return &pb.LoginResponse{
-			Code:    constant.UserNotFound,
-			Message: "Failed retrieving user info",
-		}, err
-	}
-
-	sc, err := scopeSvc.UserScope(ctx, &scope.UserScopeRequest{})
-	if sc == nil {
-		return &pb.LoginResponse{
-			Code:    constant.ScopeNotFound,
-			Message: "Failed retrieving user scope",
-		}, err
-	}
-	scopes := sc.Scopes
-
-	tokenDetail, err := tokenAdapter.GenToken(scopes, u, sc)
-
+	// get user info from other services
+	u, sc, err := getUserInfo(ctx, uint64(a.ID))
 	if err != nil {
 		return &pb.LoginResponse{
-			Code:    constant.FailedGeneratingToken,
-			Message: "Failed generating auth token",
-		}, err
+			Code:    constant.FailCode,
+			Message: err.Error(),
+		}, nil
 	}
 
-	logger.Infof("Failed to sign token %v", tokenDetail)
+	// generate jwt token
+	tokenDetail, err := tokenAdapter.GenToken(sc.Scopes, u, sc)
+	if err != nil {
+		return &pb.LoginResponse{
+			Code:    constant.FailCode,
+			Message: "Failed generating auth token",
+		}, nil
+	}
+
+	// set session info
+	if err := session.SetToken(tokenDetail, u, sc); err != nil {
+		return &pb.LoginResponse{
+			Code:    constant.FailCode,
+			Message: fmt.Sprintf("Failed to create session, err: %s", err),
+		}, nil
+	}
+
 
 	return &pb.LoginResponse{
 		Code:         constant.SuccessCode,
@@ -92,12 +90,53 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 // Refresh implements Service.
 func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.RefreshResponse, error) {
 	var resp pb.RefreshResponse
-	tokenDetail, err := tokenAdapter.RefreshToken(in.RefreshToken)
-
+	// verify if token is valid or not
+	refreshUUID, err := tokenAdapter.VerifyToken(in.RefreshToken)
 	if err != nil {
 		return &pb.RefreshResponse{
 			Code: constant.FailCode,
 			Message: fmt.Sprintf("Failed refresh token, %s", err),
+		}, nil
+	}
+
+	// get userid from session using uuid returned previously
+	userID , err := session.GetUserIdByRefreshUUID(refreshUUID)
+	if err != nil {
+		logger.Infof("err %s", err)
+		return &pb.RefreshResponse{
+			Code: constant.FailCode,
+			Message: "Session expiried, please login again",
+		}, nil
+	}
+
+	// get userinfo detail from cache
+	u, sc, infoErr := session.GetUserInfo(userID)
+	if infoErr != nil {
+		logger.Errorf("Failed to get user info, recreating user info..., error: %s", err)
+		// get user info from other services
+		u, sc, infoErr = getUserInfo(ctx, userID)
+		if infoErr != nil {
+			return &pb.RefreshResponse{
+				Code: constant.FailCode,
+				Message: infoErr.Error(),
+			}, nil
+		}
+	}
+
+	// generate new jwt token
+	tokenDetail, err := tokenAdapter.GenToken(sc.Scopes, u, sc)
+	if err != nil {
+		return &pb.RefreshResponse{
+			Code:    constant.FailCode,
+			Message: "Failed generating auth token",
+		}, nil
+	}
+
+	// set session info
+	if err := session.SetToken(tokenDetail, u, sc); err != nil {
+		return &pb.RefreshResponse{
+			Code:    constant.FailCode,
+			Message: "Failed to create session",
 		}, nil
 	}
 
@@ -108,4 +147,21 @@ func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.Re
 		RefreshToken: tokenDetail.RefreshToken,
 	}
 	return &resp, nil
+}
+
+
+func getUserInfo(ctx context.Context, userID uint64) (*user.GetUserResponse, *scope.UserScopeResponse, error) {
+	u, _ := userSvc.GetUser(ctx, &user.GetUserRequest{
+		ID: userID,
+	})
+
+	if u == nil || u.Code != constant.SuccessCode {
+		return nil, nil, fmt.Errorf("failed retrieving user info")
+	}
+
+	sc, _ := scopeSvc.UserScope(ctx, &scope.UserScopeRequest{})
+	if sc == nil || sc.Code != constant.SuccessCode {
+		return nil, nil, fmt.Errorf("failed retrieving user scope")
+	}
+	return u, sc, nil
 }

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"github.com/sabnak227/jwt-demo/util/constant"
 
 	pb "github.com/sabnak227/jwt-demo/scope"
 )
@@ -17,7 +18,7 @@ type scopeService struct{}
 func (s scopeService) UserScope(ctx context.Context, in *pb.UserScopeRequest) (*pb.UserScopeResponse, error) {
 	var resp pb.UserScopeResponse
 	resp = pb.UserScopeResponse{
-		Code: 1,
+		Code: constant.SuccessCode,
 		Message: "success",
 		Scopes: []string{"whatever", "hola"},
 	}

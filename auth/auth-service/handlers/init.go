@@ -86,7 +86,7 @@ func setupRedis() {
 }
 
 func setUpTokenAdapter() {
-	tokenAdapter = token.NewToken(conf, logger, session)
+	tokenAdapter = token.NewToken(conf, logger)
 }
 
 func getConfigFromEnv(key string, defaultVal interface{}) interface{} {
