@@ -12,6 +12,13 @@ deploy:
 	kubectl apply -f gateway.yml
 	kubectl apply -f policy.yml
 
+.PHONY: delete
+delete:
+	kubectl delete -n jwt-test -f deploy-auth-svc.yml
+	kubectl delete -n jwt-test -f deploy-resource-svc.yml
+	kubectl delete -n jwt-test -f deploy-scope-svc.yml
+	kubectl delete -n jwt-test -f deploy-user-svc.yml
+
 .PHONY: kiali
 kiali:
 	istioctl dashboard kiali
