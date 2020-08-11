@@ -16,7 +16,7 @@ require (
 	github.com/lestrrat-go/jwx v1.0.3 // indirect
 	github.com/metaverse/truss v0.1.0
 	github.com/pkg/errors v0.9.1
-	github.com/sabnak227/jwt-demo/scope v0.0.0-20200811001231-a7a6709a1174
+	github.com/sabnak227/jwt-demo/scope v0.0.0-20200811004440-54a0fb6ac2fc
 	github.com/sabnak227/jwt-demo/user v0.0.0-20200811004440-54a0fb6ac2fc
 	github.com/sabnak227/jwt-demo/util v0.0.0-20200811004440-54a0fb6ac2fc
 	github.com/sirupsen/logrus v1.4.2
