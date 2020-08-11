@@ -4,6 +4,7 @@ all: deploy
 .PHONY: deploy
 deploy:
 	kubectl apply -n jwt-test -f deploy-mysql.yml
+	kubectl apply -n jwt-test -f deploy-redis.yml
 	kubectl apply -n jwt-test -f deploy-auth-svc.yml
 	kubectl apply -n jwt-test -f deploy-resource-svc.yml
 	kubectl apply -n jwt-test -f deploy-scope-svc.yml
