@@ -34,7 +34,7 @@ func init() {
 		DBUser: getConfigFromEnv("DB_USER", "users").(string),
 		DBPassword: getConfigFromEnv("DB_PASSWORD", "users").(string),
 		AutoMigrate: getConfigFromEnv("AUTO_MIGRATE", true).(bool),
-		RedisHost: getConfigFromEnv("REDIS_HOST", "localhost:6379").(string),
+		RedisHost: getConfigFromEnv("REDIS_HOST", "redis:6379").(string),
 		RedisPassword: getConfigFromEnv("REDIS_PASSWORD", "").(string),
 		RedisDB: getConfigFromEnv("REDIS_DB", 0).(int),
 		UserSvcHost: getConfigFromEnv("USER_SVC_HOST", "user:5040").(string),
