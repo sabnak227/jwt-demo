@@ -41,6 +41,12 @@ func MakeGRPCServer(endpoints Endpoints, options ...grpctransport.ServerOption) 
 			EncodeGRPCLoginResponse,
 			serverOptions...,
 		),
+		createauth: grpctransport.NewServer(
+			endpoints.CreateAuthEndpoint,
+			DecodeGRPCCreateAuthRequest,
+			EncodeGRPCCreateAuthResponse,
+			serverOptions...,
+		),
 		refresh: grpctransport.NewServer(
 			endpoints.RefreshEndpoint,
 			DecodeGRPCRefreshRequest,
@@ -52,9 +58,10 @@ func MakeGRPCServer(endpoints Endpoints, options ...grpctransport.ServerOption) 
 
 // grpcServer implements the AuthServer interface
 type grpcServer struct {
-	jwks    grpctransport.Handler
-	login   grpctransport.Handler
-	refresh grpctransport.Handler
+	jwks       grpctransport.Handler
+	login      grpctransport.Handler
+	createauth grpctransport.Handler
+	refresh    grpctransport.Handler
 }
 
 // Methods for grpcServer to implement AuthServer interface
@@ -73,6 +80,14 @@ func (s *grpcServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.Login
 		return nil, err
 	}
 	return rep.(*pb.LoginResponse), nil
+}
+
+func (s *grpcServer) CreateAuth(ctx context.Context, req *pb.CreateAuthRequest) (*pb.CreateAuthResponse, error) {
+	_, rep, err := s.createauth.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.CreateAuthResponse), nil
 }
 
 func (s *grpcServer) Refresh(ctx context.Context, req *pb.RefreshRequest) (*pb.RefreshResponse, error) {
@@ -99,6 +114,13 @@ func DecodeGRPCLoginRequest(_ context.Context, grpcReq interface{}) (interface{}
 	return req, nil
 }
 
+// DecodeGRPCCreateAuthRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC createauth request to a user-domain createauth request. Primarily useful in a server.
+func DecodeGRPCCreateAuthRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.CreateAuthRequest)
+	return req, nil
+}
+
 // DecodeGRPCRefreshRequest is a transport/grpc.DecodeRequestFunc that converts a
 // gRPC refresh request to a user-domain refresh request. Primarily useful in a server.
 func DecodeGRPCRefreshRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
@@ -119,6 +141,13 @@ func EncodeGRPCJWKSResponse(_ context.Context, response interface{}) (interface{
 // user-domain login response to a gRPC login reply. Primarily useful in a server.
 func EncodeGRPCLoginResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(*pb.LoginResponse)
+	return resp, nil
+}
+
+// EncodeGRPCCreateAuthResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain createauth response to a gRPC createauth reply. Primarily useful in a server.
+func EncodeGRPCCreateAuthResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.CreateAuthResponse)
 	return resp, nil
 }
 

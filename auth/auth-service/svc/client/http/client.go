@@ -70,6 +70,16 @@ func New(instance string, options ...httptransport.ClientOption) (pb.AuthServer,
 			options...,
 		).Endpoint()
 	}
+	var CreateAuthZeroEndpoint endpoint.Endpoint
+	{
+		CreateAuthZeroEndpoint = httptransport.NewClient(
+			"POST",
+			copyURL(u, "/auth/register"),
+			EncodeHTTPCreateAuthZeroRequest,
+			DecodeHTTPCreateAuthResponse,
+			options...,
+		).Endpoint()
+	}
 	var RefreshZeroEndpoint endpoint.Endpoint
 	{
 		RefreshZeroEndpoint = httptransport.NewClient(
@@ -82,9 +92,10 @@ func New(instance string, options ...httptransport.ClientOption) (pb.AuthServer,
 	}
 
 	return svc.Endpoints{
-		JWKSEndpoint:    JWKSZeroEndpoint,
-		LoginEndpoint:   LoginZeroEndpoint,
-		RefreshEndpoint: RefreshZeroEndpoint,
+		JWKSEndpoint:       JWKSZeroEndpoint,
+		LoginEndpoint:      LoginZeroEndpoint,
+		CreateAuthEndpoint: CreateAuthZeroEndpoint,
+		RefreshEndpoint:    RefreshZeroEndpoint,
 	}, nil
 }
 
@@ -158,6 +169,33 @@ func DecodeHTTPLoginResponse(_ context.Context, r *http.Response) (interface{}, 
 	}
 
 	var resp pb.LoginResponse
+	if err = jsonpb.UnmarshalString(string(buf), &resp); err != nil {
+		return nil, errorDecoder(buf)
+	}
+
+	return &resp, nil
+}
+
+// DecodeHTTPCreateAuthResponse is a transport/http.DecodeResponseFunc that decodes
+// a JSON-encoded CreateAuthResponse response from the HTTP response body.
+// If the response has a non-200 status code, we will interpret that as an
+// error and attempt to decode the specific error message from the response
+// body. Primarily useful in a client.
+func DecodeHTTPCreateAuthResponse(_ context.Context, r *http.Response) (interface{}, error) {
+	defer r.Body.Close()
+	buf, err := ioutil.ReadAll(r.Body)
+	if err == io.EOF {
+		return nil, errors.New("response http body empty")
+	}
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot read http body")
+	}
+
+	if r.StatusCode != http.StatusOK {
+		return nil, errors.Wrapf(errorDecoder(buf), "status code: '%d'", r.StatusCode)
+	}
+
+	var resp pb.CreateAuthResponse
 	if err = jsonpb.UnmarshalString(string(buf), &resp); err != nil {
 		return nil, errorDecoder(buf)
 	}
@@ -314,6 +352,113 @@ func EncodeHTTPLoginOneRequest(_ context.Context, r *http.Request, request inter
 	// Set the body parameters
 	var buf bytes.Buffer
 	toRet := request.(*pb.LoginRequest)
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(toRet); err != nil {
+		return errors.Wrapf(err, "couldn't encode body as json %v", toRet)
+	}
+	r.Body = ioutil.NopCloser(&buf)
+	return nil
+}
+
+// EncodeHTTPCreateAuthZeroRequest is a transport/http.EncodeRequestFunc
+// that encodes a createauth request into the various portions of
+// the http request (path, query, and body).
+func EncodeHTTPCreateAuthZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+	strval := ""
+	_ = strval
+	req := request.(*pb.CreateAuthRequest)
+	_ = req
+
+	r.Header.Set("transport", "HTTPJSON")
+	r.Header.Set("request-url", r.URL.Path)
+
+	// Set the path parameters
+	path := strings.Join([]string{
+		"",
+		"auth",
+		"register",
+	}, "/")
+	u, err := url.Parse(path)
+	if err != nil {
+		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
+	}
+	r.URL.RawPath = u.RawPath
+	r.URL.Path = u.Path
+
+	// Set the query parameters
+	values := r.URL.Query()
+	var tmp []byte
+	_ = tmp
+
+	r.URL.RawQuery = values.Encode()
+	// Set the body parameters
+	var buf bytes.Buffer
+	toRet := request.(*pb.CreateAuthRequest)
+
+	toRet.UserId = req.UserId
+
+	toRet.Password = req.Password
+
+	toRet.Email = req.Email
+
+	toRet.FirstName = req.FirstName
+
+	toRet.LastName = req.LastName
+
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(toRet); err != nil {
+		return errors.Wrapf(err, "couldn't encode body as json %v", toRet)
+	}
+	r.Body = ioutil.NopCloser(&buf)
+	return nil
+}
+
+// EncodeHTTPCreateAuthOneRequest is a transport/http.EncodeRequestFunc
+// that encodes a createauth request into the various portions of
+// the http request (path, query, and body).
+func EncodeHTTPCreateAuthOneRequest(_ context.Context, r *http.Request, request interface{}) error {
+	strval := ""
+	_ = strval
+	req := request.(*pb.CreateAuthRequest)
+	_ = req
+
+	r.Header.Set("transport", "HTTPJSON")
+	r.Header.Set("request-url", r.URL.Path)
+
+	// Set the path parameters
+	path := strings.Join([]string{
+		"",
+		"auth",
+		"register",
+	}, "/")
+	u, err := url.Parse(path)
+	if err != nil {
+		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
+	}
+	r.URL.RawPath = u.RawPath
+	r.URL.Path = u.Path
+
+	// Set the query parameters
+	values := r.URL.Query()
+	var tmp []byte
+	_ = tmp
+
+	values.Add("user_id", fmt.Sprint(req.UserId))
+
+	values.Add("password", fmt.Sprint(req.Password))
+
+	values.Add("email", fmt.Sprint(req.Email))
+
+	values.Add("first_name", fmt.Sprint(req.FirstName))
+
+	values.Add("last_name", fmt.Sprint(req.LastName))
+
+	r.URL.RawQuery = values.Encode()
+	// Set the body parameters
+	var buf bytes.Buffer
+	toRet := request.(*pb.CreateAuthRequest)
 	encoder := json.NewEncoder(&buf)
 	encoder.SetEscapeHTML(false)
 	if err := encoder.Encode(toRet); err != nil {

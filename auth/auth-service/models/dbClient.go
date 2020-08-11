@@ -11,6 +11,7 @@ type DBClient interface {
 	Migrate()
 	Close() error
 	AuthUser(email string, password string) (*Auth, error)
+	CreateAuth(Auth) error
 }
 
 // GormLogger struct

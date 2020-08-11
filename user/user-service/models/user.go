@@ -11,7 +11,6 @@ type User struct {
 	FirstName string `json:"first_name" gorm:"type:varchar(50)"`
 	LastName  string `json:"last_name" gorm:"type:varchar(50)"`
 	Email     string `json:"email" gorm:"type:varchar(100);unique_index"`
-	Password  string `json:"password" gorm:"type:varchar(255)"`
 	Address1  string `json:"address1" gorm:"type:varchar(255);default:null"`
 	Address2  string `json:"address2" gorm:"type:varchar(255);default:null"`
 	City      string `json:"city" gorm:"type:varchar(30);default:null"`

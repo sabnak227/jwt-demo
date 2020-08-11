@@ -33,9 +33,10 @@ import (
 // single type that implements the Service interface. For example, you might
 // construct individual endpoints using transport/http.NewClient, combine them into an Endpoints, and return it to the caller as a Service.
 type Endpoints struct {
-	JWKSEndpoint    endpoint.Endpoint
-	LoginEndpoint   endpoint.Endpoint
-	RefreshEndpoint endpoint.Endpoint
+	JWKSEndpoint       endpoint.Endpoint
+	LoginEndpoint      endpoint.Endpoint
+	CreateAuthEndpoint endpoint.Endpoint
+	RefreshEndpoint    endpoint.Endpoint
 }
 
 // Endpoints
@@ -54,6 +55,14 @@ func (e Endpoints) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginRes
 		return nil, err
 	}
 	return response.(*pb.LoginResponse), nil
+}
+
+func (e Endpoints) CreateAuth(ctx context.Context, in *pb.CreateAuthRequest) (*pb.CreateAuthResponse, error) {
+	response, err := e.CreateAuthEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*pb.CreateAuthResponse), nil
 }
 
 func (e Endpoints) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.RefreshResponse, error) {
@@ -88,6 +97,17 @@ func MakeLoginEndpoint(s pb.AuthServer) endpoint.Endpoint {
 	}
 }
 
+func MakeCreateAuthEndpoint(s pb.AuthServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.CreateAuthRequest)
+		v, err := s.CreateAuth(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
+
 func MakeRefreshEndpoint(s pb.AuthServer) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(*pb.RefreshRequest)
@@ -106,9 +126,10 @@ func MakeRefreshEndpoint(s pb.AuthServer) endpoint.Endpoint {
 // WrapAllExcept(middleware, "Status", "Ping")
 func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...string) {
 	included := map[string]struct{}{
-		"JWKS":    struct{}{},
-		"Login":   struct{}{},
-		"Refresh": struct{}{},
+		"JWKS":       struct{}{},
+		"Login":      struct{}{},
+		"CreateAuth": struct{}{},
+		"Refresh":    struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -124,6 +145,9 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 		}
 		if inc == "Login" {
 			e.LoginEndpoint = middleware(e.LoginEndpoint)
+		}
+		if inc == "CreateAuth" {
+			e.CreateAuthEndpoint = middleware(e.CreateAuthEndpoint)
 		}
 		if inc == "Refresh" {
 			e.RefreshEndpoint = middleware(e.RefreshEndpoint)
@@ -142,9 +166,10 @@ type LabeledMiddleware func(string, endpoint.Endpoint) endpoint.Endpoint
 // functionality.
 func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoint) endpoint.Endpoint, excluded ...string) {
 	included := map[string]struct{}{
-		"JWKS":    struct{}{},
-		"Login":   struct{}{},
-		"Refresh": struct{}{},
+		"JWKS":       struct{}{},
+		"Login":      struct{}{},
+		"CreateAuth": struct{}{},
+		"Refresh":    struct{}{},
 	}
 
 	for _, ex := range excluded {
@@ -160,6 +185,9 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 		}
 		if inc == "Login" {
 			e.LoginEndpoint = middleware("Login", e.LoginEndpoint)
+		}
+		if inc == "CreateAuth" {
+			e.CreateAuthEndpoint = middleware("CreateAuth", e.CreateAuthEndpoint)
 		}
 		if inc == "Refresh" {
 			e.RefreshEndpoint = middleware("Refresh", e.RefreshEndpoint)

@@ -62,6 +62,19 @@ func New(conn *grpc.ClientConn, options ...ClientOption) (pb.AuthServer, error) 
 		).Endpoint()
 	}
 
+	var createauthEndpoint endpoint.Endpoint
+	{
+		createauthEndpoint = grpctransport.NewClient(
+			conn,
+			"auth.Auth",
+			"CreateAuth",
+			EncodeGRPCCreateAuthRequest,
+			DecodeGRPCCreateAuthResponse,
+			pb.CreateAuthResponse{},
+			clientOptions...,
+		).Endpoint()
+	}
+
 	var refreshEndpoint endpoint.Endpoint
 	{
 		refreshEndpoint = grpctransport.NewClient(
@@ -76,9 +89,10 @@ func New(conn *grpc.ClientConn, options ...ClientOption) (pb.AuthServer, error) 
 	}
 
 	return svc.Endpoints{
-		JWKSEndpoint:    jwksEndpoint,
-		LoginEndpoint:   loginEndpoint,
-		RefreshEndpoint: refreshEndpoint,
+		JWKSEndpoint:       jwksEndpoint,
+		LoginEndpoint:      loginEndpoint,
+		CreateAuthEndpoint: createauthEndpoint,
+		RefreshEndpoint:    refreshEndpoint,
 	}, nil
 }
 
@@ -95,6 +109,13 @@ func DecodeGRPCJWKSResponse(_ context.Context, grpcReply interface{}) (interface
 // gRPC login reply to a user-domain login response. Primarily useful in a client.
 func DecodeGRPCLoginResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
 	reply := grpcReply.(*pb.LoginResponse)
+	return reply, nil
+}
+
+// DecodeGRPCCreateAuthResponse is a transport/grpc.DecodeResponseFunc that converts a
+// gRPC createauth reply to a user-domain createauth response. Primarily useful in a client.
+func DecodeGRPCCreateAuthResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
+	reply := grpcReply.(*pb.CreateAuthResponse)
 	return reply, nil
 }
 
@@ -118,6 +139,13 @@ func EncodeGRPCJWKSRequest(_ context.Context, request interface{}) (interface{},
 // user-domain login request to a gRPC login request. Primarily useful in a client.
 func EncodeGRPCLoginRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(*pb.LoginRequest)
+	return req, nil
+}
+
+// EncodeGRPCCreateAuthRequest is a transport/grpc.EncodeRequestFunc that converts a
+// user-domain createauth request to a gRPC createauth request. Primarily useful in a client.
+func EncodeGRPCCreateAuthRequest(_ context.Context, request interface{}) (interface{}, error) {
+	req := request.(*pb.CreateAuthRequest)
 	return req, nil
 }
 

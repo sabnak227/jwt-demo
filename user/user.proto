@@ -64,6 +64,5 @@ message CreateUserRequest {
 message CreateUserResponse {
   int32 code = 1;
   string message = 2;
-  UserObj user = 3;
-  map<string, int32> errors = 4;
+  map<string, int32> errors = 3;
 }

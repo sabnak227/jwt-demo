@@ -25,6 +25,20 @@ service Auth {
     };
   }
 
+  rpc CreateAuth (CreateAuthRequest) returns (CreateAuthResponse) {
+    option (google.api.http) = {
+      custom {
+        kind: "HEAD"
+        path: "/auth/register"
+      }
+      additional_bindings {
+        post: "/auth/register"
+        // All other fields (In) are located in the body of the http/json request
+        body: "*"
+      }
+    };
+  }
+
   rpc Refresh (RefreshRequest) returns (RefreshResponse) {
     option (google.api.http) = {
       custom {
@@ -55,6 +69,22 @@ message LoginRequest {
   string password = 2;
 }
 message LoginResponse {
+  int32 code = 1;
+  string message = 2;
+  map<string, int32> errors = 3;
+  string access_token = 4;
+  string refresh_token = 5;
+}
+
+message CreateAuthRequest {
+  uint64 user_id = 1;
+  string password = 2;
+  string email = 3;
+  string first_name = 4;
+  string last_name = 5;
+}
+
+message CreateAuthResponse {
   int32 code = 1;
   string message = 2;
   map<string, int32> errors = 3;

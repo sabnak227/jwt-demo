@@ -9,4 +9,5 @@ type Config struct {
 	DBUser     string
 	DBPassword string
 	AutoMigrate bool
+	AuthSvcHost string
 }

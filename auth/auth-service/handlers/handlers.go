@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	pb "github.com/sabnak227/jwt-demo/auth"
+	"github.com/sabnak227/jwt-demo/auth/auth-service/models"
 	"github.com/sabnak227/jwt-demo/scope"
 	"github.com/sabnak227/jwt-demo/user"
 	"github.com/sabnak227/jwt-demo/util/constant"
@@ -58,7 +59,7 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 	}
 
 	// get user info from other services
-	u, sc, err := getUserInfo(ctx, uint64(a.ID))
+	u, sc, err := getUserInfo(ctx, a.UserID)
 	if err != nil {
 		return &pb.LoginResponse{
 			Code:    constant.FailCode,
@@ -91,9 +92,49 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 	}, nil
 }
 
+// CreateAuth implements Service.
+func (s authService) CreateAuth(ctx context.Context, in *pb.CreateAuthRequest) (*pb.CreateAuthResponse, error) {
+	i := createAuthRequest{
+		req: *in,
+	}
+	// request body validation
+	if err := i.Validate(); err != nil {
+		errors, _ := helper.BuildErrorResponse(err)
+		return &pb.CreateAuthResponse{
+			Code:    constant.ValidationError,
+			Message: "Validation error",
+			Errors:  errors,
+		}, nil
+	}
+
+	// store in database
+	err := repo.CreateAuth(models.Auth{
+		UserID:    in.UserId,
+		FirstName: in.FirstName,
+		LastName:  in.LastName,
+		Email:     in.Email,
+		Password:  in.Password,
+	})
+	if err != nil {
+		return &pb.CreateAuthResponse{
+			Code:    constant.WrongPasswordCode,
+			Message: "Failed to create the authentication entry",
+		}, nil
+	}
+
+	// todo: not generating the jwt yet, cos there will be multiple round trips between user, scope and auth svc.
+	// let the user login manually for now
+
+	return &pb.CreateAuthResponse{
+		Code:    constant.SuccessCode,
+		Message: "success",
+		// AccessToken:
+		// RefreshToken:
+	}, nil
+}
+
 // Refresh implements Service.
 func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.RefreshResponse, error) {
-	var resp pb.RefreshResponse
 	i := refreshRequest{
 		req: *in,
 	}
@@ -157,13 +198,12 @@ func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.Re
 		}, nil
 	}
 
-	resp = pb.RefreshResponse{
+	return &pb.RefreshResponse{
 		Code:         constant.SuccessCode,
 		Message:      "New access token granted",
 		AccessToken:  tokenDetail.AccessToken,
 		RefreshToken: tokenDetail.RefreshToken,
-	}
-	return &resp, nil
+	}, nil
 }
 
 func getUserInfo(ctx context.Context, userID uint64) (*user.GetUserResponse, *scope.UserScopeResponse, error) {

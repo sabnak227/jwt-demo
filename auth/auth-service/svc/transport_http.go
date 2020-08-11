@@ -75,6 +75,19 @@ func MakeHTTPHandler(endpoints Endpoints, options ...httptransport.ServerOption)
 		serverOptions...,
 	))
 
+	m.Methods("POST").Path("/auth/register").Handler(httptransport.NewServer(
+		endpoints.CreateAuthEndpoint,
+		DecodeHTTPCreateAuthZeroRequest,
+		EncodeHTTPGenericResponse,
+		serverOptions...,
+	))
+	m.Methods("HEAD").Path("/auth/register").Handler(httptransport.NewServer(
+		endpoints.CreateAuthEndpoint,
+		DecodeHTTPCreateAuthOneRequest,
+		EncodeHTTPGenericResponse,
+		serverOptions...,
+	))
+
 	m.Methods("POST").Path("/auth/refresh").Handler(httptransport.NewServer(
 		endpoints.RefreshEndpoint,
 		DecodeHTTPRefreshZeroRequest,
@@ -255,6 +268,111 @@ func DecodeHTTPLoginOneRequest(_ context.Context, r *http.Request) (interface{},
 		PasswordLoginStr := PasswordLoginStrArr[0]
 		PasswordLogin := PasswordLoginStr
 		req.Password = PasswordLogin
+	}
+
+	return &req, err
+}
+
+// DecodeHTTPCreateAuthZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded createauth request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPCreateAuthZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	defer r.Body.Close()
+	var req pb.CreateAuthRequest
+	buf, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		// AllowUnknownFields stops the unmarshaler from failing if the JSON contains unknown fields.
+		unmarshaller := jsonpb.Unmarshaler{
+			AllowUnknownFields: true,
+		}
+		if err = unmarshaller.Unmarshal(bytes.NewBuffer(buf), &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, httpError{errors.Wrapf(err, "request body '%s': cannot parse non-json request body", buf),
+				http.StatusBadRequest,
+				nil,
+			}
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := r.URL.Query()
+	_ = queryParams
+
+	return &req, err
+}
+
+// DecodeHTTPCreateAuthOneRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded createauth request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPCreateAuthOneRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	defer r.Body.Close()
+	var req pb.CreateAuthRequest
+	buf, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		// AllowUnknownFields stops the unmarshaler from failing if the JSON contains unknown fields.
+		unmarshaller := jsonpb.Unmarshaler{
+			AllowUnknownFields: true,
+		}
+		if err = unmarshaller.Unmarshal(bytes.NewBuffer(buf), &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, httpError{errors.Wrapf(err, "request body '%s': cannot parse non-json request body", buf),
+				http.StatusBadRequest,
+				nil,
+			}
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := r.URL.Query()
+	_ = queryParams
+
+	if UserIdCreateAuthStrArr, ok := queryParams["user_id"]; ok {
+		UserIdCreateAuthStr := UserIdCreateAuthStrArr[0]
+		UserIdCreateAuth, err := strconv.ParseUint(UserIdCreateAuthStr, 10, 64)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("Error while extracting UserIdCreateAuth from query, queryParams: %v", queryParams))
+		}
+		req.UserId = UserIdCreateAuth
+	}
+
+	if PasswordCreateAuthStrArr, ok := queryParams["password"]; ok {
+		PasswordCreateAuthStr := PasswordCreateAuthStrArr[0]
+		PasswordCreateAuth := PasswordCreateAuthStr
+		req.Password = PasswordCreateAuth
+	}
+
+	if EmailCreateAuthStrArr, ok := queryParams["email"]; ok {
+		EmailCreateAuthStr := EmailCreateAuthStrArr[0]
+		EmailCreateAuth := EmailCreateAuthStr
+		req.Email = EmailCreateAuth
+	}
+
+	if FirstNameCreateAuthStrArr, ok := queryParams["first_name"]; ok {
+		FirstNameCreateAuthStr := FirstNameCreateAuthStrArr[0]
+		FirstNameCreateAuth := FirstNameCreateAuthStr
+		req.FirstName = FirstNameCreateAuth
+	}
+
+	if LastNameCreateAuthStrArr, ok := queryParams["last_name"]; ok {
+		LastNameCreateAuthStr := LastNameCreateAuthStrArr[0]
+		LastNameCreateAuth := LastNameCreateAuthStr
+		req.LastName = LastNameCreateAuth
 	}
 
 	return &req, err

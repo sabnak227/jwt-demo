@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"github.com/sabnak227/jwt-demo/user/user-service/models"
 	"github.com/sabnak227/jwt-demo/util/constant"
 	"github.com/sabnak227/jwt-demo/util/helper"
 
@@ -48,7 +49,6 @@ func (s userService) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.Ge
 
 // CreateUser implements Service.
 func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	var resp pb.CreateUserResponse
 	i := createUserRequest{
 		req: *in,
 	}
@@ -58,12 +58,11 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 		return &pb.CreateUserResponse{
 			Code:    constant.ValidationError,
 			Message: "Validation error",
-			User:    nil,
 			Errors:  errors,
 		}, nil
 	}
 
-	// verify user credentials in database
+	// verify if user already exists
 	a, err := repo.CheckEmailExists(in.Email)
 	if err != nil && a != nil {
 		return &pb.CreateUserResponse{
@@ -73,10 +72,28 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 	}
 	logger.Infof("creating user: %s", in.Email)
 
-	resp = pb.CreateUserResponse{
-		// Code:
-		// Message:
-		// User:
+	// create user
+	user := models.User{
+		FirstName: in.FirstName,
+		LastName:  in.LastName,
+		Email:     in.Email,
+		Address1:  in.Address1,
+		Address2:  in.Address2,
+		City:      in.City,
+		State:     in.State,
+		Country:   in.Country,
+		Phone:     in.Phone,
 	}
-	return &resp, nil
+
+	if err := repo.CreateUser(user); err != nil {
+		return &pb.CreateUserResponse{
+			Code:    constant.FailCode,
+			Message: "Failed to create user",
+		}, nil
+	}
+
+	return &pb.CreateUserResponse{
+		Code:    constant.SuccessCode,
+		Message: "success",
+	}, nil
 }
