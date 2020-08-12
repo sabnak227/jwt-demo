@@ -295,6 +295,7 @@ github.com/ryanuber/columnize v0.0.0-20160712163229-9b3edd62028f/go.mod h1:sm1tb
 github.com/sabnak227/jwt-demo v0.0.0-20200811004440-54a0fb6ac2fc h1:fVQdi+iVkvCfITPGahcVQtUlykopEZwxg+erTbaflYs=
 github.com/sabnak227/jwt-demo v0.0.0-20200811211257-66214fff2c84 h1:qwADXL9o5ID2BSluotv1Tf7mCKH+97n10aq7gH9bsaU=
 github.com/sabnak227/jwt-demo/auth v0.0.0-20200811210553-05b4aca65646/go.mod h1:iVpHCMsJtfJOQoHJj9QB8PFltSdENvt7iUuiVpHIEkM=
+github.com/sabnak227/jwt-demo/auth v0.0.0-20200812015047-89a8262e5c24/go.mod h1:WnEVmID+rtC1rW+9WB6RYYPSeqd8MrKT+sVzwgP6oi8=
 github.com/sabnak227/jwt-demo/scope v0.0.0-20200810164103-11c7042f5bb0 h1:0tyauJTQ7/WpseiXckMan6JxSiVxnzBc/eQO77WgxD0=
 github.com/sabnak227/jwt-demo/scope v0.0.0-20200810164103-11c7042f5bb0/go.mod h1:bO2AX6xR0UZY1BWmBd4C0mgMKLE19TNtflLsjVPBf0A=
 github.com/sabnak227/jwt-demo/scope v0.0.0-20200811001231-a7a6709a1174 h1:/Y2zISpVi66osHRgIr4dGRZgetzi71laWdwwbDXC2L4=
@@ -303,6 +304,8 @@ github.com/sabnak227/jwt-demo/scope v0.0.0-20200811004440-54a0fb6ac2fc h1:6EJaD5
 github.com/sabnak227/jwt-demo/scope v0.0.0-20200811004440-54a0fb6ac2fc/go.mod h1:og/5qNd/O4uCp2ghVMIeAs1iJ8tnJ0hxbiee+3pZcP8=
 github.com/sabnak227/jwt-demo/scope v0.0.0-20200811024124-82564ff0c6c3 h1:OUep+xnGTeO+tU8YRzlTOg2jJAklhi4YAvEZBem9STQ=
 github.com/sabnak227/jwt-demo/scope v0.0.0-20200811024124-82564ff0c6c3/go.mod h1:og/5qNd/O4uCp2ghVMIeAs1iJ8tnJ0hxbiee+3pZcP8=
+github.com/sabnak227/jwt-demo/scope v0.0.0-20200812015047-89a8262e5c24 h1:jOrON5Ju/vwQa5VTGGjgpOfVOlZGOeVCX5+WF8syWyU=
+github.com/sabnak227/jwt-demo/scope v0.0.0-20200812015047-89a8262e5c24/go.mod h1:og/5qNd/O4uCp2ghVMIeAs1iJ8tnJ0hxbiee+3pZcP8=
 github.com/sabnak227/jwt-demo/user v0.0.0-20200810164103-11c7042f5bb0 h1:XkfBvM8u4jTHRTyAFAX5Wh8bZlbei+YDaZpQuV2SPRo=
 github.com/sabnak227/jwt-demo/user v0.0.0-20200810164103-11c7042f5bb0/go.mod h1:n2W1qrOlDa8VNj5Zjt/lECjzrCvYby4RYSMao6g3CV8=
 github.com/sabnak227/jwt-demo/user v0.0.0-20200811001231-a7a6709a1174 h1:NFQSPjTiqwI4AdhMLD7wcC9Sf4IAQQDp/obgtTjF7as=
@@ -311,6 +314,8 @@ github.com/sabnak227/jwt-demo/user v0.0.0-20200811004440-54a0fb6ac2fc h1:cPwbeKZ
 github.com/sabnak227/jwt-demo/user v0.0.0-20200811004440-54a0fb6ac2fc/go.mod h1:NAZfun1i/a9WA41ykZfM1bi4AxyWVPJjd+ugOfRa5QU=
 github.com/sabnak227/jwt-demo/user v0.0.0-20200811024124-82564ff0c6c3 h1:Tuuf8vP6ErouKqjyaPsGxufPppnpQWM4gIvAOhfi30M=
 github.com/sabnak227/jwt-demo/user v0.0.0-20200811024124-82564ff0c6c3/go.mod h1:C/1nbmR9PzZyBGetT/3uTQJ3WhAr6ywIcj2E8xEW8vc=
+github.com/sabnak227/jwt-demo/user v0.0.0-20200812015047-89a8262e5c24 h1:zhJwiMZGOu6TQqlr9wcCO2H2YGJqXvxY95sD9mw+vUA=
+github.com/sabnak227/jwt-demo/user v0.0.0-20200812015047-89a8262e5c24/go.mod h1:t6MWOFVZU+7Q1joRptkhcrx3nDaGffBVif5rUi4Gln0=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200808193236-c280dbae12ae h1:E216MouegaiihKXHg491GZL06tDY4BDm5QoSvY0Ju1Q=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200808193236-c280dbae12ae/go.mod h1:4bVIIZwCkmiRDU2O/oqQWRhiT5S6gqMoW+ub3AtboY4=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200810164103-11c7042f5bb0 h1:AdGkoyt2DSw7yl2/U3xo/dqBrORBLFdKxzlOzAMGmiY=
@@ -325,6 +330,8 @@ github.com/sabnak227/jwt-demo/util v0.0.0-20200811024124-82564ff0c6c3/go.mod h1:
 github.com/sabnak227/jwt-demo/util v0.0.0-20200811211257-66214fff2c84 h1:BXrfE6N+bqxn5X0RYlQtTpAJceftX05qPbeMkLF9QbM=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200812003240-8d4135408dce h1:RCisOKQoFdRbZPrKjnd1Il0DA/Tlf9n0khzd7XBcgfA=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200812003240-8d4135408dce/go.mod h1:+cwke8t9DowISl20cUr1l1UV8Sr1kdLMCXeyXYVTBcQ=
+github.com/sabnak227/jwt-demo/util v0.0.0-20200812015047-89a8262e5c24 h1:tAm4/f6Q8n6nBMbxiyGFWtRKvNcrQ+0y3svFePOgG88=
+github.com/sabnak227/jwt-demo/util v0.0.0-20200812015047-89a8262e5c24/go.mod h1:+cwke8t9DowISl20cUr1l1UV8Sr1kdLMCXeyXYVTBcQ=
 github.com/samuel/go-zookeeper v0.0.0-20190923202752-2cc03de413da/go.mod h1:gi+0XIa01GRL2eRQVjQkKGqKF3SF9vZR/HnPullcV2E=
 github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg65j358z/aeFdxmN0P9QXhEzd20vsDc=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=

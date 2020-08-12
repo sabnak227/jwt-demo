@@ -30,7 +30,7 @@ func init() {
 		DBPassword: getConfigFromEnv("DB_PASSWORD", "users").(string),
 		AutoMigrate: getConfigFromEnv("AUTO_MIGRATE", true).(bool),
 		AuthSvcHost: getConfigFromEnv("AUTH_SVC_HOST", "auth:5040").(string),
-		AmqpDns: getConfigFromEnv("AMQP_DSN", "amqp://guest:guest@amqp:5672/").(string),
+		AmqpDsn: getConfigFromEnv("AMQP_DSN", "amqp://guest:guest@amqp:5672/").(string),
 	}
 
 	setupDb()
@@ -62,7 +62,10 @@ func setupDb() {
 func setupAMQP() {
 	logger.Info("AMQP Initializing...")
 	amqpClient = &amqpAdapter.AmqpClient{}
-	amqpClient.ConnectToBroker(conf.AmqpDns)
+	err := amqpClient.ConnectToBroker(conf.AmqpDsn)
+	if err != nil {
+		panic("AMQP initialization failed" + err.Error())
+	}
 	logger.Info("AMQP initialized")
 }
 

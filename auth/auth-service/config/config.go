@@ -14,5 +14,5 @@ type Config struct {
 	RedisDB   int
 	UserSvcHost string
 	ScopeSvcHost string
-	AmqpDns     string
+	AmqpDsn     string
 }

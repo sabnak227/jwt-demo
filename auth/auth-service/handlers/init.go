@@ -41,7 +41,7 @@ func init() {
 		RedisDB: getConfigFromEnv("REDIS_DB", 0).(int),
 		UserSvcHost: getConfigFromEnv("USER_SVC_HOST", "user:5040").(string),
 		ScopeSvcHost: getConfigFromEnv("SCOPE_SVC_HOST", "scope:5040").(string),
-		AmqpDns: getConfigFromEnv("AMQP_DSN", "amqp://guest:guest@amqp:5672/").(string),
+		AmqpDsn: getConfigFromEnv("AMQP_DSN", "amqp://guest:guest@amqp:5672/").(string),
 	}
 	setupDb()
 	setupRedis()
@@ -96,7 +96,10 @@ func setUpTokenAdapter() {
 func setupAMQP() {
 	logger.Info("AMQP Initializing...")
 	amqpClient = &amqpAdapter.AmqpClient{}
-	amqpClient.ConnectToBroker(conf.AmqpDns)
+	err := amqpClient.ConnectToBroker(conf.AmqpDsn)
+	if err != nil {
+		panic("AMQP initialization failed" + err.Error())
+	}
 	subscribers()
 	logger.Info("AMQP initialized")
 }

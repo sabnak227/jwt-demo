@@ -115,7 +115,7 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 
 	// create authentication entry via amqp
 	msg := models.CreateUserMsg{
-		UserId:    uint64(u.ID),
+		UserId:    uint64(user.ID),
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
 		Email:     u.Email,

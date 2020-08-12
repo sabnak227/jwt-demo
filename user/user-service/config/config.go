@@ -10,5 +10,5 @@ type Config struct {
 	DBPassword string
 	AutoMigrate bool
 	AuthSvcHost string
-	AmqpDns    string
+	AmqpDsn    string
 }
