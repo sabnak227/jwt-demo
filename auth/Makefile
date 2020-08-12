@@ -3,7 +3,10 @@ all: run
 
 .PHONY: run
 run:
-	export DB_HOST=localhost REDIS_HOST=localhost:6379 USER_SVC_HOST=:5053 SCOPE_SVC_HOST=:5063 DEBUG_ADDR=:5071 HTTP_ADDR=:5072 GRPC_ADDR=:5073 && go run auth-service/cmd/auth/main.go
+	export USER_SVC_HOST=:5053 SCOPE_SVC_HOST=:5063 DEBUG_ADDR=:5071 HTTP_ADDR=:5072 GRPC_ADDR=:5073 && \
+	export DB_HOST=localhost REDIS_HOST=localhost:6379 && \
+	export AMQP_DSN=amqp://guest:guest@localhost:5672/ && \
+	go run auth-service/cmd/auth/main.go
 
 .PHONY: build
 build:

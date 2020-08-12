@@ -2,6 +2,10 @@ module github.com/sabnak227/jwt-demo/auth
 
 go 1.13
 
+replace github.com/sabnak227/jwt-demo/util => ../util
+
+replace github.com/sabnak227/jwt-demo/user => ../user
+
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-kit/kit v0.10.0
@@ -11,18 +15,13 @@ require (
 	github.com/google/uuid v1.0.0
 	github.com/gorilla/mux v1.7.4
 	github.com/jinzhu/gorm v1.9.15
-	github.com/lestrrat-go/jwx v1.0.3 // indirect
 	github.com/metaverse/truss v0.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/sabnak227/jwt-demo/scope v0.0.0-20200811024124-82564ff0c6c3
 	github.com/sabnak227/jwt-demo/user v0.0.0-20200811024124-82564ff0c6c3
-	github.com/sabnak227/jwt-demo/util v0.0.0-20200811024124-82564ff0c6c3
-	github.com/sirupsen/logrus v1.4.2
+	github.com/sabnak227/jwt-demo/util v0.0.0-20200812003240-8d4135408dce
+	github.com/sirupsen/logrus v1.6.0
+	github.com/streadway/amqp v1.0.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
-	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
-	golang.org/x/sys v0.0.0-20200810151505-1b9f1253b3ed // indirect
-	golang.org/x/text v0.3.3 // indirect
-	google.golang.org/genproto v0.0.0-20200808173500-a06252235341 // indirect
 	google.golang.org/grpc v1.31.0
-	google.golang.org/protobuf v1.25.0 // indirect
 )

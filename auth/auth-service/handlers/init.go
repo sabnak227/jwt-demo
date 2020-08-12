@@ -8,6 +8,7 @@ import (
 	scopeClient "github.com/sabnak227/jwt-demo/scope/scope-service/svc/client/grpc"
 	"github.com/sabnak227/jwt-demo/user"
 	userClient "github.com/sabnak227/jwt-demo/user/user-service/svc/client/grpc"
+	amqpAdapter "github.com/sabnak227/jwt-demo/util/amqp"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"os"
@@ -21,6 +22,7 @@ var (
 	repo models.DBClient
 	session models.SessionClient
 	tokenAdapter *token.Token
+	amqpClient *amqpAdapter.AmqpClient
 )
 
 func init() {
@@ -39,11 +41,13 @@ func init() {
 		RedisDB: getConfigFromEnv("REDIS_DB", 0).(int),
 		UserSvcHost: getConfigFromEnv("USER_SVC_HOST", "user:5040").(string),
 		ScopeSvcHost: getConfigFromEnv("SCOPE_SVC_HOST", "scope:5040").(string),
+		AmqpDns: getConfigFromEnv("AMQP_DSN", "amqp://guest:guest@amqp:5672/").(string),
 	}
 	setupDb()
 	setupRedis()
 	setupGrpcClient()
 	setUpTokenAdapter()
+	setupAMQP()
 }
 
 func setupGrpcClient() {
@@ -87,6 +91,14 @@ func setupRedis() {
 
 func setUpTokenAdapter() {
 	tokenAdapter = token.NewToken(conf, logger)
+}
+
+func setupAMQP() {
+	logger.Info("AMQP Initializing...")
+	amqpClient = &amqpAdapter.AmqpClient{}
+	amqpClient.ConnectToBroker(conf.AmqpDns)
+	subscribers()
+	logger.Info("AMQP initialized")
 }
 
 func getConfigFromEnv(key string, defaultVal interface{}) interface{} {

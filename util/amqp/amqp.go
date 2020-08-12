@@ -10,7 +10,7 @@ import (
 
 // IAmqpClient Defines our interface for connecting, producing and consuming messages.
 type IAmqpClient interface {
-	ConnectToBroker(connectionString string)
+	ConnectToBroker(connectionString string) error
 	Publish(msg []byte, exchangeName string, exchangeType string) error
 	PublishOnQueue(msg []byte, queueName string) error
 	PublishOnQueueWithContext(ctx context.Context, msg []byte, queueName string) error
@@ -25,16 +25,15 @@ type AmqpClient struct {
 }
 
 // ConnectToBroker connects to an AMQP broker using the supplied connectionString.
-func (m *AmqpClient) ConnectToBroker(connectionString string) {
+func (m *AmqpClient) ConnectToBroker(connectionString string) error {
 	if connectionString == "" {
-		panic("Cannot initialize connection to broker, connectionString not set. Have you initialized?")
+		return fmt.Errorf("empty dns")
 	}
 
 	var err error
 	m.conn, err = amqp.Dial(fmt.Sprintf("%s/", connectionString))
-	if err != nil {
-		panic("Failed to connect to AMQP compatible broker at: " + connectionString)
-	}
+
+	return err
 }
 
 // Publish publishes a message to the named exchange.
@@ -245,5 +244,5 @@ func failOnError(err error, msg string) {
 }
 
 func log(msg string) {
-	logrus.Infof("msg:%s\n", msg)
+	logrus.Infof("AMQP Message: %s\n", msg)
 }

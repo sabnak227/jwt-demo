@@ -5,6 +5,7 @@ import (
 	authClient "github.com/sabnak227/jwt-demo/auth/auth-service/svc/client/grpc"
 	"github.com/sabnak227/jwt-demo/user/user-service/config"
 	"github.com/sabnak227/jwt-demo/user/user-service/models"
+	amqpAdapter "github.com/sabnak227/jwt-demo/util/amqp"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"os"
@@ -15,9 +16,8 @@ var (
 	conf config.Config
 	logger *log.Logger
 	repo models.DBClient
+	amqpClient *amqpAdapter.AmqpClient
 )
-
-
 
 func init() {
 	logger = log.New()
@@ -30,10 +30,12 @@ func init() {
 		DBPassword: getConfigFromEnv("DB_PASSWORD", "users").(string),
 		AutoMigrate: getConfigFromEnv("AUTO_MIGRATE", true).(bool),
 		AuthSvcHost: getConfigFromEnv("AUTH_SVC_HOST", "auth:5040").(string),
+		AmqpDns: getConfigFromEnv("AMQP_DSN", "amqp://guest:guest@amqp:5672/").(string),
 	}
 
 	setupDb()
 	setupGrpcClient()
+	setupAMQP()
 }
 
 func setupGrpcClient() {
@@ -55,6 +57,13 @@ func setupDb() {
 	logger.Info("Database initialized")
 	repo.Migrate()
 	logger.Info("Database migrated")
+}
+
+func setupAMQP() {
+	logger.Info("AMQP Initializing...")
+	amqpClient = &amqpAdapter.AmqpClient{}
+	amqpClient.ConnectToBroker(conf.AmqpDns)
+	logger.Info("AMQP initialized")
 }
 
 func getConfigFromEnv(key string, defaultVal interface{}) interface{} {

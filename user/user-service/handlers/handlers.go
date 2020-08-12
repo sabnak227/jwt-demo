@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/sabnak227/jwt-demo/auth"
 	"github.com/sabnak227/jwt-demo/user/user-service/models"
 	"github.com/sabnak227/jwt-demo/util/constant"
@@ -96,20 +97,38 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 	}
 
 	// create authentication entry
-	res, err := authSvc.CreateAuth(ctx, &auth.CreateAuthRequest{
-		UserId:    uint64(user.ID),
-		Password:  in.Password,
-		Email:     user.Email,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-	})
+	//res, err := authSvc.CreateAuth(ctx, &auth.CreateAuthRequest{
+	//	UserId:    uint64(user.ID),
+	//	Password:  in.Password,
+	//	Email:     user.Email,
+	//	FirstName: user.FirstName,
+	//	LastName:  user.LastName,
+	//})
+	//if res == nil || res.Code != constant.SuccessCode {
+	//	// failed, rollback
+	//	return &pb.CreateUserResponse{
+	//		Code:    constant.FailCode,
+	//		Message: "Failed to create authentication entry",
+	//	}, nil
+	//}
 
-	if res == nil || res.Code != constant.SuccessCode {
-		// failed, rollback
-		return &pb.CreateUserResponse{
-			Code:    constant.FailCode,
-			Message: "Failed to create authentication entry",
-		}, nil
+
+	// create authentication entry via amqp
+	msg := models.CreateUserMsg{
+		UserId:    uint64(u.ID),
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+		Email:     u.Email,
+		Password:  in.Password,
+	}
+
+	b, _ := json.Marshal(msg)
+
+	if err := amqpClient.PublishOnQueue(b, "hello"); err != nil {
+		logger.Error("Failed to publish to queue")
+		if err := repo.Delete(uint64(user.ID)); err != nil {
+			logger.Error("Failed to delete faulty user: %d", user.ID)
+		}
 	}
 
 	return &pb.CreateUserResponse{

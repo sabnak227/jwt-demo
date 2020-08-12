@@ -9,6 +9,7 @@ services:
       - DEBUG_ADDR=:5051
       - HTTP_ADDR=:5052
       - GRPC_ADDR=:5053
+      - AMQP_DSN=amqp://guest:guest@localhost:5672/
     ports:
       - 5051:5051
       - 5052:5052
@@ -27,6 +28,7 @@ services:
       - DEBUG_ADDR=:5071
       - HTTP_ADDR=:5072
       - GRPC_ADDR=:5073
+      - AMQP_DSN=amqp://guest:guest@localhost:5672/
     ports:
       - 5071:5071
       - 5072:5072
@@ -71,5 +73,14 @@ services:
     image: redis:alpine
     ports:
       - 6379:6379
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - 5672:5672
+      - 15672:15672
 volumes:
   go-modules:
