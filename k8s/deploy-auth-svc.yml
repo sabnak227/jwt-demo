@@ -57,3 +57,5 @@ spec:
               value: /app.rsa
             - name: JWKS_PATH
               value: /jwks.json
+            - name: AMQP_DSN
+              value: amqp://guest:guest@rabbitmq:5672/

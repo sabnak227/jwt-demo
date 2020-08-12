@@ -16,4 +16,12 @@ build:
 
 .PHONY: mysql
 mysql:
-	kubectl port-forward $(shell kubectl get pods -n jwt-test -l app=mysql -o jsonpath="{.items[0].metadata.name}") -n jwt-test 33060:3306
+	kubectl port-forward $(shell kubectl get pods -n jwt-test -l app=mysql -o jsonpath="{.items[0].metadata.name}") -n jwt-test 1338:3306
+
+.PHONY: redis
+redis:
+	kubectl port-forward $(shell kubectl get pods -n jwt-test -l app=redis -o jsonpath="{.items[0].metadata.name}") -n jwt-test 1339:6379
+
+.PHONY: mq
+mq:
+	kubectl port-forward $(shell kubectl get pods -n jwt-test -l app=rabbitmq -o jsonpath="{.items[0].metadata.name}") -n jwt-test 1340:15672

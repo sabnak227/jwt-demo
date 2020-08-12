@@ -1,7 +1,6 @@
 package amqp
 
 import (
-	"context"
 	"fmt"
 	"github.com/sirupsen/logrus"
 
@@ -11,11 +10,8 @@ import (
 // IAmqpClient Defines our interface for connecting, producing and consuming messages.
 type IAmqpClient interface {
 	ConnectToBroker(connectionString string) error
-	Publish(msg []byte, exchangeName string, exchangeType string) error
-	PublishOnQueue(msg []byte, queueName string) error
-	PublishOnQueueWithContext(ctx context.Context, msg []byte, queueName string) error
-	Subscribe(exchangeName string, exchangeType string, consumerName string, handlerFunc func(amqp.Delivery)) error
-	SubscribeToQueue(queueName string, consumerName string, handlerFunc func(amqp.Delivery)) error
+	Publish(options PublisherOptions, body []byte, routingKey string) error
+	Subscribe(options SubscriberOptions, handlerFunc func(amqp.Delivery)) error
 	Close()
 }
 
@@ -36,190 +32,213 @@ func (m *AmqpClient) ConnectToBroker(connectionString string) error {
 	return err
 }
 
+
+type PublisherOptions struct {
+	ExchangeName string
+	ExchangeType string
+	BindingKey   string
+	GenerateQueue bool
+	QueueName string
+	QueueOptions *QueueOptions
+	QueueBindOptions *QueueBindOptions
+	ExchangeOptions *ExchangeOptions
+	PublishOptions *PublishOptions
+}
+
+//TopicPublisher initiates a opic type exchange
+func TopicPublisher(exchangeName string, bindingKey string) *PublisherOptions {
+	var o PublisherOptions
+	o.ExchangeName = exchangeName
+	o.ExchangeType = amqp.ExchangeTopic
+	o.BindingKey = bindingKey
+	o.ExchangeOptions = &ExchangeOptions{
+		Durable:    true,
+		AutoDelete: false,
+		Internal:   false,
+		NoWait:     false,
+		Args:       nil,
+	}
+	o.PublishOptions = &PublishOptions{
+		Mandatory: false,
+		Immediate: false,
+	}
+	o.GenerateQueue = false
+	o.QueueName = ""
+	o.QueueOptions = &QueueOptions{
+		Durable: true,
+		AutoDelete: false,
+		Exclusive: false,
+		NoWait: false,
+		Args: nil,
+	}
+	o.QueueBindOptions = &QueueBindOptions{
+		NoWait: false,
+		Args: nil,
+	}
+
+	return &o
+}
+
+
+type SubscriberOptions struct {
+	ExchangeName string
+	ExchangeType string
+	BindingKey   string
+	GenerateQueue bool
+	QueueName string
+	QueueOptions *QueueOptions
+	QueueBindOptions *QueueBindOptions
+	ExchangeOptions *ExchangeOptions
+	ConsumeOptions *ConsumeOptions
+}
+
+func TopicSubscriber(exchangeName string, bindingKey string) *SubscriberOptions {
+	var o SubscriberOptions
+	o.ExchangeName = exchangeName
+	o.ExchangeType = amqp.ExchangeTopic
+	o.BindingKey = bindingKey
+	o.ExchangeOptions = &ExchangeOptions{
+		Durable:    true,
+		AutoDelete: false,
+		Internal:   false,
+		NoWait:     false,
+		Args:       nil,
+	}
+	o.ConsumeOptions = &ConsumeOptions{
+		ConsumerName: "",
+		AutoAck: true,
+		Exclusive: false,
+		NoLocal: false,
+		NoWait: false,
+		Args: nil,
+	}
+	o.GenerateQueue = false
+	o.QueueName = ""
+	o.QueueOptions = &QueueOptions{
+		Durable: true,
+		AutoDelete: false,
+		Exclusive: false,
+		NoWait: false,
+		Args: nil,
+	}
+	o.QueueBindOptions = &QueueBindOptions{
+		NoWait: false,
+		Args: nil,
+	}
+
+	return &o
+}
+// TODO: implement direct, fanout and header types as well
+
 // Publish publishes a message to the named exchange.
-func (m *AmqpClient) Publish(body []byte, exchangeName string, exchangeType string) error {
+func (m *AmqpClient) Publish(options PublisherOptions, body []byte, routingKey string) error {
 	if m.conn == nil {
 		panic("Tried to send message before connection was initialized. Don't do that.")
 	}
-	ch, err := m.conn.Channel() // Get a channel from the connection
+	ch, err := m.conn.Channel()
+	failOnError(err, "Failed to connect to channel")
 	defer ch.Close()
+
 	err = ch.ExchangeDeclare(
-		exchangeName, // name of the exchange
-		exchangeType, // type
-		true,         // durable
-		false,        // delete when complete
-		false,        // internal
-		false,        // noWait
-		nil,          // arguments
+		options.ExchangeName,
+		options.ExchangeType,
+		options.ExchangeOptions.Durable,
+		options.ExchangeOptions.AutoDelete,
+		options.ExchangeOptions.Internal,
+		options.ExchangeOptions.NoWait,
+		options.ExchangeOptions.Args,
 	)
 	failOnError(err, "Failed to register an Exchange")
 
-	queue, err := ch.QueueDeclare( // Declare a queue that will be created if not exists with some args
-		"",    // our queue name
-		false, // durable
-		false, // delete when unused
-		false, // exclusive
-		false, // no-wait
-		nil,   // arguments
-	)
+	if options.GenerateQueue {
+		log(fmt.Sprintf("declared Exchange, declaring Queue (%s)", ""))
+		queue, err := ch.QueueDeclare(
+			options.QueueName,
+			options.QueueOptions.Durable,
+			options.QueueOptions.AutoDelete,
+			options.QueueOptions.Exclusive,
+			options.QueueOptions.NoWait,
+			options.QueueOptions.Args,
+		)
+		failOnError(err, "Failed to declare queue")
+		options.QueueName = queue.Name
 
-	err = ch.QueueBind(
-		queue.Name,   // name of the queue
-		exchangeName, // bindingKey
-		exchangeName, // sourceExchange
-		false,        // noWait
-		nil,          // arguments
-	)
+		if err := ch.QueueBind(
+			options.QueueName,
+			options.BindingKey,
+			options.ExchangeName,
+			options.QueueBindOptions.NoWait,
+			options.QueueBindOptions.Args,
+		); err != nil {
+			failOnError(err, "Failed to bind queue")
+		}
+	}
 
-	err = ch.Publish( // Publishes a message onto the queue.
-		exchangeName, // exchange
-		exchangeName, // routing key      q.Name
-		false,        // mandatory
-		false,        // immediate
+
+	err = ch.Publish(
+		options.ExchangeName,
+		routingKey,
+		options.PublishOptions.Mandatory,
+		options.PublishOptions.Immediate,
 		amqp.Publishing{
-			Body: body, // Our JSON body as []byte
+			Body: body,
 		})
 	log(fmt.Sprintf("A message was sent: %v", string(body)))
 	return err
 }
 
-// PublishOnQueueWithContext publishes the supplied body onto the named queue, passing the context.
-func (m *AmqpClient) PublishOnQueueWithContext(ctx context.Context, body []byte, queueName string) error {
-	if m.conn == nil {
-		panic("Tried to send message before connection was initialized. Don't do that.")
-	}
-	ch, err := m.conn.Channel() // Get a channel from the connection
-	defer ch.Close()
-
-	queue, err := ch.QueueDeclare( // Declare a queue that will be created if not exists with some args
-		queueName, // our queue name
-		false,     // durable
-		false,     // delete when unused
-		false,     // exclusive
-		false,     // no-wait
-		nil,       // arguments
-	)
-
-	// Publishes a message onto the queue.
-	err = ch.Publish(
-		"",         // exchange
-		queue.Name, // routing key
-		false,      // mandatory
-		false,      // immediate
-		buildMessage(ctx, body))
-	log(fmt.Sprintf("A message was sent to queue %v: %v", queueName, string(body)))
-	return err
-}
-
-func buildMessage(ctx context.Context, body []byte) amqp.Publishing {
-	publishing := amqp.Publishing{
-		ContentType: "application/json",
-		Body:        body, // Our JSON body as []byte
-	}
-	// if ctx != nil {
-	// 	child := tracing.StartChildSpanFromContext(ctx, "messaging")
-	// 	defer child.Finish()
-	// 	var val = make(opentracing.TextMapCarrier)
-	// 	err := tracing.AddTracingToTextMapCarrier(child, val)
-	// 	if err != nil {
-	// 		logrus.Errorf("Error injecting span context: %v", err.Error())
-	// 	} else {
-	// 		publishing.Headers = tracing.CarrierToMap(val)
-	// 	}
-	// }
-	return publishing
-}
-
-// PublishOnQueue publishes the supplied body on the queueName.
-func (m *AmqpClient) PublishOnQueue(body []byte, queueName string) error {
-	return m.PublishOnQueueWithContext(nil, body, queueName)
-}
-
 // Subscribe registers a handler function for a given exchange.
-func (m *AmqpClient) Subscribe(exchangeName string, exchangeType string, consumerName string, handlerFunc func(amqp.Delivery)) error {
+func (m *AmqpClient) Subscribe(options SubscriberOptions, handlerFunc func(amqp.Delivery)) error {
 	ch, err := m.conn.Channel()
 	failOnError(err, "Failed to open a channel")
-	// defer ch.Close()
 
 	err = ch.ExchangeDeclare(
-		exchangeName, // name of the exchange
-		exchangeType, // type
-		true,         // durable
-		false,        // delete when complete
-		false,        // internal
-		false,        // noWait
-		nil,          // arguments
+		options.ExchangeName,
+		options.ExchangeType,
+		options.ExchangeOptions.Durable,
+		options.ExchangeOptions.AutoDelete,
+		options.ExchangeOptions.Internal,
+		options.ExchangeOptions.NoWait,
+		options.ExchangeOptions.Args,
 	)
 	failOnError(err, "Failed to register an Exchange")
 
-	log(fmt.Sprintf("declared Exchange, declaring Queue (%s)", ""))
-	queue, err := ch.QueueDeclare(
-		"",    // name of the queue
-		false, // durable
-		false, // delete when usused
-		false, // exclusive
-		false, // noWait
-		nil,   // arguments
-	)
-	failOnError(err, "Failed to register an Queue")
+	if options.GenerateQueue {
+		log(fmt.Sprintf("declared Exchange, declaring Queue (%s)", ""))
+		queue, err := ch.QueueDeclare(
+			options.QueueName,
+			options.QueueOptions.Durable,
+			options.QueueOptions.AutoDelete,
+			options.QueueOptions.Exclusive,
+			options.QueueOptions.NoWait,
+			options.QueueOptions.Args,
+		)
+		failOnError(err, "Failed to declare queue")
+		options.QueueName = queue.Name
 
-	log(fmt.Sprintf("declared Queue (%d messages, %d consumers), binding to Exchange (key '%s')",
-		queue.Messages, queue.Consumers, exchangeName))
-
-	err = ch.QueueBind(
-		queue.Name,   // name of the queue
-		exchangeName, // bindingKey
-		exchangeName, // sourceExchange
-		false,        // noWait
-		nil,          // arguments
-	)
-	if err != nil {
-		return fmt.Errorf("Queue Bind: %s", err)
+		if err := ch.QueueBind(
+			options.QueueName,
+			options.BindingKey,
+			options.ExchangeName,
+			options.QueueBindOptions.NoWait,
+			options.QueueBindOptions.Args,
+		); err != nil {
+			failOnError(err, "Failed to bind queue")
+		}
 	}
 
 	msgs, err := ch.Consume(
-		queue.Name,   // queue
-		consumerName, // consumer
-		true,         // auto-ack
-		false,        // exclusive
-		false,        // no-local
-		false,        // no-wait
-		nil,          // args
+		options.QueueName,
+		options.ConsumeOptions.ConsumerName,
+		options.ConsumeOptions.AutoAck,
+		options.ConsumeOptions.Exclusive,
+		options.ConsumeOptions.NoLocal,
+		options.ConsumeOptions.NoWait,
+		options.ConsumeOptions.Args,
 	)
 	failOnError(err, "Failed to register a consumer")
 
-	go consumeLoop(msgs, handlerFunc)
-	return nil
-}
-
-// SubscribeToQueue registers a handler function for the named queue.
-func (m *AmqpClient) SubscribeToQueue(queueName string, consumerName string, handlerFunc func(amqp.Delivery)) error {
-	ch, err := m.conn.Channel()
-	failOnError(err, "Failed to open a channel")
-
-	log(fmt.Sprintf("Declaring Queue (%s)", queueName))
-	queue, err := ch.QueueDeclare(
-		queueName, // name of the queue
-		false,     // durable
-		false,     // delete when usused
-		false,     // exclusive
-		false,     // noWait
-		nil,       // arguments
-	)
-	failOnError(err, "Failed to register an Queue")
-
-	msgs, err := ch.Consume(
-		queue.Name,   // queue
-		consumerName, // consumer
-		true,         // auto-ack
-		false,        // exclusive
-		false,        // no-local
-		false,        // no-wait
-		nil,          // args
-	)
-	failOnError(err, "Failed to register a consumer")
-
-	go consumeLoop(msgs, handlerFunc)
+	go consumeLoop(msgs, ch, handlerFunc)
 	return nil
 }
 
@@ -230,7 +249,8 @@ func (m *AmqpClient) Close() {
 	}
 }
 
-func consumeLoop(deliveries <-chan amqp.Delivery, handlerFunc func(d amqp.Delivery)) {
+func consumeLoop(deliveries <-chan amqp.Delivery, ch *amqp.Channel, handlerFunc func(d amqp.Delivery)) {
+	defer ch.Close()
 	for d := range deliveries {
 		// Invoke the handlerFunc func we passed as parameter.
 		handlerFunc(d)
@@ -245,4 +265,119 @@ func failOnError(err error, msg string) {
 
 func log(msg string) {
 	logrus.Infof("AMQP Message: %s\n", msg)
+}
+
+type ExchangeOptions struct {
+	Durable bool
+	AutoDelete bool
+	Internal bool
+	NoWait bool
+	Args amqp.Table
+}
+
+func (eo *ExchangeOptions) SetExchangeDurable(flag bool) {
+	eo.Durable = flag
+}
+
+func (eo *ExchangeOptions) SetExchangeAutoDelete(flag bool) {
+	eo.AutoDelete = flag
+}
+
+func (eo *ExchangeOptions) SetExchangeInternal(flag bool) {
+	eo.Internal = flag
+}
+
+func (eo *ExchangeOptions) SetExchangeNoWait(flag bool) {
+	eo.NoWait = flag
+}
+
+func (eo *ExchangeOptions) SetExchangeArgs(args amqp.Table) {
+	eo.Args = args
+}
+
+type PublishOptions struct {
+	Mandatory bool
+	Immediate bool
+}
+
+func (po *PublishOptions) SetMandatory(flag bool) {
+	po.Mandatory = flag
+}
+
+func (po *PublishOptions) SetImmediate(flag bool) {
+	po.Immediate = flag
+}
+
+type ConsumeOptions struct {
+	ConsumerName string
+	AutoAck bool
+	Exclusive bool
+	NoLocal bool
+	NoWait bool
+	Args amqp.Table
+}
+
+func (co *ConsumeOptions) SetConsumerName(name string) {
+	co.ConsumerName = name
+}
+
+func (co *ConsumeOptions) SetAutoAck(flag bool) {
+	co.AutoAck = flag
+}
+
+func (co *ConsumeOptions) SetExclusive(flag bool) {
+	co.Exclusive = flag
+}
+
+func (co *ConsumeOptions) SetNoLocal(flag bool) {
+	co.NoLocal = flag
+}
+
+func (co *ConsumeOptions) SetNoWait(flag bool) {
+	co.NoWait = flag
+}
+
+func (co *ConsumeOptions) SetArgs(args amqp.Table) {
+	co.Args = args
+}
+
+type QueueOptions struct {
+	Durable bool
+	AutoDelete bool
+	Exclusive bool
+	NoWait bool
+	Args amqp.Table
+}
+
+func (qo *QueueOptions) SetDurable(flag bool) {
+	qo.Durable = flag
+}
+
+func (qo *QueueOptions) SetAutoDelete(flag bool) {
+	qo.AutoDelete = flag
+}
+
+func (qo *QueueOptions) SetExclusive(flag bool) {
+	qo.Exclusive = flag
+}
+
+func (qo *QueueOptions) SetNoWait(flag bool) {
+	qo.NoWait = flag
+}
+
+func (qo *QueueOptions) SetArgs(args amqp.Table) {
+	qo.Args = args
+}
+
+type QueueBindOptions struct {
+	NoWait bool
+	Args amqp.Table
+}
+
+func (qbo *QueueBindOptions) SetNoWait(flag bool) {
+	qbo.NoWait = flag
+}
+
+func (qbo *QueueBindOptions) SetArgs(args amqp.Table) {
+	qbo.Args = args
 }

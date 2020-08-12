@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/sabnak227/jwt-demo/auth"
 	"github.com/sabnak227/jwt-demo/user/user-service/models"
+	amqpAdapter "github.com/sabnak227/jwt-demo/util/amqp"
 	"github.com/sabnak227/jwt-demo/util/constant"
 	"github.com/sabnak227/jwt-demo/util/helper"
 
@@ -124,7 +125,9 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 
 	b, _ := json.Marshal(msg)
 
-	if err := amqpClient.PublishOnQueue(b, "hello"); err != nil {
+	// publishing on user_create.# topic exchange to notify all services subscribing to this topic
+	o := amqpAdapter.TopicPublisher("user_create", "user_create.#")
+	if err := amqpClient.Publish(*o, b, "user_create.#"); err != nil {
 		logger.Error("Failed to publish to queue")
 		if err := repo.Delete(uint64(user.ID)); err != nil {
 			logger.Error("Failed to delete faulty user: %d", user.ID)
