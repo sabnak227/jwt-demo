@@ -65,11 +65,7 @@ func (c *MysqlClient) AuthUser(email string, password string)  (*Auth, error) {
 
 //CreateAuth upserts an auth entry to keep idempotence for microservice error handling
 func (c *MysqlClient) CreateAuth(auth Auth) error {
-	hash, err := bcrypt.GenerateFromPassword([]byte(auth.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-	auth.Password = string(hash)
+
 	return c.conn.Where(Auth{
 		UserID:    auth.UserID,
 	}).Assign(auth).FirstOrCreate(&auth).Error

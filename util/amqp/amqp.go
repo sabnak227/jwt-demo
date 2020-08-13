@@ -83,6 +83,7 @@ type SubscriberOptions struct {
 
 func FanoutPublisher(exchangeName string) *PublisherOptions {
 	var o PublisherOptions
+	o.options = getDefaultOptions()
 	o.ExchangeName = exchangeName
 	o.ExchangeType = amqp.ExchangeFanout
 	o.BindingKey = ""
@@ -90,7 +91,6 @@ func FanoutPublisher(exchangeName string) *PublisherOptions {
 		Mandatory: false,
 		Immediate: false,
 	}
-	o.options = getDefaultOptions()
 
 	return &o
 }
@@ -110,6 +110,7 @@ func TopicPublisher(exchangeName string, bindingKey string) *PublisherOptions {
 
 func FanoutSubscriber(exchangeName string) *SubscriberOptions {
 	var o SubscriberOptions
+	o.options = getDefaultOptions()
 	o.ExchangeName = exchangeName
 	o.ExchangeType = amqp.ExchangeFanout
 	o.BindingKey = ""
@@ -121,7 +122,6 @@ func FanoutSubscriber(exchangeName string) *SubscriberOptions {
 		NoWait: false,
 		Args: nil,
 	}
-	o.options = getDefaultOptions()
 
 	return &o
 }
@@ -148,17 +148,18 @@ func (m *AmqpClient) Publish(options PublisherOptions, body []byte, routingKey s
 	failOnError(err, "Failed to connect to channel")
 	defer ch.Close()
 
-	err = ch.ExchangeDeclare(
-		options.ExchangeName,
-		options.ExchangeType,
-		options.ExchangeOptions.Durable,
-		options.ExchangeOptions.AutoDelete,
-		options.ExchangeOptions.Internal,
-		options.ExchangeOptions.NoWait,
-		options.ExchangeOptions.Args,
-	)
-	failOnError(err, "Failed to register an Exchange")
-
+	if options.ExchangeType != amqp.ExchangeFanout {
+		err = ch.ExchangeDeclare(
+			options.ExchangeName,
+			options.ExchangeType,
+			options.ExchangeOptions.Durable,
+			options.ExchangeOptions.AutoDelete,
+			options.ExchangeOptions.Internal,
+			options.ExchangeOptions.NoWait,
+			options.ExchangeOptions.Args,
+		)
+		failOnError(err, "Failed to register an Exchange")
+	}
 
 	deliveryMode := amqp.Transient
 	if options.GenerateQueue {
@@ -208,16 +209,18 @@ func (m *AmqpClient) Subscribe(options SubscriberOptions, handlerFunc func(amqp.
 	ch, err := m.conn.Channel()
 	failOnError(err, "Failed to open a channel")
 
-	err = ch.ExchangeDeclare(
-		options.ExchangeName,
-		options.ExchangeType,
-		options.ExchangeOptions.Durable,
-		options.ExchangeOptions.AutoDelete,
-		options.ExchangeOptions.Internal,
-		options.ExchangeOptions.NoWait,
-		options.ExchangeOptions.Args,
-	)
-	failOnError(err, "Failed to register an Exchange")
+	if options.ExchangeType != amqp.ExchangeFanout {
+		err = ch.ExchangeDeclare(
+			options.ExchangeName,
+			options.ExchangeType,
+			options.ExchangeOptions.Durable,
+			options.ExchangeOptions.AutoDelete,
+			options.ExchangeOptions.Internal,
+			options.ExchangeOptions.NoWait,
+			options.ExchangeOptions.Args,
+		)
+		failOnError(err, "Failed to register an Exchange")
+	}
 
 	if options.GenerateQueue {
 		log(fmt.Sprintf("declared Exchange, declaring Queue (%s)", ""))

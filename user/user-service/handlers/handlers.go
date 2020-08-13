@@ -8,6 +8,7 @@ import (
 	amqpAdapter "github.com/sabnak227/jwt-demo/util/amqp"
 	"github.com/sabnak227/jwt-demo/util/constant"
 	"github.com/sabnak227/jwt-demo/util/helper"
+	"golang.org/x/crypto/bcrypt"
 
 	pb "github.com/sabnak227/jwt-demo/user"
 )
@@ -78,6 +79,7 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 
 	// create user
 	u := models.User{
+		Status:    models.UserStatusEnabled,
 		FirstName: in.FirstName,
 		LastName:  in.LastName,
 		Email:     in.Email,
@@ -97,22 +99,14 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 		}, nil
 	}
 
-	// create authentication entry
-	//res, err := authSvc.CreateAuth(ctx, &auth.CreateAuthRequest{
-	//	UserId:    uint64(user.ID),
-	//	Password:  in.Password,
-	//	Email:     user.Email,
-	//	FirstName: user.FirstName,
-	//	LastName:  user.LastName,
-	//})
-	//if res == nil || res.Code != constant.SuccessCode {
-	//	// failed, rollback
-	//	return &pb.CreateUserResponse{
-	//		Code:    constant.FailCode,
-	//		Message: "Failed to create authentication entry",
-	//	}, nil
-	//}
-
+	// hashing password
+	hash, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return &pb.CreateUserResponse{
+			Code:    constant.FailCode,
+			Message: "Failed to hash password",
+		}, nil
+	}
 
 	// create authentication entry via amqp
 	msg := models.CreateUserMsg{
@@ -120,18 +114,14 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
 		Email:     u.Email,
-		Password:  in.Password,
+		Password:  string(hash),
 	}
-
 	b, _ := json.Marshal(msg)
 
 	// publishing on user_create.# topic exchange to notify all services subscribing to this topic
 	o := amqpAdapter.FanoutPublisher("user_create")
 	if err := amqpClient.Publish(*o, b, "user_create.#"); err != nil {
-		logger.Error("Failed to publish to queue")
-		if err := repo.Delete(uint64(user.ID)); err != nil {
-			logger.Error("Failed to delete faulty user: %d", user.ID)
-		}
+		logger.Errorf("Failed to publish to queue %s", err)
 	}
 
 	return &pb.CreateUserResponse{
@@ -151,6 +141,7 @@ func (s userService) DeleteUser(ctx context.Context, in *pb.DeleteUserRequest) (
 		}, nil
 	}
 
+	// TODO shouldnt call auth, but should set status = disabled and ping scope service to revoke access
 	// delete authentication entry
 	// no need to check the response anyways
 	res, _ := authSvc.DeleteAuth(ctx, &auth.DeleteAuthRequest{

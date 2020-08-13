@@ -46,11 +46,11 @@ func createUserMsgProcessor(msg amqp.Delivery) {
 
 func ackMsg(msg amqp.Delivery, multiple bool) {
 	if err := msg.Ack(multiple); err != nil {
-		logger.Fatalf("Failed to acknowledge message {%s}, error %s", msg.Body, err)
+		logger.Errorf("Failed to acknowledge message {%s}, error %s", msg.Body, err)
 	}
 }
 func rejectMsg(msg amqp.Delivery) {
 	if err := msg.Nack(false, true); err != nil {
-		logger.Fatalf("Failed to reject message {%s}, error %s", msg.Body, err)
+		logger.Errorf("Failed to reject message {%s}, error %s", msg.Body, err)
 	}
 }

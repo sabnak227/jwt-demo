@@ -9,6 +9,7 @@ import (
 	"github.com/sabnak227/jwt-demo/user"
 	"github.com/sabnak227/jwt-demo/util/constant"
 	"github.com/sabnak227/jwt-demo/util/helper"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // NewService returns a naïve, stateless implementation of Service.
@@ -107,15 +108,23 @@ func (s authService) CreateAuth(ctx context.Context, in *pb.CreateAuthRequest) (
 		}, nil
 	}
 
+	// hashing password
+	hash, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return &pb.CreateAuthResponse{
+			Code:    constant.FailCode,
+			Message: "Failed to hash password",
+		}, nil
+	}
+
 	// store in database
-	err := repo.CreateAuth(models.Auth{
+	if err := repo.CreateAuth(models.Auth{
 		UserID:    in.UserId,
 		FirstName: in.FirstName,
 		LastName:  in.LastName,
 		Email:     in.Email,
-		Password:  in.Password,
-	})
-	if err != nil {
+		Password:  string(hash),
+	}); err != nil {
 		return &pb.CreateAuthResponse{
 			Code:    constant.WrongPasswordCode,
 			Message: "Failed to create the authentication entry",
@@ -125,8 +134,6 @@ func (s authService) CreateAuth(ctx context.Context, in *pb.CreateAuthRequest) (
 	return &pb.CreateAuthResponse{
 		Code:    constant.SuccessCode,
 		Message: "success",
-		// AccessToken:
-		// RefreshToken:
 	}, nil
 }
 
