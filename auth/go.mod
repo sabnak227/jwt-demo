@@ -2,8 +2,6 @@ module github.com/sabnak227/jwt-demo/auth
 
 go 1.13
 
-replace github.com/sabnak227/jwt-demo/util => ../util
-
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-kit/kit v0.10.0
@@ -15,11 +13,12 @@ require (
 	github.com/jinzhu/gorm v1.9.15
 	github.com/metaverse/truss v0.1.0
 	github.com/pkg/errors v0.9.1
-	github.com/sabnak227/jwt-demo/scope v0.0.0-20200812201839-e9805e935abe
-	github.com/sabnak227/jwt-demo/user v0.0.0-20200812201839-e9805e935abe
-	github.com/sabnak227/jwt-demo/util v0.0.0-20200812202203-06101fe9e058
+	github.com/sabnak227/jwt-demo/scope v0.0.0-20200813020645-c7e09c0675bb
+	github.com/sabnak227/jwt-demo/user v0.0.0-20200813020645-c7e09c0675bb
+	github.com/sabnak227/jwt-demo/util v0.0.0-20200813020645-c7e09c0675bb
 	github.com/sirupsen/logrus v1.6.0
 	github.com/streadway/amqp v1.0.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+	google.golang.org/genproto v0.0.0-20200813001606-1ccf2a5ae4fd // indirect
 	google.golang.org/grpc v1.31.0
 )
