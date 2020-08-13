@@ -33,7 +33,9 @@ func (m *AmqpClient) ConnectToBroker(connectionString string) error {
 }
 
 
-type PublisherOptions struct {
+
+
+type options struct{
 	ExchangeName string
 	ExchangeType string
 	BindingKey   string
@@ -42,26 +44,10 @@ type PublisherOptions struct {
 	QueueOptions *QueueOptions
 	QueueBindOptions *QueueBindOptions
 	ExchangeOptions *ExchangeOptions
-	PublishOptions *PublishOptions
 }
 
-//TopicPublisher initiates a opic type exchange
-func TopicPublisher(exchangeName string, bindingKey string) *PublisherOptions {
-	var o PublisherOptions
-	o.ExchangeName = exchangeName
-	o.ExchangeType = amqp.ExchangeTopic
-	o.BindingKey = bindingKey
-	o.ExchangeOptions = &ExchangeOptions{
-		Durable:    true,
-		AutoDelete: false,
-		Internal:   false,
-		NoWait:     false,
-		Args:       nil,
-	}
-	o.PublishOptions = &PublishOptions{
-		Mandatory: false,
-		Immediate: false,
-	}
+func getDefaultOptions() options{
+	o := options{}
 	o.GenerateQueue = false
 	o.QueueName = ""
 	o.QueueOptions = &QueueOptions{
@@ -75,28 +61,6 @@ func TopicPublisher(exchangeName string, bindingKey string) *PublisherOptions {
 		NoWait: false,
 		Args: nil,
 	}
-
-	return &o
-}
-
-
-type SubscriberOptions struct {
-	ExchangeName string
-	ExchangeType string
-	BindingKey   string
-	GenerateQueue bool
-	QueueName string
-	QueueOptions *QueueOptions
-	QueueBindOptions *QueueBindOptions
-	ExchangeOptions *ExchangeOptions
-	ConsumeOptions *ConsumeOptions
-}
-
-func TopicSubscriber(exchangeName string, bindingKey string) *SubscriberOptions {
-	var o SubscriberOptions
-	o.ExchangeName = exchangeName
-	o.ExchangeType = amqp.ExchangeTopic
-	o.BindingKey = bindingKey
 	o.ExchangeOptions = &ExchangeOptions{
 		Durable:    true,
 		AutoDelete: false,
@@ -104,6 +68,51 @@ func TopicSubscriber(exchangeName string, bindingKey string) *SubscriberOptions 
 		NoWait:     false,
 		Args:       nil,
 	}
+	return o
+}
+
+type PublisherOptions struct {
+	options
+	PublishOptions *PublishOptions
+}
+
+type SubscriberOptions struct {
+	options
+	ConsumeOptions *ConsumeOptions
+}
+
+func FanoutPublisher(exchangeName string) *PublisherOptions {
+	var o PublisherOptions
+	o.ExchangeName = exchangeName
+	o.ExchangeType = amqp.ExchangeFanout
+	o.BindingKey = ""
+	o.PublishOptions = &PublishOptions{
+		Mandatory: false,
+		Immediate: false,
+	}
+	o.options = getDefaultOptions()
+
+	return &o
+}
+
+func DirectPublisher(exchangeName string, bindingKey string) *PublisherOptions {
+	o := FanoutPublisher(exchangeName)
+	o.ExchangeType = amqp.ExchangeDirect
+	o.BindingKey = bindingKey
+	return o
+}
+
+func TopicPublisher(exchangeName string, bindingKey string) *PublisherOptions {
+	o:= DirectPublisher(exchangeName, bindingKey)
+	o.ExchangeType = amqp.ExchangeTopic
+	return o
+}
+
+func FanoutSubscriber(exchangeName string) *SubscriberOptions {
+	var o SubscriberOptions
+	o.ExchangeName = exchangeName
+	o.ExchangeType = amqp.ExchangeFanout
+	o.BindingKey = ""
 	o.ConsumeOptions = &ConsumeOptions{
 		ConsumerName: "",
 		AutoAck: true,
@@ -112,23 +121,23 @@ func TopicSubscriber(exchangeName string, bindingKey string) *SubscriberOptions 
 		NoWait: false,
 		Args: nil,
 	}
-	o.GenerateQueue = false
-	o.QueueName = ""
-	o.QueueOptions = &QueueOptions{
-		Durable: true,
-		AutoDelete: false,
-		Exclusive: false,
-		NoWait: false,
-		Args: nil,
-	}
-	o.QueueBindOptions = &QueueBindOptions{
-		NoWait: false,
-		Args: nil,
-	}
+	o.options = getDefaultOptions()
 
 	return &o
 }
-// TODO: implement direct, fanout and header types as well
+
+func DirectSubscriber(exchangeName string, bindingKey string) *SubscriberOptions {
+	o := FanoutSubscriber(exchangeName)
+	o.ExchangeType = amqp.ExchangeDirect
+	o.BindingKey = bindingKey
+	return o
+}
+
+func TopicSubscriber(exchangeName string, bindingKey string) *SubscriberOptions {
+	o:= TopicSubscriber(exchangeName, bindingKey)
+	o.ExchangeType = amqp.ExchangeTopic
+	return o
+}
 
 // Publish publishes a message to the named exchange.
 func (m *AmqpClient) Publish(options PublisherOptions, body []byte, routingKey string) error {
@@ -150,6 +159,8 @@ func (m *AmqpClient) Publish(options PublisherOptions, body []byte, routingKey s
 	)
 	failOnError(err, "Failed to register an Exchange")
 
+
+	deliveryMode := amqp.Transient
 	if options.GenerateQueue {
 		log(fmt.Sprintf("declared Exchange, declaring Queue (%s)", ""))
 		queue, err := ch.QueueDeclare(
@@ -172,6 +183,10 @@ func (m *AmqpClient) Publish(options PublisherOptions, body []byte, routingKey s
 		); err != nil {
 			failOnError(err, "Failed to bind queue")
 		}
+
+		if options.QueueOptions.Durable {
+			deliveryMode = amqp.Persistent
+		}
 	}
 
 
@@ -181,6 +196,7 @@ func (m *AmqpClient) Publish(options PublisherOptions, body []byte, routingKey s
 		options.PublishOptions.Mandatory,
 		options.PublishOptions.Immediate,
 		amqp.Publishing{
+			DeliveryMode: deliveryMode,
 			Body: body,
 		})
 	log(fmt.Sprintf("A message was sent: %v", string(body)))
