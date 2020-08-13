@@ -7,7 +7,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"github.com/sabnak227/jwt-demo/auth/auth-service/config"
-	"github.com/sabnak227/jwt-demo/scope"
 	"github.com/sabnak227/jwt-demo/user"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -100,7 +99,7 @@ func NewToken(conf config.Config, logger *log.Logger) *Token {
 	}
 }
 
-func (t *Token)GenToken(scopes []string, user *user.GetUserResponse, scope *scope.UserScopeResponse) (*Details, error) {
+func (t *Token)GenToken(scopes []string, user *user.UserObj, scope []string) (*Details, error) {
 	td := &Details{}
 	td.AtExpires = time.Now().Add(accessExp).Unix()
 	td.AccessUuid = uuid.New().String()

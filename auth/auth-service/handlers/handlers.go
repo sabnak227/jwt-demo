@@ -68,7 +68,7 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 	}
 
 	// generate jwt token
-	tokenDetail, err := tokenAdapter.GenToken(sc.Scopes, u, sc)
+	tokenDetail, err := tokenAdapter.GenToken(sc.Scopes, u.User, sc.Scopes)
 	if err != nil {
 		return &pb.LoginResponse{
 			Code:    constant.FailCode,
@@ -77,7 +77,7 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 	}
 
 	// set session info
-	if err := session.SetToken(a.UserID, tokenDetail, u, sc); err != nil {
+	if err := session.SetToken(a.UserID, tokenDetail, u.User, sc.Scopes); err != nil {
 		return &pb.LoginResponse{
 			Code:    constant.FailCode,
 			Message: fmt.Sprintf("Failed to create session, err: %s", err),
@@ -121,9 +121,6 @@ func (s authService) CreateAuth(ctx context.Context, in *pb.CreateAuthRequest) (
 			Message: "Failed to create the authentication entry",
 		}, nil
 	}
-
-	// todo: not generating the jwt yet, cos there will be multiple round trips between user, scope and auth svc.
-	// let the user login manually for now
 
 	return &pb.CreateAuthResponse{
 		Code:    constant.SuccessCode,
@@ -189,17 +186,19 @@ func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.Re
 	if infoErr != nil {
 		logger.Errorf("Failed to get user info, recreating user info..., error: %s", err)
 		// get user info from other services
-		u, sc, infoErr = getUserInfo(ctx, userID)
-		if infoErr != nil {
+		uRes, scRes, err := getUserInfo(ctx, userID)
+		if err != nil || uRes == nil {
 			return &pb.RefreshResponse{
 				Code:    constant.FailCode,
 				Message: infoErr.Error(),
 			}, nil
 		}
+		u = uRes.User
+		sc = scRes.Scopes
 	}
 
 	// generate new jwt token
-	tokenDetail, err := tokenAdapter.GenToken(sc.Scopes, u, sc)
+	tokenDetail, err := tokenAdapter.GenToken(sc, u, sc)
 	if err != nil {
 		return &pb.RefreshResponse{
 			Code:    constant.FailCode,

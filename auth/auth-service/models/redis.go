@@ -7,7 +7,6 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/sabnak227/jwt-demo/auth/auth-service/config"
 	"github.com/sabnak227/jwt-demo/auth/auth-service/token"
-	"github.com/sabnak227/jwt-demo/scope"
 	"github.com/sabnak227/jwt-demo/user"
 	log "github.com/sirupsen/logrus"
 	"strconv"
@@ -45,7 +44,7 @@ func (c *RedisClient) Close() error {
 	return err
 }
 
-func (c *RedisClient) SetToken(userId uint64, td *token.Details, user *user.GetUserResponse, scope *scope.UserScopeResponse) error {
+func (c *RedisClient) SetToken(userId uint64, td *token.Details, user *user.UserObj, scope []string) error {
 	at := time.Unix(td.AtExpires, 0)
 	rt := time.Unix(td.RtExpires, 0)
 	now := time.Now()
@@ -59,7 +58,7 @@ func (c *RedisClient) SetToken(userId uint64, td *token.Details, user *user.GetU
 		return errRefresh
 	}
 
-	if err := c.SetUserInfo(user.User.Id, user, scope); err != nil {
+	if err := c.SetUserInfo(user.Id, user, scope); err != nil {
 		return err
 	}
 
@@ -78,7 +77,7 @@ func (c *RedisClient) GetUserIdByRefreshUUID(uuid string) (uint64, error) {
 	return n, nil
 }
 
-func (c *RedisClient) GetUserInfo(userID uint64) (*user.GetUserResponse, *scope.UserScopeResponse, error) {
+func (c *RedisClient) GetUserInfo(userID uint64) (*user.UserObj, []string, error) {
 	userStr, userErr := c.conn.Get(ctx, getUserInfoUserKey(userID)).Result()
 	if userErr != nil {
 		return nil, nil, userErr
@@ -89,12 +88,12 @@ func (c *RedisClient) GetUserInfo(userID uint64) (*user.GetUserResponse, *scope.
 		return nil, nil, scopeErr
 	}
 
-	var userRes *user.GetUserResponse
+	var userRes *user.UserObj
 	if err := json.Unmarshal([]byte(userStr), &userRes); err != nil {
 		return nil, nil, err
 	}
 
-	var scopeRes *scope.UserScopeResponse
+	var scopeRes []string
 	if err := json.Unmarshal([]byte(scopeStr), &scopeRes); err != nil {
 		return nil, nil, err
 	}
@@ -102,7 +101,7 @@ func (c *RedisClient) GetUserInfo(userID uint64) (*user.GetUserResponse, *scope.
 	return userRes, scopeRes, nil
 }
 
-func (c *RedisClient) SetUserInfo(userID uint64, user *user.GetUserResponse, scope *scope.UserScopeResponse) error {
+func (c *RedisClient) SetUserInfo(userID uint64, user *user.UserObj, scope []string) error {
 	u, err := json.Marshal(user)
 	if err != nil {
 		return err

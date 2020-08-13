@@ -9,7 +9,7 @@ import (
 )
 
 func subscribers() {
-	o := amqpAdapter.TopicSubscriber("user_create", "user_create.#")
+	o := amqpAdapter.FanoutSubscriber("user_create")
 	// use manual ack here
 	o.ConsumeOptions.SetAutoAck(false)
 	o.GenerateQueue = true

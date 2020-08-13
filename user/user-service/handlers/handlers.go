@@ -126,7 +126,7 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 	b, _ := json.Marshal(msg)
 
 	// publishing on user_create.# topic exchange to notify all services subscribing to this topic
-	o := amqpAdapter.TopicPublisher("user_create", "user_create.#")
+	o := amqpAdapter.FanoutPublisher("user_create")
 	if err := amqpClient.Publish(*o, b, "user_create.#"); err != nil {
 		logger.Error("Failed to publish to queue")
 		if err := repo.Delete(uint64(user.ID)); err != nil {
