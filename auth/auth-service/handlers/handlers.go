@@ -213,18 +213,17 @@ func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.Re
 }
 
 func getUserInfo(ctx context.Context, userID uint64) (*user.GetUserResponse, *scope.UserScopeResponse, error) {
-	u, _ := userSvc.GetUser(ctx, &user.GetUserRequest{
+	u, err := userSvc.GetUser(ctx, &user.GetUserRequest{
 		ID: userID,
 	})
-
+	logger.Infof("user svc response %v, error: %s", u, err)
 	if u == nil || u.Code != constant.SuccessCode {
-		logger.Error(u)
 		return nil, nil, fmt.Errorf("failed retrieving user info")
 	}
 
-	sc, _ := scopeSvc.UserScope(ctx, &scope.UserScopeRequest{})
+	sc, err := scopeSvc.UserScope(ctx, &scope.UserScopeRequest{})
+	logger.Infof("scope svc response %v, error: %s", sc, err)
 	if sc == nil || sc.Code != constant.SuccessCode {
-		logger.Error(u)
 		return nil, nil, fmt.Errorf("failed retrieving user scope")
 	}
 	return u, sc, nil

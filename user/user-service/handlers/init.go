@@ -30,7 +30,7 @@ func init() {
 		DBPassword: getConfigFromEnv("DB_PASSWORD", "users").(string),
 		AutoMigrate: getConfigFromEnv("AUTO_MIGRATE", true).(bool),
 		AuthSvcHost: getConfigFromEnv("AUTH_SVC_HOST", "auth:5040").(string),
-		AmqpDsn: getConfigFromEnv("AMQP_DSN", "amqp://guest:guest@amqp:5672/").(string),
+		AmqpDsn: getConfigFromEnv("AMQP_DSN", "amqp://guest:guest@rabbitmq:5672/").(string),
 	}
 
 	setupDb()
@@ -39,7 +39,7 @@ func init() {
 }
 
 func setupGrpcClient() {
-	logger.Info("Dialing user service rpc server...")
+	logger.Info("Dialing auth service rpc server...")
 	uconn, err := grpc.Dial(conf.AuthSvcHost, grpc.WithInsecure())
 	if err != nil {
 		panic("failed to connect to auth svc " + err.Error())
@@ -52,7 +52,7 @@ func setupDb() {
 	repo = &models.MysqlClient{}
 	err := repo.OpenCon(conf, logger)
 	if err != nil {
-		panic("Database initialization failed" + err.Error())
+		panic("Database initialization failed, " + err.Error())
 	}
 	logger.Info("Database initialized")
 	repo.Migrate()

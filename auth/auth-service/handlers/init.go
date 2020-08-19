@@ -41,7 +41,7 @@ func init() {
 		RedisDB: getConfigFromEnv("REDIS_DB", 0).(int),
 		UserSvcHost: getConfigFromEnv("USER_SVC_HOST", "user:5040").(string),
 		ScopeSvcHost: getConfigFromEnv("SCOPE_SVC_HOST", "scope:5040").(string),
-		AmqpDsn: getConfigFromEnv("AMQP_DSN", "amqp://guest:guest@amqp:5672/").(string),
+		AmqpDsn: getConfigFromEnv("AMQP_DSN", "amqp://guest:guest@rabbitmq:5672/").(string),
 	}
 	setupDb()
 	setupRedis()
