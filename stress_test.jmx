@@ -131,7 +131,7 @@
                 <connectTime>true</connectTime>
               </value>
             </objProp>
-            <stringProp name="filename">/Users/jason/Desktop/result.xml</stringProp>
+            <stringProp name="filename"></stringProp>
           </ResultCollector>
           <hashTree/>
           <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">

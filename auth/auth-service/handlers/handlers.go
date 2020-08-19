@@ -137,23 +137,6 @@ func (s authService) CreateAuth(ctx context.Context, in *pb.CreateAuthRequest) (
 	}, nil
 }
 
-// DeleteAuth implements Service.
-func (s authService) DeleteAuth(ctx context.Context, in *pb.DeleteAuthRequest) (*pb.DeleteAuthResponse, error) {
-	logger.Infof("deleting auth for user %d", in.UserId)
-	err := repo.DeleteAuth(in.UserId)
-	if err != nil {
-		return &pb.DeleteAuthResponse{
-			Code:    constant.FailCode,
-			Message: "Failed to delete the authentication entry",
-		}, nil
-	}
-
-	return &pb.DeleteAuthResponse{
-		Code:    constant.SuccessCode,
-		Message: "success",
-	}, nil
-}
-
 // Refresh implements Service.
 func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.RefreshResponse, error) {
 	i := refreshRequest{

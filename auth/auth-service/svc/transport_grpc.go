@@ -47,12 +47,6 @@ func MakeGRPCServer(endpoints Endpoints, options ...grpctransport.ServerOption) 
 			EncodeGRPCCreateAuthResponse,
 			serverOptions...,
 		),
-		deleteauth: grpctransport.NewServer(
-			endpoints.DeleteAuthEndpoint,
-			DecodeGRPCDeleteAuthRequest,
-			EncodeGRPCDeleteAuthResponse,
-			serverOptions...,
-		),
 		refresh: grpctransport.NewServer(
 			endpoints.RefreshEndpoint,
 			DecodeGRPCRefreshRequest,
@@ -67,7 +61,6 @@ type grpcServer struct {
 	jwks       grpctransport.Handler
 	login      grpctransport.Handler
 	createauth grpctransport.Handler
-	deleteauth grpctransport.Handler
 	refresh    grpctransport.Handler
 }
 
@@ -95,14 +88,6 @@ func (s *grpcServer) CreateAuth(ctx context.Context, req *pb.CreateAuthRequest) 
 		return nil, err
 	}
 	return rep.(*pb.CreateAuthResponse), nil
-}
-
-func (s *grpcServer) DeleteAuth(ctx context.Context, req *pb.DeleteAuthRequest) (*pb.DeleteAuthResponse, error) {
-	_, rep, err := s.deleteauth.ServeGRPC(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-	return rep.(*pb.DeleteAuthResponse), nil
 }
 
 func (s *grpcServer) Refresh(ctx context.Context, req *pb.RefreshRequest) (*pb.RefreshResponse, error) {
@@ -136,13 +121,6 @@ func DecodeGRPCCreateAuthRequest(_ context.Context, grpcReq interface{}) (interf
 	return req, nil
 }
 
-// DecodeGRPCDeleteAuthRequest is a transport/grpc.DecodeRequestFunc that converts a
-// gRPC deleteauth request to a user-domain deleteauth request. Primarily useful in a server.
-func DecodeGRPCDeleteAuthRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
-	req := grpcReq.(*pb.DeleteAuthRequest)
-	return req, nil
-}
-
 // DecodeGRPCRefreshRequest is a transport/grpc.DecodeRequestFunc that converts a
 // gRPC refresh request to a user-domain refresh request. Primarily useful in a server.
 func DecodeGRPCRefreshRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
@@ -170,13 +148,6 @@ func EncodeGRPCLoginResponse(_ context.Context, response interface{}) (interface
 // user-domain createauth response to a gRPC createauth reply. Primarily useful in a server.
 func EncodeGRPCCreateAuthResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(*pb.CreateAuthResponse)
-	return resp, nil
-}
-
-// EncodeGRPCDeleteAuthResponse is a transport/grpc.EncodeResponseFunc that converts a
-// user-domain deleteauth response to a gRPC deleteauth reply. Primarily useful in a server.
-func EncodeGRPCDeleteAuthResponse(_ context.Context, response interface{}) (interface{}, error) {
-	resp := response.(*pb.DeleteAuthResponse)
 	return resp, nil
 }
 

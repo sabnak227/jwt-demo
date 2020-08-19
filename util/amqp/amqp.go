@@ -148,18 +148,16 @@ func (m *AmqpClient) Publish(options PublisherOptions, body []byte, routingKey s
 	failOnError(err, "Failed to connect to channel")
 	defer ch.Close()
 
-	if options.ExchangeType != amqp.ExchangeFanout {
-		err = ch.ExchangeDeclare(
-			options.ExchangeName,
-			options.ExchangeType,
-			options.ExchangeOptions.Durable,
-			options.ExchangeOptions.AutoDelete,
-			options.ExchangeOptions.Internal,
-			options.ExchangeOptions.NoWait,
-			options.ExchangeOptions.Args,
-		)
-		failOnError(err, "Failed to register an Exchange")
-	}
+	err = ch.ExchangeDeclare(
+		options.ExchangeName,
+		options.ExchangeType,
+		options.ExchangeOptions.Durable,
+		options.ExchangeOptions.AutoDelete,
+		options.ExchangeOptions.Internal,
+		options.ExchangeOptions.NoWait,
+		options.ExchangeOptions.Args,
+	)
+	failOnError(err, "Failed to register an Exchange")
 
 	deliveryMode := amqp.Transient
 	if options.GenerateQueue {
@@ -209,21 +207,19 @@ func (m *AmqpClient) Subscribe(options SubscriberOptions, handlerFunc func(amqp.
 	ch, err := m.conn.Channel()
 	failOnError(err, "Failed to open a channel")
 
-	if options.ExchangeType != amqp.ExchangeFanout {
-		err = ch.ExchangeDeclare(
-			options.ExchangeName,
-			options.ExchangeType,
-			options.ExchangeOptions.Durable,
-			options.ExchangeOptions.AutoDelete,
-			options.ExchangeOptions.Internal,
-			options.ExchangeOptions.NoWait,
-			options.ExchangeOptions.Args,
-		)
-		failOnError(err, "Failed to register an Exchange")
-	}
+	err = ch.ExchangeDeclare(
+		options.ExchangeName,
+		options.ExchangeType,
+		options.ExchangeOptions.Durable,
+		options.ExchangeOptions.AutoDelete,
+		options.ExchangeOptions.Internal,
+		options.ExchangeOptions.NoWait,
+		options.ExchangeOptions.Args,
+	)
+	failOnError(err, "Failed to register an Exchange")
 
 	if options.GenerateQueue {
-		log(fmt.Sprintf("declared Exchange, declaring Queue (%s)", ""))
+		log(fmt.Sprintf("declared Exchange, declaring Queue (%s)", options.QueueName))
 		queue, err := ch.QueueDeclare(
 			options.QueueName,
 			options.QueueOptions.Durable,

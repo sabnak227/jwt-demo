@@ -66,7 +66,6 @@ func NewEndpoints() svc.Endpoints {
 		jwksEndpoint       = svc.MakeJWKSEndpoint(service)
 		loginEndpoint      = svc.MakeLoginEndpoint(service)
 		createauthEndpoint = svc.MakeCreateAuthEndpoint(service)
-		deleteauthEndpoint = svc.MakeDeleteAuthEndpoint(service)
 		refreshEndpoint    = svc.MakeRefreshEndpoint(service)
 	)
 
@@ -74,7 +73,6 @@ func NewEndpoints() svc.Endpoints {
 		JWKSEndpoint:       jwksEndpoint,
 		LoginEndpoint:      loginEndpoint,
 		CreateAuthEndpoint: createauthEndpoint,
-		DeleteAuthEndpoint: deleteauthEndpoint,
 		RefreshEndpoint:    refreshEndpoint,
 	}
 

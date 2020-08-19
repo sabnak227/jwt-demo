@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/sabnak227/jwt-demo/auth/auth-service/models"
 	userModels "github.com/sabnak227/jwt-demo/user/user-service/models"
 	amqpAdapter "github.com/sabnak227/jwt-demo/util/amqp"
@@ -9,48 +10,58 @@ import (
 )
 
 func subscribers() {
-	o := amqpAdapter.FanoutSubscriber("user_create")
+	o := amqpAdapter.FanoutSubscriber("user_updates")
 	// use manual ack here
 	o.ConsumeOptions.SetAutoAck(false)
 	o.GenerateQueue = true
-	o.QueueName = "user_create.auth_create"
-	err := amqpClient.Subscribe(*o, createUserMsgProcessor)
+	o.QueueName = "user_updates.auth_updates"
+	err := amqpClient.Subscribe(*o, UserUpdateMsgProcessor)
 	if err != nil {
 		panic("Could not subscribe to exchange user_create")
 	}
 }
 
-func createUserMsgProcessor(msg amqp.Delivery) {
+func UserUpdateMsgProcessor(msg amqp.Delivery) {
 	logger.Infof("Create user message received, %s", msg.Body)
-	var user userModels.CreateUserMsg
-	err := json.Unmarshal(msg.Body, &user)
-	if err != nil {
-		logger.Errorf("Failed to unmarshal create auth message for user %s, requeueing...., error %s", user.Email, err)
-		rejectMsg(msg)
+	var user userModels.UserMsg
+	if err := json.Unmarshal(msg.Body, &user); err != nil {
+		logger.Errorf("Failed to unmarshal user svc message for user %s, error %s", msg.Body, err)
+		nackMsg(msg)
 		return
 	}
 
-	if err := repo.CreateAuth(models.Auth{
+	var err error
+	switch user.Type {
+	case userModels.UserMsgTypeCreated:
+		err = createUser(user)
+	default:
+		err = fmt.Errorf("undefined message type: %s", user.Type)
+	}
+	if err != nil {
+		logger.Errorf("Failed to unmarshal user svc message for user %s, error %s", msg.Body, err)
+		nackMsg(msg)
+		return
+	}
+	ackMsg(msg)
+}
+
+func createUser(user userModels.UserMsg) error {
+	return repo.CreateAuth(models.Auth{
 		UserID:    user.UserId,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Email:     user.Email,
 		Password:  user.Password,
-	}); err != nil {
-		logger.Errorf("Failed to create auth for user %s, requeueing...., error %s", user.Email, err)
-		rejectMsg(msg)
-		return
-	}
-	ackMsg(msg, true)
+	})
 }
 
-func ackMsg(msg amqp.Delivery, multiple bool) {
-	if err := msg.Ack(multiple); err != nil {
+func ackMsg(msg amqp.Delivery) {
+	if err := msg.Ack(false); err != nil {
 		logger.Errorf("Failed to acknowledge message {%s}, error %s", msg.Body, err)
 	}
 }
-func rejectMsg(msg amqp.Delivery) {
-	if err := msg.Nack(false, true); err != nil {
+func nackMsg(msg amqp.Delivery) {
+	if err := msg.Nack(false, false); err != nil {
 		logger.Errorf("Failed to reject message {%s}, error %s", msg.Body, err)
 	}
 }
