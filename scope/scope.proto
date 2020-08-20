@@ -7,12 +7,13 @@ import "github.com/metaverse/truss/deftree/googlethirdparty/annotations.proto";
 service Scope {
   rpc UserScope (UserScopeRequest) returns (UserScopeResponse) {
     option (google.api.http) = {
-      get: "/scope/user/{id}"
+      get: "/scope/user/{ID}"
     };
   }
 }
 
 message UserScopeRequest {
+  uint64 ID = 1;
 }
 message UserScopeResponse {
   int32 code = 1;

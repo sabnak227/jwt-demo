@@ -135,7 +135,7 @@ func EncodeHTTPUserScopeZeroRequest(_ context.Context, r *http.Request, request 
 		"",
 		"scope",
 		"user",
-		fmt.Sprint(req.Id),
+		fmt.Sprint(req.ID),
 	}, "/")
 	u, err := url.Parse(path)
 	if err != nil {

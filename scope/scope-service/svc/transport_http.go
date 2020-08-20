@@ -55,7 +55,7 @@ func MakeHTTPHandler(endpoints Endpoints, options ...httptransport.ServerOption)
 	serverOptions = append(serverOptions, options...)
 	m := mux.NewRouter()
 
-	m.Methods("GET").Path("/scope/user/{id}").Handler(httptransport.NewServer(
+	m.Methods("GET").Path("/scope/user/{ID}").Handler(httptransport.NewServer(
 		endpoints.UserScopeEndpoint,
 		DecodeHTTPUserScopeZeroRequest,
 		EncodeHTTPGenericResponse,
@@ -146,6 +146,13 @@ func DecodeHTTPUserScopeZeroRequest(_ context.Context, r *http.Request) (interfa
 
 	queryParams := r.URL.Query()
 	_ = queryParams
+
+	IDUserScopeStr := pathParams["ID"]
+	IDUserScope, err := strconv.ParseUint(IDUserScopeStr, 10, 64)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("Error while extracting IDUserScope from path, pathParams: %v", pathParams))
+	}
+	req.ID = IDUserScope
 
 	return &req, err
 }

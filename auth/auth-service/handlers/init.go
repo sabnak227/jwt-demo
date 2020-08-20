@@ -9,9 +9,9 @@ import (
 	"github.com/sabnak227/jwt-demo/user"
 	userClient "github.com/sabnak227/jwt-demo/user/user-service/svc/client/grpc"
 	amqpAdapter "github.com/sabnak227/jwt-demo/util/amqp"
+	"github.com/sabnak227/jwt-demo/util/helper"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
-	"os"
 )
 
 var (
@@ -29,19 +29,19 @@ func init() {
 	logger = log.New()
 
 	conf = config.Config{
-		DBDriver: getConfigFromEnv("DB_DRIVER", "mysql").(string),
-		DBHost: getConfigFromEnv("DB_HOST", "mysql").(string),
-		DBPort: getConfigFromEnv("DB_PORT", "3306").(string),
-		DBName: getConfigFromEnv("DB_NAME", "users").(string),
-		DBUser: getConfigFromEnv("DB_USER", "users").(string),
-		DBPassword: getConfigFromEnv("DB_PASSWORD", "users").(string),
-		AutoMigrate: getConfigFromEnv("AUTO_MIGRATE", true).(bool),
-		RedisHost: getConfigFromEnv("REDIS_HOST", "redis:6379").(string),
-		RedisPassword: getConfigFromEnv("REDIS_PASSWORD", "").(string),
-		RedisDB: getConfigFromEnv("REDIS_DB", 0).(int),
-		UserSvcHost: getConfigFromEnv("USER_SVC_HOST", "user:5040").(string),
-		ScopeSvcHost: getConfigFromEnv("SCOPE_SVC_HOST", "scope:5040").(string),
-		AmqpDsn: getConfigFromEnv("AMQP_DSN", "amqp://guest:guest@rabbitmq:5672/").(string),
+		DBDriver: helper.GetStrFromEnv("DB_DRIVER", "mysql"),
+		DBHost: helper.GetStrFromEnv("DB_HOST", "mysql"),
+		DBPort: helper.GetStrFromEnv("DB_PORT", "3306"),
+		DBName: helper.GetStrFromEnv("DB_NAME", "users"),
+		DBUser: helper.GetStrFromEnv("DB_USER", "users"),
+		DBPassword: helper.GetStrFromEnv("DB_PASSWORD", "users"),
+		AutoMigrate: helper.GetBoolFromEnv("AUTO_MIGRATE", true),
+		RedisHost: helper.GetStrFromEnv("REDIS_HOST", "redis:6379"),
+		RedisPassword: helper.GetStrFromEnv("REDIS_PASSWORD", ""),
+		RedisDB: helper.GetIntFromEnv("REDIS_DB", 0),
+		UserSvcHost: helper.GetStrFromEnv("USER_SVC_HOST", "user:5040"),
+		ScopeSvcHost: helper.GetStrFromEnv("SCOPE_SVC_HOST", "scope:5040"),
+		AmqpDsn: helper.GetStrFromEnv("AMQP_DSN", "amqp://guest:guest@rabbitmq:5672/"),
 	}
 	setupDb()
 	setupRedis()
@@ -102,13 +102,4 @@ func setupAMQP() {
 	}
 	subscribers()
 	logger.Info("AMQP initialized")
-}
-
-func getConfigFromEnv(key string, defaultVal interface{}) interface{} {
-	val, ok := os.LookupEnv(key)
-	if !ok {
-		return defaultVal
-	} else {
-		return val
-	}
 }

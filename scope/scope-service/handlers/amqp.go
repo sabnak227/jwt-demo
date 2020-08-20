@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/sabnak227/jwt-demo/auth/auth-service/models"
 	userModels "github.com/sabnak227/jwt-demo/user/user-service/models"
 	amqpAdapter "github.com/sabnak227/jwt-demo/util/amqp"
 	"github.com/streadway/amqp"
@@ -14,7 +13,7 @@ func subscribers() {
 	// use manual ack here
 	o.ConsumeOptions.SetAutoAck(false)
 	o.GenerateQueue = true
-	o.QueueName = "user_updates.auth_updates"
+	o.QueueName = "user_updates.scope_updates"
 	err := amqpClient.Subscribe(*o, UserUpdateMsgProcessor)
 	if err != nil {
 		panic("Could not subscribe to exchange user_create")
@@ -33,7 +32,7 @@ func UserUpdateMsgProcessor(msg amqp.Delivery) {
 	var err error
 	switch user.Type {
 	case userModels.UserMsgTypeCreated:
-		err = createUser(user)
+		err = createDefaultScope(user)
 	default:
 		err = fmt.Errorf("undefined message type: %s", user.Type)
 	}
@@ -45,23 +44,6 @@ func UserUpdateMsgProcessor(msg amqp.Delivery) {
 	amqpAdapter.AckMsg(msg, logger)
 }
 
-func createUser(user userModels.UserMsg) error {
-	return repo.CreateAuth(models.Auth{
-		UserID:    user.UserId,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Email:     user.Email,
-		Password:  user.Password,
-	})
-}
-
-func ackMsg(msg amqp.Delivery) {
-	if err := msg.Ack(false); err != nil {
-		logger.Errorf("Failed to acknowledge message {%s}, error %s", msg.Body, err)
-	}
-}
-func nackMsg(msg amqp.Delivery) {
-	if err := msg.Nack(false, false); err != nil {
-		logger.Errorf("Failed to reject message {%s}, error %s", msg.Body, err)
-	}
+func createDefaultScope(user userModels.UserMsg) error {
+	return repo.AssignRole(repo.GetConn(), user.UserId, "user")
 }

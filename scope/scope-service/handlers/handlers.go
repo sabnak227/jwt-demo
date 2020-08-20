@@ -16,11 +16,17 @@ type scopeService struct{}
 
 // UserScope implements Service.
 func (s scopeService) UserScope(ctx context.Context, in *pb.UserScopeRequest) (*pb.UserScopeResponse, error) {
-	var resp pb.UserScopeResponse
-	resp = pb.UserScopeResponse{
-		Code: constant.SuccessCode,
-		Message: "success",
-		Scopes: []string{"whatever", "hola"},
+	perms, err := repo.GetPerms(repo.GetConn(), in.ID)
+	if err != nil {
+		return &pb.UserScopeResponse{
+			Code:    constant.FailCode,
+			Message: "Failed getting user scopes, err: " + err.Error(),
+		}, nil
 	}
-	return &resp, nil
+
+	return &pb.UserScopeResponse{
+		Code:    constant.SuccessCode,
+		Message: "success",
+		Scopes:  perms,
+	}, nil
 }
