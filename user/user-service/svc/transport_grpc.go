@@ -41,6 +41,12 @@ func MakeGRPCServer(endpoints Endpoints, options ...grpctransport.ServerOption) 
 			EncodeGRPCCreateUserResponse,
 			serverOptions...,
 		),
+		updateuser: grpctransport.NewServer(
+			endpoints.UpdateUserEndpoint,
+			DecodeGRPCUpdateUserRequest,
+			EncodeGRPCUpdateUserResponse,
+			serverOptions...,
+		),
 		deleteuser: grpctransport.NewServer(
 			endpoints.DeleteUserEndpoint,
 			DecodeGRPCDeleteUserRequest,
@@ -54,6 +60,7 @@ func MakeGRPCServer(endpoints Endpoints, options ...grpctransport.ServerOption) 
 type grpcServer struct {
 	getuser    grpctransport.Handler
 	createuser grpctransport.Handler
+	updateuser grpctransport.Handler
 	deleteuser grpctransport.Handler
 }
 
@@ -73,6 +80,14 @@ func (s *grpcServer) CreateUser(ctx context.Context, req *pb.CreateUserRequest) 
 		return nil, err
 	}
 	return rep.(*pb.CreateUserResponse), nil
+}
+
+func (s *grpcServer) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
+	_, rep, err := s.updateuser.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.UpdateUserResponse), nil
 }
 
 func (s *grpcServer) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
@@ -99,6 +114,13 @@ func DecodeGRPCCreateUserRequest(_ context.Context, grpcReq interface{}) (interf
 	return req, nil
 }
 
+// DecodeGRPCUpdateUserRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC updateuser request to a user-domain updateuser request. Primarily useful in a server.
+func DecodeGRPCUpdateUserRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.UpdateUserRequest)
+	return req, nil
+}
+
 // DecodeGRPCDeleteUserRequest is a transport/grpc.DecodeRequestFunc that converts a
 // gRPC deleteuser request to a user-domain deleteuser request. Primarily useful in a server.
 func DecodeGRPCDeleteUserRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
@@ -119,6 +141,13 @@ func EncodeGRPCGetUserResponse(_ context.Context, response interface{}) (interfa
 // user-domain createuser response to a gRPC createuser reply. Primarily useful in a server.
 func EncodeGRPCCreateUserResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(*pb.CreateUserResponse)
+	return resp, nil
+}
+
+// EncodeGRPCUpdateUserResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain updateuser response to a gRPC updateuser reply. Primarily useful in a server.
+func EncodeGRPCUpdateUserResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.UpdateUserResponse)
 	return resp, nil
 }
 

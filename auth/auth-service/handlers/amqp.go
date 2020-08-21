@@ -34,6 +34,8 @@ func UserUpdateMsgProcessor(msg amqp.Delivery) {
 	switch user.Type {
 	case userModels.UserMsgTypeCreated:
 		err = createUser(user)
+	case userModels.UserMsgTypeDeleted:
+		err = disableUser(user)
 	default:
 		err = fmt.Errorf("undefined message type: %s", user.Type)
 	}
@@ -53,6 +55,10 @@ func createUser(user userModels.UserMsg) error {
 		Email:     user.Email,
 		Password:  user.Password,
 	})
+}
+
+func disableUser(user userModels.UserMsg) error {
+	return repo.DeleteAuth(repo.GetConn(), user.UserId)
 }
 
 func ackMsg(msg amqp.Delivery) {

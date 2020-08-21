@@ -57,19 +57,28 @@ func (c *MysqlClient) Close() error {
 
 func (c *MysqlClient) GetUser(conn *gorm.DB, id uint64) (*User, error) {
 	var user User
-	err := conn.Where("id = ?", id).Find(&user).Error
+	err := conn.Where("id = ?", id).Unscoped().Find(&user).Error
 	return &user, err
 }
 
-func (c *MysqlClient) CheckEmailExists(conn *gorm.DB, email string) (*User, error) {
-	var user User
-	err := conn.Where("email = ?", email).Find(&user).Error
-	return &user, err
+func (c *MysqlClient) CheckEmailExists(conn *gorm.DB, email string) (bool, error) {
+	var cnt int
+	err := conn.Model(&User{}).Unscoped().Where("email = ?", email).Count(&cnt).Error
+	return cnt > 0, err
 }
 
 func (c *MysqlClient) CreateUser(conn *gorm.DB, user User) (*User, error) {
+	if user.Status != "" {
+		user.Status = UserStatusEnabled
+	}
 	err := conn.Create(&user).Error
 	return &user, err
+}
+
+func (c *MysqlClient) UpdateUser(conn *gorm.DB, user User) (*User, error) {
+	var res User
+	err := conn.Model(&res).Unscoped().Updates(user).Error
+	return &res, err
 }
 
 func (c *MysqlClient) Delete(conn *gorm.DB, id uint64) error {

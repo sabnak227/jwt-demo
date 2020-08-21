@@ -23,6 +23,19 @@ service User {
       }
     };
   }
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse) {
+    option (google.api.http) = {
+      custom {
+        kind: "HEAD"
+        path: "/user/{ID}"
+      }
+      additional_bindings {
+        put: "/user/{ID}"
+        // All other fields (In) are located in the body of the http/json request
+        body: "*"
+      }
+    };
+  }
   rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse) {
     option (google.api.http) = {
       custom {
@@ -72,12 +85,32 @@ message CreateUserRequest {
   string state = 8;
   string country = 9;
   string phone = 10;
+  string status = 11;
 }
 
 message CreateUserResponse {
   int32 code = 1;
   string message = 2;
-  map<string, int32> errors = 3;
+}
+
+
+message UpdateUserRequest {
+  uint64 ID = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string email = 4;
+  string address1 = 5;
+  string address2 = 6;
+  string city = 7;
+  string state = 8;
+  string country = 9;
+  string phone = 10;
+  string status = 11;
+}
+
+message UpdateUserResponse {
+  int32 code = 1;
+  string message = 2;
 }
 
 message DeleteUserRequest {

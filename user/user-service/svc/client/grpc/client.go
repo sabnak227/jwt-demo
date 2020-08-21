@@ -62,6 +62,19 @@ func New(conn *grpc.ClientConn, options ...ClientOption) (pb.UserServer, error) 
 		).Endpoint()
 	}
 
+	var updateuserEndpoint endpoint.Endpoint
+	{
+		updateuserEndpoint = grpctransport.NewClient(
+			conn,
+			"user.User",
+			"UpdateUser",
+			EncodeGRPCUpdateUserRequest,
+			DecodeGRPCUpdateUserResponse,
+			pb.UpdateUserResponse{},
+			clientOptions...,
+		).Endpoint()
+	}
+
 	var deleteuserEndpoint endpoint.Endpoint
 	{
 		deleteuserEndpoint = grpctransport.NewClient(
@@ -78,6 +91,7 @@ func New(conn *grpc.ClientConn, options ...ClientOption) (pb.UserServer, error) 
 	return svc.Endpoints{
 		GetUserEndpoint:    getuserEndpoint,
 		CreateUserEndpoint: createuserEndpoint,
+		UpdateUserEndpoint: updateuserEndpoint,
 		DeleteUserEndpoint: deleteuserEndpoint,
 	}, nil
 }
@@ -95,6 +109,13 @@ func DecodeGRPCGetUserResponse(_ context.Context, grpcReply interface{}) (interf
 // gRPC createuser reply to a user-domain createuser response. Primarily useful in a client.
 func DecodeGRPCCreateUserResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
 	reply := grpcReply.(*pb.CreateUserResponse)
+	return reply, nil
+}
+
+// DecodeGRPCUpdateUserResponse is a transport/grpc.DecodeResponseFunc that converts a
+// gRPC updateuser reply to a user-domain updateuser response. Primarily useful in a client.
+func DecodeGRPCUpdateUserResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
+	reply := grpcReply.(*pb.UpdateUserResponse)
 	return reply, nil
 }
 
@@ -118,6 +139,13 @@ func EncodeGRPCGetUserRequest(_ context.Context, request interface{}) (interface
 // user-domain createuser request to a gRPC createuser request. Primarily useful in a client.
 func EncodeGRPCCreateUserRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(*pb.CreateUserRequest)
+	return req, nil
+}
+
+// EncodeGRPCUpdateUserRequest is a transport/grpc.EncodeRequestFunc that converts a
+// user-domain updateuser request to a gRPC updateuser request. Primarily useful in a client.
+func EncodeGRPCUpdateUserRequest(_ context.Context, request interface{}) (interface{}, error) {
+	req := request.(*pb.UpdateUserRequest)
 	return req, nil
 }
 

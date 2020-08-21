@@ -75,6 +75,19 @@ func MakeHTTPHandler(endpoints Endpoints, options ...httptransport.ServerOption)
 		serverOptions...,
 	))
 
+	m.Methods("PUT").Path("/user/{ID}").Handler(httptransport.NewServer(
+		endpoints.UpdateUserEndpoint,
+		DecodeHTTPUpdateUserZeroRequest,
+		EncodeHTTPGenericResponse,
+		serverOptions...,
+	))
+	m.Methods("HEAD").Path("/user/{ID}").Handler(httptransport.NewServer(
+		endpoints.UpdateUserEndpoint,
+		DecodeHTTPUpdateUserOneRequest,
+		EncodeHTTPGenericResponse,
+		serverOptions...,
+	))
+
 	m.Methods("DELETE").Path("/user/{ID}").Handler(httptransport.NewServer(
 		endpoints.DeleteUserEndpoint,
 		DecodeHTTPDeleteUserZeroRequest,
@@ -310,6 +323,158 @@ func DecodeHTTPCreateUserOneRequest(_ context.Context, r *http.Request) (interfa
 		PhoneCreateUserStr := PhoneCreateUserStrArr[0]
 		PhoneCreateUser := PhoneCreateUserStr
 		req.Phone = PhoneCreateUser
+	}
+
+	if StatusCreateUserStrArr, ok := queryParams["status"]; ok {
+		StatusCreateUserStr := StatusCreateUserStrArr[0]
+		StatusCreateUser := StatusCreateUserStr
+		req.Status = StatusCreateUser
+	}
+
+	return &req, err
+}
+
+// DecodeHTTPUpdateUserZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded updateuser request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPUpdateUserZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	defer r.Body.Close()
+	var req pb.UpdateUserRequest
+	buf, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		// AllowUnknownFields stops the unmarshaler from failing if the JSON contains unknown fields.
+		unmarshaller := jsonpb.Unmarshaler{
+			AllowUnknownFields: true,
+		}
+		if err = unmarshaller.Unmarshal(bytes.NewBuffer(buf), &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, httpError{errors.Wrapf(err, "request body '%s': cannot parse non-json request body", buf),
+				http.StatusBadRequest,
+				nil,
+			}
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := r.URL.Query()
+	_ = queryParams
+
+	IDUpdateUserStr := pathParams["ID"]
+	IDUpdateUser, err := strconv.ParseUint(IDUpdateUserStr, 10, 64)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("Error while extracting IDUpdateUser from path, pathParams: %v", pathParams))
+	}
+	req.ID = IDUpdateUser
+
+	return &req, err
+}
+
+// DecodeHTTPUpdateUserOneRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded updateuser request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPUpdateUserOneRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	defer r.Body.Close()
+	var req pb.UpdateUserRequest
+	buf, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		// AllowUnknownFields stops the unmarshaler from failing if the JSON contains unknown fields.
+		unmarshaller := jsonpb.Unmarshaler{
+			AllowUnknownFields: true,
+		}
+		if err = unmarshaller.Unmarshal(bytes.NewBuffer(buf), &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, httpError{errors.Wrapf(err, "request body '%s': cannot parse non-json request body", buf),
+				http.StatusBadRequest,
+				nil,
+			}
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := r.URL.Query()
+	_ = queryParams
+
+	IDUpdateUserStr := pathParams["ID"]
+	IDUpdateUser, err := strconv.ParseUint(IDUpdateUserStr, 10, 64)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("Error while extracting IDUpdateUser from path, pathParams: %v", pathParams))
+	}
+	req.ID = IDUpdateUser
+
+	if FirstNameUpdateUserStrArr, ok := queryParams["first_name"]; ok {
+		FirstNameUpdateUserStr := FirstNameUpdateUserStrArr[0]
+		FirstNameUpdateUser := FirstNameUpdateUserStr
+		req.FirstName = FirstNameUpdateUser
+	}
+
+	if LastNameUpdateUserStrArr, ok := queryParams["last_name"]; ok {
+		LastNameUpdateUserStr := LastNameUpdateUserStrArr[0]
+		LastNameUpdateUser := LastNameUpdateUserStr
+		req.LastName = LastNameUpdateUser
+	}
+
+	if EmailUpdateUserStrArr, ok := queryParams["email"]; ok {
+		EmailUpdateUserStr := EmailUpdateUserStrArr[0]
+		EmailUpdateUser := EmailUpdateUserStr
+		req.Email = EmailUpdateUser
+	}
+
+	if Address1UpdateUserStrArr, ok := queryParams["address1"]; ok {
+		Address1UpdateUserStr := Address1UpdateUserStrArr[0]
+		Address1UpdateUser := Address1UpdateUserStr
+		req.Address1 = Address1UpdateUser
+	}
+
+	if Address2UpdateUserStrArr, ok := queryParams["address2"]; ok {
+		Address2UpdateUserStr := Address2UpdateUserStrArr[0]
+		Address2UpdateUser := Address2UpdateUserStr
+		req.Address2 = Address2UpdateUser
+	}
+
+	if CityUpdateUserStrArr, ok := queryParams["city"]; ok {
+		CityUpdateUserStr := CityUpdateUserStrArr[0]
+		CityUpdateUser := CityUpdateUserStr
+		req.City = CityUpdateUser
+	}
+
+	if StateUpdateUserStrArr, ok := queryParams["state"]; ok {
+		StateUpdateUserStr := StateUpdateUserStrArr[0]
+		StateUpdateUser := StateUpdateUserStr
+		req.State = StateUpdateUser
+	}
+
+	if CountryUpdateUserStrArr, ok := queryParams["country"]; ok {
+		CountryUpdateUserStr := CountryUpdateUserStrArr[0]
+		CountryUpdateUser := CountryUpdateUserStr
+		req.Country = CountryUpdateUser
+	}
+
+	if PhoneUpdateUserStrArr, ok := queryParams["phone"]; ok {
+		PhoneUpdateUserStr := PhoneUpdateUserStrArr[0]
+		PhoneUpdateUser := PhoneUpdateUserStr
+		req.Phone = PhoneUpdateUser
+	}
+
+	if StatusUpdateUserStrArr, ok := queryParams["status"]; ok {
+		StatusUpdateUserStr := StatusUpdateUserStrArr[0]
+		StatusUpdateUser := StatusUpdateUserStr
+		req.Status = StatusUpdateUser
 	}
 
 	return &req, err

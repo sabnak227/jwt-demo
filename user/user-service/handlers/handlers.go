@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	pb "github.com/sabnak227/jwt-demo/user"
 	"github.com/sabnak227/jwt-demo/user/user-service/models"
 	amqpAdapter "github.com/sabnak227/jwt-demo/util/amqp"
@@ -58,14 +59,17 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 
 	// verify if user already exists
 	exist, err := repo.CheckEmailExists(repo.GetConn(), in.Email)
-	if err == nil && exist != nil {
-		return nil, errors.NewResponseError(err, "User already exist").SetErrorCode(constant.UserExists)
+	if err != nil {
+		return nil, errors.NewResponseError(err, "Failed getting user email")
+	}
+	if exist {
+		return nil, errors.NewResponseError(fmt.Errorf("email exists"), "Email already taken").SetErrorCode(constant.ValidationError)
 	}
 	logger.Infof("creating user: %s", in.Email)
 
 	// create user
 	u := models.User{
-		Status:    models.UserStatusEnabled,
+		Status:    in.Status,
 		FirstName: in.FirstName,
 		LastName:  in.LastName,
 		Email:     in.Email,
@@ -85,13 +89,64 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 	// publish user creation via amqp
 	b, _ := json.Marshal(models.NewUserMsg(user, models.UserMsgTypeCreated).SetPassword(in.Password))
 
-	// publishing on user_create.# topic exchange to notify all services subscribing to this topic
+	// publishing on user_create.# fanout exchange to notify all services subscribing to this topic
 	o := amqpAdapter.FanoutPublisher("user_updates")
 	if err := amqpClient.Publish(*o, b, ""); err != nil {
 		logger.Errorf("Failed to publish to queue %s", err)
 	}
 
 	return &pb.CreateUserResponse{
+		Code:    constant.SuccessCode,
+		Message: "success",
+	}, nil
+}
+
+// UpdateUser implements Service.
+func (s userService) UpdateUser(ctx context.Context, in *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
+	i := updateUserRequest{
+		req: *in,
+	}
+	// request body validation
+	if err := i.Validate(); err != nil {
+		return nil, errors.NewResponseError(err, "Validation error")
+	}
+
+	// get user
+	user, err := repo.GetUser(repo.GetConn(), in.ID)
+	if err != nil {
+		return nil, errors.NewResponseError(err, "User not found").SetErrorCode(constant.UserNotFound).SetErrorCode(http.StatusNotFound)
+	}
+
+	// verify email
+	if in.Email != user.Email {
+		exist, err := repo.CheckEmailExists(repo.GetConn(), in.Email)
+		if err != nil {
+			return nil, errors.NewResponseError(err, "Failed getting user email")
+		}
+		if exist {
+			return nil, errors.NewResponseError(fmt.Errorf("email exists"), "Email already taken").SetErrorCode(constant.ValidationError)
+		}
+	}
+
+	logger.Infof("updating user: %s", in.Email)
+
+	// update user
+	user.FirstName = in.FirstName
+	user.LastName = in.LastName
+	user.Email = in.Email
+	user.Address1 = in.Address1
+	user.Address2 = in.Address2
+	user.City = in.City
+	user.State = in.State
+	user.Country = in.Country
+	user.Phone = in.Phone
+	user.Status = in.Status
+
+	if _, err := repo.UpdateUser(repo.GetConn(), *user); err != nil {
+		return nil, errors.NewResponseError(err, "Failed to update user")
+	}
+
+	return &pb.UpdateUserResponse{
 		Code:    constant.SuccessCode,
 		Message: "success",
 	}, nil

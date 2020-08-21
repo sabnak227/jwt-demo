@@ -65,12 +65,14 @@ func NewEndpoints() svc.Endpoints {
 	var (
 		getuserEndpoint    = svc.MakeGetUserEndpoint(service)
 		createuserEndpoint = svc.MakeCreateUserEndpoint(service)
+		updateuserEndpoint = svc.MakeUpdateUserEndpoint(service)
 		deleteuserEndpoint = svc.MakeDeleteUserEndpoint(service)
 	)
 
 	endpoints := svc.Endpoints{
 		GetUserEndpoint:    getuserEndpoint,
 		CreateUserEndpoint: createuserEndpoint,
+		UpdateUserEndpoint: updateuserEndpoint,
 		DeleteUserEndpoint: deleteuserEndpoint,
 	}
 

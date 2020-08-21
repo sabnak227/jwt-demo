@@ -13,8 +13,9 @@ type DBClient interface {
 	Migrate()
 	Close() error
 	GetUser(conn *gorm.DB, id uint64) (*User, error)
-	CheckEmailExists(conn *gorm.DB, email string) (*User, error)
+	CheckEmailExists(conn *gorm.DB, email string) (bool, error)
 	CreateUser(conn *gorm.DB, user User) (*User, error)
+	UpdateUser(conn *gorm.DB, user User) (*User, error)
 	Delete(conn *gorm.DB, id uint64) error
 }
 

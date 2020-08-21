@@ -70,6 +70,16 @@ func New(instance string, options ...httptransport.ClientOption) (pb.UserServer,
 			options...,
 		).Endpoint()
 	}
+	var UpdateUserZeroEndpoint endpoint.Endpoint
+	{
+		UpdateUserZeroEndpoint = httptransport.NewClient(
+			"PUT",
+			copyURL(u, "/user/"),
+			EncodeHTTPUpdateUserZeroRequest,
+			DecodeHTTPUpdateUserResponse,
+			options...,
+		).Endpoint()
+	}
 	var DeleteUserZeroEndpoint endpoint.Endpoint
 	{
 		DeleteUserZeroEndpoint = httptransport.NewClient(
@@ -84,6 +94,7 @@ func New(instance string, options ...httptransport.ClientOption) (pb.UserServer,
 	return svc.Endpoints{
 		GetUserEndpoint:    GetUserZeroEndpoint,
 		CreateUserEndpoint: CreateUserZeroEndpoint,
+		UpdateUserEndpoint: UpdateUserZeroEndpoint,
 		DeleteUserEndpoint: DeleteUserZeroEndpoint,
 	}, nil
 }
@@ -158,6 +169,33 @@ func DecodeHTTPCreateUserResponse(_ context.Context, r *http.Response) (interfac
 	}
 
 	var resp pb.CreateUserResponse
+	if err = jsonpb.UnmarshalString(string(buf), &resp); err != nil {
+		return nil, errorDecoder(buf)
+	}
+
+	return &resp, nil
+}
+
+// DecodeHTTPUpdateUserResponse is a transport/http.DecodeResponseFunc that decodes
+// a JSON-encoded UpdateUserResponse response from the HTTP response body.
+// If the response has a non-200 status code, we will interpret that as an
+// error and attempt to decode the specific error message from the response
+// body. Primarily useful in a client.
+func DecodeHTTPUpdateUserResponse(_ context.Context, r *http.Response) (interface{}, error) {
+	defer r.Body.Close()
+	buf, err := ioutil.ReadAll(r.Body)
+	if err == io.EOF {
+		return nil, errors.New("response http body empty")
+	}
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot read http body")
+	}
+
+	if r.StatusCode != http.StatusOK {
+		return nil, errors.Wrapf(errorDecoder(buf), "status code: '%d'", r.StatusCode)
+	}
+
+	var resp pb.UpdateUserResponse
 	if err = jsonpb.UnmarshalString(string(buf), &resp); err != nil {
 		return nil, errorDecoder(buf)
 	}
@@ -283,6 +321,8 @@ func EncodeHTTPCreateUserZeroRequest(_ context.Context, r *http.Request, request
 
 	toRet.Phone = req.Phone
 
+	toRet.Status = req.Status
+
 	encoder := json.NewEncoder(&buf)
 	encoder.SetEscapeHTML(false)
 	if err := encoder.Encode(toRet); err != nil {
@@ -342,10 +382,139 @@ func EncodeHTTPCreateUserOneRequest(_ context.Context, r *http.Request, request 
 
 	values.Add("phone", fmt.Sprint(req.Phone))
 
+	values.Add("status", fmt.Sprint(req.Status))
+
 	r.URL.RawQuery = values.Encode()
 	// Set the body parameters
 	var buf bytes.Buffer
 	toRet := request.(*pb.CreateUserRequest)
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(toRet); err != nil {
+		return errors.Wrapf(err, "couldn't encode body as json %v", toRet)
+	}
+	r.Body = ioutil.NopCloser(&buf)
+	return nil
+}
+
+// EncodeHTTPUpdateUserZeroRequest is a transport/http.EncodeRequestFunc
+// that encodes a updateuser request into the various portions of
+// the http request (path, query, and body).
+func EncodeHTTPUpdateUserZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+	strval := ""
+	_ = strval
+	req := request.(*pb.UpdateUserRequest)
+	_ = req
+
+	r.Header.Set("transport", "HTTPJSON")
+	r.Header.Set("request-url", r.URL.Path)
+
+	// Set the path parameters
+	path := strings.Join([]string{
+		"",
+		"user",
+		fmt.Sprint(req.ID),
+	}, "/")
+	u, err := url.Parse(path)
+	if err != nil {
+		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
+	}
+	r.URL.RawPath = u.RawPath
+	r.URL.Path = u.Path
+
+	// Set the query parameters
+	values := r.URL.Query()
+	var tmp []byte
+	_ = tmp
+
+	r.URL.RawQuery = values.Encode()
+	// Set the body parameters
+	var buf bytes.Buffer
+	toRet := request.(*pb.UpdateUserRequest)
+
+	toRet.FirstName = req.FirstName
+
+	toRet.LastName = req.LastName
+
+	toRet.Email = req.Email
+
+	toRet.Address1 = req.Address1
+
+	toRet.Address2 = req.Address2
+
+	toRet.City = req.City
+
+	toRet.State = req.State
+
+	toRet.Country = req.Country
+
+	toRet.Phone = req.Phone
+
+	toRet.Status = req.Status
+
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(toRet); err != nil {
+		return errors.Wrapf(err, "couldn't encode body as json %v", toRet)
+	}
+	r.Body = ioutil.NopCloser(&buf)
+	return nil
+}
+
+// EncodeHTTPUpdateUserOneRequest is a transport/http.EncodeRequestFunc
+// that encodes a updateuser request into the various portions of
+// the http request (path, query, and body).
+func EncodeHTTPUpdateUserOneRequest(_ context.Context, r *http.Request, request interface{}) error {
+	strval := ""
+	_ = strval
+	req := request.(*pb.UpdateUserRequest)
+	_ = req
+
+	r.Header.Set("transport", "HTTPJSON")
+	r.Header.Set("request-url", r.URL.Path)
+
+	// Set the path parameters
+	path := strings.Join([]string{
+		"",
+		"user",
+		fmt.Sprint(req.ID),
+	}, "/")
+	u, err := url.Parse(path)
+	if err != nil {
+		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
+	}
+	r.URL.RawPath = u.RawPath
+	r.URL.Path = u.Path
+
+	// Set the query parameters
+	values := r.URL.Query()
+	var tmp []byte
+	_ = tmp
+
+	values.Add("first_name", fmt.Sprint(req.FirstName))
+
+	values.Add("last_name", fmt.Sprint(req.LastName))
+
+	values.Add("email", fmt.Sprint(req.Email))
+
+	values.Add("address1", fmt.Sprint(req.Address1))
+
+	values.Add("address2", fmt.Sprint(req.Address2))
+
+	values.Add("city", fmt.Sprint(req.City))
+
+	values.Add("state", fmt.Sprint(req.State))
+
+	values.Add("country", fmt.Sprint(req.Country))
+
+	values.Add("phone", fmt.Sprint(req.Phone))
+
+	values.Add("status", fmt.Sprint(req.Status))
+
+	r.URL.RawQuery = values.Encode()
+	// Set the body parameters
+	var buf bytes.Buffer
+	toRet := request.(*pb.UpdateUserRequest)
 	encoder := json.NewEncoder(&buf)
 	encoder.SetEscapeHTML(false)
 	if err := encoder.Encode(toRet); err != nil {

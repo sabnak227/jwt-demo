@@ -36,12 +36,15 @@ func NewResponseError(err error, msg string) *ResponseError {
 type errorResponse struct {
 	Code     int    `json:"code"`
 	Message  string `json:"message"`
-	Error	 string  `json:"error"`
+	Error	 string  `json:"error,omitempty"`
 	ValidationErrors map[string]int32 `json:"validation_errors,omitempty"`
 }
 
 func (e *ResponseError) Error() string {
-	return e.Err.Error()
+	if e.Err != nil {
+		return e.Err.Error()
+	}
+	return ""
 }
 
 func (e *ResponseError) SetStatusCode(c int) *ResponseError {
@@ -59,10 +62,14 @@ func (e *ResponseError) StatusCode() int {
 }
 
 func (e *ResponseError) MarshalJSON() ([]byte, error) {
+	err := ""
+	if e.Err != nil {
+		err = e.Err.Error()
+	}
 	return json.Marshal(errorResponse{
 		Code: e.ErrorCode,
 		Message: e.Message,
-		Error: e.Err.Error(),
+		Error: err,
 		ValidationErrors: e.ValidationErrors,
 	})
 }

@@ -160,6 +160,7 @@ github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANyt
 github.com/influxdata/influxdb1-client v0.0.0-20191209144304-8bf82d3c094d/go.mod h1:qj24IKcXYK6Iy9ceXlo3Tc+vtHo9lIhSX5JddghvEPo=
 github.com/jinzhu/gorm v1.9.15 h1:OdR1qFvtXktlxk73XFYMiYn9ywzTwytqe4QkuMRqc38=
 github.com/jinzhu/gorm v1.9.15/go.mod h1:G3LB3wezTOWM2ITLzPxEXgSkOXAntiLHS7UdBefADcs=
+github.com/jinzhu/gorm v1.9.16 h1:+IyIjPEABKRpsu/F8OvDPy9fyQlgsg2luMV2ZIH5i5o=
 github.com/jinzhu/gorm v1.9.16/go.mod h1:G3LB3wezTOWM2ITLzPxEXgSkOXAntiLHS7UdBefADcs=
 github.com/jinzhu/inflection v1.0.0 h1:K317FqzuhWc8YvSVlFMCCUb36O/S9MCKRDI7QkRKD/E=
 github.com/jinzhu/inflection v1.0.0/go.mod h1:h+uFLlag+Qp1Va5pdKtLDYj+kHp5pxUVkryuEj+Srlc=
@@ -285,6 +286,7 @@ github.com/sabnak227/jwt-demo/auth v0.0.0-20200813020645-c7e09c0675bb/go.mod h1:
 github.com/sabnak227/jwt-demo/auth v0.0.0-20200819180714-17e952fb120e h1:lxkx8UQ33RVTkdXNHuA3OKlDb8BXrAFq6Vcwpsf1OS0=
 github.com/sabnak227/jwt-demo/auth v0.0.0-20200819180714-17e952fb120e/go.mod h1:vY1viPlIfmx/okBdwMfvQv5JUu419ChJBUZOHqwkK3E=
 github.com/sabnak227/jwt-demo/auth v0.0.0-20200819191209-9d9043b16789/go.mod h1:uJ4K32uUiC9RNBZpgx+/9E2l46ALJiddX+xWOdwKtzo=
+github.com/sabnak227/jwt-demo/auth v0.0.0-20200821193701-e9050f6a1c40 h1:RhtEwCDvILLzOpZ/3pR1WsMIKuT3J7TcNS8T/z4iZsA=
 github.com/sabnak227/jwt-demo/auth v0.0.0-20200821193701-e9050f6a1c40/go.mod h1:p9jDgtpLsvLcm3MO1r8Sog5uqDVYBs0T1hvh4kcWtbE=
 github.com/sabnak227/jwt-demo/scope v0.0.0-20200811024124-82564ff0c6c3/go.mod h1:og/5qNd/O4uCp2ghVMIeAs1iJ8tnJ0hxbiee+3pZcP8=
 github.com/sabnak227/jwt-demo/scope v0.0.0-20200812015047-89a8262e5c24/go.mod h1:og/5qNd/O4uCp2ghVMIeAs1iJ8tnJ0hxbiee+3pZcP8=
@@ -314,6 +316,7 @@ github.com/sabnak227/jwt-demo/util v0.0.0-20200819180714-17e952fb120e h1:1K/3gkZ
 github.com/sabnak227/jwt-demo/util v0.0.0-20200819180714-17e952fb120e/go.mod h1:+cwke8t9DowISl20cUr1l1UV8Sr1kdLMCXeyXYVTBcQ=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200820211533-9ff71d726337 h1:zbhZSl3WWWmzmUSWPyVAGj5BwmZV7758IKiUiobP7gY=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200820211533-9ff71d726337/go.mod h1:+cwke8t9DowISl20cUr1l1UV8Sr1kdLMCXeyXYVTBcQ=
+github.com/sabnak227/jwt-demo/util v0.0.0-20200821193701-e9050f6a1c40 h1:QFaS4ueRkCdHarYEShGTFsfKoPOV5S8UF9nulC7nwRA=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200821193701-e9050f6a1c40/go.mod h1:+cwke8t9DowISl20cUr1l1UV8Sr1kdLMCXeyXYVTBcQ=
 github.com/samuel/go-zookeeper v0.0.0-20190923202752-2cc03de413da/go.mod h1:gi+0XIa01GRL2eRQVjQkKGqKF3SF9vZR/HnPullcV2E=
 github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg65j358z/aeFdxmN0P9QXhEzd20vsDc=
@@ -412,6 +415,7 @@ golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e h1:3G+cUijn7XD+S4eJFddp53Pv7
 golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e/go.mod h1:qpuaurCH72eLCgpAm/N6yyVIVM9cpaDIP3A8BGJEC5A=
 golang.org/x/net v0.0.0-20200707034311-ab3426394381 h1:VXak5I6aEWmAXeQjA+QSZzlgNrpq9mjcfDemuexIKsU=
 golang.org/x/net v0.0.0-20200707034311-ab3426394381/go.mod h1:/O7V0waA8r7cgGh81Ro3o1hOxt32SMVPicZroKQ2sZA=
+golang.org/x/net v0.0.0-20200813134508-3edf25e44fcc h1:zK/HqS5bZxDptfPJNq8v7vJfXtkU7r9TLIoSr1bXaP4=
 golang.org/x/net v0.0.0-20200813134508-3edf25e44fcc/go.mod h1:/O7V0waA8r7cgGh81Ro3o1hOxt32SMVPicZroKQ2sZA=
 golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
 golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421/go.mod h1:gOpvHmFTYa4IltrdGE7lF6nIHvwfUNPOp7c8zoXwtLw=
@@ -445,6 +449,7 @@ golang.org/x/sys v0.0.0-20200810151505-1b9f1253b3ed h1:WBkVNH1zd9jg/dK4HCM4lNANn
 golang.org/x/sys v0.0.0-20200810151505-1b9f1253b3ed/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20200812155832-6a926be9bd1d h1:QQrM/CCYEzTs91GZylDCQjGHudbPTxF/1fvXdVh5lMo=
 golang.org/x/sys v0.0.0-20200812155832-6a926be9bd1d/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20200821140526-fda516888d29 h1:mNuhGagCf3lDDm5C0376C/sxh6V7fy9WbdEu/YDNA04=
 golang.org/x/sys v0.0.0-20200821140526-fda516888d29/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/text v0.3.2 h1:tW2bmiBqwgJj/UpqtC8EpXEZVYOwU0yG4iWbprSVAcs=
@@ -492,6 +497,7 @@ google.golang.org/genproto v0.0.0-20200812160120-2e714abc8b50 h1:l2NG22m/r5lXIXY
 google.golang.org/genproto v0.0.0-20200812160120-2e714abc8b50/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
 google.golang.org/genproto v0.0.0-20200813001606-1ccf2a5ae4fd h1:pCOIJgz7MD1XjLsF1K0X2xI97dR8sEXS34ZcYl7fcNE=
 google.golang.org/genproto v0.0.0-20200813001606-1ccf2a5ae4fd/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
+google.golang.org/genproto v0.0.0-20200815001618-f69a88009b70 h1:wboULUXGF3c5qdUnKp+6gLAccE6PRpa/czkYvQ4UXv8=
 google.golang.org/genproto v0.0.0-20200815001618-f69a88009b70/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
 google.golang.org/grpc v1.17.0/go.mod h1:6QZJwpn2B+Zp71q/5VxRsJ6NXXVCE5NRUHRo+f3cWCs=
 google.golang.org/grpc v1.19.0/go.mod h1:mqu4LbDTu4XGKhr4mRzUsmM4RtVoemTSY81AxZiDr8c=
