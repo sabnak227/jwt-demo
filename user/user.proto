@@ -5,6 +5,12 @@ package user;
 import "github.com/metaverse/truss/deftree/googlethirdparty/annotations.proto";
 
 service User {
+  rpc ListUser (ListUserRequest) returns (ListUserResponse) {
+    option (google.api.http) = {
+      get: "/user"
+    };
+  }
+
   rpc GetUser (GetUserRequest) returns (GetUserResponse) {
     option (google.api.http) = {
       get: "/user/{ID}"
@@ -62,6 +68,22 @@ message UserObj {
   string state = 8;
   string country = 9;
   string phone = 10;
+  string status = 11;
+  int64 created_at = 12;
+  int64 updated_at = 13;
+  int64 deleted_at = 14;
+}
+
+message ListUserRequest {
+  uint32 offset = 1;
+  uint32 limit = 2;
+  string search = 3;
+}
+
+message ListUserResponse {
+  int32 code = 1;
+  string message = 2;
+  repeated UserObj user = 3;
 }
 
 message GetUserRequest {

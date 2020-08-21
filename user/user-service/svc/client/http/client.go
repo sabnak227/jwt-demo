@@ -50,6 +50,16 @@ func New(instance string, options ...httptransport.ClientOption) (pb.UserServer,
 	}
 	_ = u
 
+	var ListUserZeroEndpoint endpoint.Endpoint
+	{
+		ListUserZeroEndpoint = httptransport.NewClient(
+			"GET",
+			copyURL(u, "/user"),
+			EncodeHTTPListUserZeroRequest,
+			DecodeHTTPListUserResponse,
+			options...,
+		).Endpoint()
+	}
 	var GetUserZeroEndpoint endpoint.Endpoint
 	{
 		GetUserZeroEndpoint = httptransport.NewClient(
@@ -92,6 +102,7 @@ func New(instance string, options ...httptransport.ClientOption) (pb.UserServer,
 	}
 
 	return svc.Endpoints{
+		ListUserEndpoint:   ListUserZeroEndpoint,
 		GetUserEndpoint:    GetUserZeroEndpoint,
 		CreateUserEndpoint: CreateUserZeroEndpoint,
 		UpdateUserEndpoint: UpdateUserZeroEndpoint,
@@ -121,6 +132,33 @@ func CtxValuesToSend(keys ...string) httptransport.ClientOption {
 }
 
 // HTTP Client Decode
+
+// DecodeHTTPListUserResponse is a transport/http.DecodeResponseFunc that decodes
+// a JSON-encoded ListUserResponse response from the HTTP response body.
+// If the response has a non-200 status code, we will interpret that as an
+// error and attempt to decode the specific error message from the response
+// body. Primarily useful in a client.
+func DecodeHTTPListUserResponse(_ context.Context, r *http.Response) (interface{}, error) {
+	defer r.Body.Close()
+	buf, err := ioutil.ReadAll(r.Body)
+	if err == io.EOF {
+		return nil, errors.New("response http body empty")
+	}
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot read http body")
+	}
+
+	if r.StatusCode != http.StatusOK {
+		return nil, errors.Wrapf(errorDecoder(buf), "status code: '%d'", r.StatusCode)
+	}
+
+	var resp pb.ListUserResponse
+	if err = jsonpb.UnmarshalString(string(buf), &resp); err != nil {
+		return nil, errorDecoder(buf)
+	}
+
+	return &resp, nil
+}
 
 // DecodeHTTPGetUserResponse is a transport/http.DecodeResponseFunc that decodes
 // a JSON-encoded GetUserResponse response from the HTTP response body.
@@ -231,6 +269,45 @@ func DecodeHTTPDeleteUserResponse(_ context.Context, r *http.Response) (interfac
 }
 
 // HTTP Client Encode
+
+// EncodeHTTPListUserZeroRequest is a transport/http.EncodeRequestFunc
+// that encodes a listuser request into the various portions of
+// the http request (path, query, and body).
+func EncodeHTTPListUserZeroRequest(_ context.Context, r *http.Request, request interface{}) error {
+	strval := ""
+	_ = strval
+	req := request.(*pb.ListUserRequest)
+	_ = req
+
+	r.Header.Set("transport", "HTTPJSON")
+	r.Header.Set("request-url", r.URL.Path)
+
+	// Set the path parameters
+	path := strings.Join([]string{
+		"",
+		"user",
+	}, "/")
+	u, err := url.Parse(path)
+	if err != nil {
+		return errors.Wrapf(err, "couldn't unmarshal path %q", path)
+	}
+	r.URL.RawPath = u.RawPath
+	r.URL.Path = u.Path
+
+	// Set the query parameters
+	values := r.URL.Query()
+	var tmp []byte
+	_ = tmp
+
+	values.Add("offset", fmt.Sprint(req.Offset))
+
+	values.Add("limit", fmt.Sprint(req.Limit))
+
+	values.Add("search", fmt.Sprint(req.Search))
+
+	r.URL.RawQuery = values.Encode()
+	return nil
+}
 
 // EncodeHTTPGetUserZeroRequest is a transport/http.EncodeRequestFunc
 // that encodes a getuser request into the various portions of

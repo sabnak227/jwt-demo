@@ -7,6 +7,17 @@ import (
 	"github.com/sabnak227/jwt-demo/user/user-service/models"
 )
 
+type listUserRequest struct {
+	req pb.ListUserRequest
+}
+
+func (l listUserRequest) Validate() error {
+	s := l.req
+	return validation.ValidateStruct(&s,
+		validation.Field(&s.Limit, validation.Min(uint32(1))),
+		validation.Field(&s.Offset, validation.Min(uint32(1))),
+	)
+}
 
 type createUserRequest struct {
 	req pb.CreateUserRequest

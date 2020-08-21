@@ -29,6 +29,12 @@ func MakeGRPCServer(endpoints Endpoints, options ...grpctransport.ServerOption) 
 	return &grpcServer{
 		// user
 
+		listuser: grpctransport.NewServer(
+			endpoints.ListUserEndpoint,
+			DecodeGRPCListUserRequest,
+			EncodeGRPCListUserResponse,
+			serverOptions...,
+		),
 		getuser: grpctransport.NewServer(
 			endpoints.GetUserEndpoint,
 			DecodeGRPCGetUserRequest,
@@ -58,6 +64,7 @@ func MakeGRPCServer(endpoints Endpoints, options ...grpctransport.ServerOption) 
 
 // grpcServer implements the UserServer interface
 type grpcServer struct {
+	listuser   grpctransport.Handler
 	getuser    grpctransport.Handler
 	createuser grpctransport.Handler
 	updateuser grpctransport.Handler
@@ -65,6 +72,14 @@ type grpcServer struct {
 }
 
 // Methods for grpcServer to implement UserServer interface
+
+func (s *grpcServer) ListUser(ctx context.Context, req *pb.ListUserRequest) (*pb.ListUserResponse, error) {
+	_, rep, err := s.listuser.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.ListUserResponse), nil
+}
 
 func (s *grpcServer) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	_, rep, err := s.getuser.ServeGRPC(ctx, req)
@@ -100,6 +115,13 @@ func (s *grpcServer) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) 
 
 // Server Decode
 
+// DecodeGRPCListUserRequest is a transport/grpc.DecodeRequestFunc that converts a
+// gRPC listuser request to a user-domain listuser request. Primarily useful in a server.
+func DecodeGRPCListUserRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.ListUserRequest)
+	return req, nil
+}
+
 // DecodeGRPCGetUserRequest is a transport/grpc.DecodeRequestFunc that converts a
 // gRPC getuser request to a user-domain getuser request. Primarily useful in a server.
 func DecodeGRPCGetUserRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
@@ -129,6 +151,13 @@ func DecodeGRPCDeleteUserRequest(_ context.Context, grpcReq interface{}) (interf
 }
 
 // Server Encode
+
+// EncodeGRPCListUserResponse is a transport/grpc.EncodeResponseFunc that converts a
+// user-domain listuser response to a gRPC listuser reply. Primarily useful in a server.
+func EncodeGRPCListUserResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(*pb.ListUserResponse)
+	return resp, nil
+}
 
 // EncodeGRPCGetUserResponse is a transport/grpc.EncodeResponseFunc that converts a
 // user-domain getuser response to a gRPC getuser reply. Primarily useful in a server.

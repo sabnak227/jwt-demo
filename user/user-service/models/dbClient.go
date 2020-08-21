@@ -12,6 +12,7 @@ type DBClient interface {
 	GetConn() *gorm.DB
 	Migrate()
 	Close() error
+	ListUser(conn *gorm.DB, offset uint32, limit uint32, search string) (*[]User, error)
 	GetUser(conn *gorm.DB, id uint64) (*User, error)
 	CheckEmailExists(conn *gorm.DB, email string) (bool, error)
 	CreateUser(conn *gorm.DB, user User) (*User, error)

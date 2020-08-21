@@ -19,6 +19,67 @@ func NewService() pb.UserServer {
 
 type userService struct{}
 
+// ListUser implements Service.
+func (s userService) ListUser(ctx context.Context, in *pb.ListUserRequest) (*pb.ListUserResponse, error) {
+	i := listUserRequest{
+		req: *in,
+	}
+	// request body validation
+	if err := i.Validate(); err != nil {
+		return nil, errors.NewResponseError(err, "Validation error")
+	}
+
+	if in.Limit == 0 {
+		in.Limit = 10
+	}
+	logger.Infof("Listing user info offset %d limit %d search %s", in.Offset, in.Limit, in.Search)
+
+	users, err := repo.ListUser(repo.GetConn(), in.Offset, in.Limit, in.Search)
+	if err != nil {
+		return nil, errors.NewResponseError(err, "Failed listing users")
+	}
+
+	if users == nil {
+		return &pb.ListUserResponse{
+			Code:    constant.SuccessCode,
+			Message: "success",
+			User:    nil,
+		}, nil
+	}
+
+	var res []*pb.UserObj
+	userSlice := *users
+	for i := 0; i < len(userSlice); i++ {
+		u := userSlice[i]
+		dt := int64(0)
+		if u.DeletedAt != nil {
+			dt = u.CreatedAt.Unix()
+		}
+		res = append(res, &pb.UserObj{
+			Id:        uint64(u.ID),
+			FirstName: u.FirstName,
+			LastName:  u.LastName,
+			Email:     u.Email,
+			Address1:  u.Address1,
+			Address2:  u.Address2,
+			City:      u.City,
+			State:     u.State,
+			Country:   u.Country,
+			Phone:     u.Phone,
+			Status:    u.Status,
+			CreatedAt: u.CreatedAt.Unix(),
+			UpdatedAt: u.UpdatedAt.Unix(),
+			DeletedAt: dt,
+		})
+	}
+
+	return &pb.ListUserResponse{
+		Code:    constant.SuccessCode,
+		Message: "success",
+		User:    res,
+	}, nil
+}
+
 // GetUser implements Service.
 func (s userService) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	logger.Infof("Getting user info for %d", in.ID)

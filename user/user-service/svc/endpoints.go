@@ -33,6 +33,7 @@ import (
 // single type that implements the Service interface. For example, you might
 // construct individual endpoints using transport/http.NewClient, combine them into an Endpoints, and return it to the caller as a Service.
 type Endpoints struct {
+	ListUserEndpoint   endpoint.Endpoint
 	GetUserEndpoint    endpoint.Endpoint
 	CreateUserEndpoint endpoint.Endpoint
 	UpdateUserEndpoint endpoint.Endpoint
@@ -40,6 +41,14 @@ type Endpoints struct {
 }
 
 // Endpoints
+
+func (e Endpoints) ListUser(ctx context.Context, in *pb.ListUserRequest) (*pb.ListUserResponse, error) {
+	response, err := e.ListUserEndpoint(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return response.(*pb.ListUserResponse), nil
+}
 
 func (e Endpoints) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	response, err := e.GetUserEndpoint(ctx, in)
@@ -74,6 +83,17 @@ func (e Endpoints) DeleteUser(ctx context.Context, in *pb.DeleteUserRequest) (*p
 }
 
 // Make Endpoints
+
+func MakeListUserEndpoint(s pb.UserServer) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(*pb.ListUserRequest)
+		v, err := s.ListUser(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	}
+}
 
 func MakeGetUserEndpoint(s pb.UserServer) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
@@ -126,6 +146,7 @@ func MakeDeleteUserEndpoint(s pb.UserServer) endpoint.Endpoint {
 // WrapAllExcept(middleware, "Status", "Ping")
 func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...string) {
 	included := map[string]struct{}{
+		"ListUser":   struct{}{},
 		"GetUser":    struct{}{},
 		"CreateUser": struct{}{},
 		"UpdateUser": struct{}{},
@@ -140,6 +161,9 @@ func (e *Endpoints) WrapAllExcept(middleware endpoint.Middleware, excluded ...st
 	}
 
 	for inc, _ := range included {
+		if inc == "ListUser" {
+			e.ListUserEndpoint = middleware(e.ListUserEndpoint)
+		}
 		if inc == "GetUser" {
 			e.GetUserEndpoint = middleware(e.GetUserEndpoint)
 		}
@@ -166,6 +190,7 @@ type LabeledMiddleware func(string, endpoint.Endpoint) endpoint.Endpoint
 // functionality.
 func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoint) endpoint.Endpoint, excluded ...string) {
 	included := map[string]struct{}{
+		"ListUser":   struct{}{},
 		"GetUser":    struct{}{},
 		"CreateUser": struct{}{},
 		"UpdateUser": struct{}{},
@@ -180,6 +205,9 @@ func (e *Endpoints) WrapAllLabeledExcept(middleware func(string, endpoint.Endpoi
 	}
 
 	for inc, _ := range included {
+		if inc == "ListUser" {
+			e.ListUserEndpoint = middleware("ListUser", e.ListUserEndpoint)
+		}
 		if inc == "GetUser" {
 			e.GetUserEndpoint = middleware("GetUser", e.GetUserEndpoint)
 		}

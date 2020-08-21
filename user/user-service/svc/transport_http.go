@@ -55,6 +55,13 @@ func MakeHTTPHandler(endpoints Endpoints, options ...httptransport.ServerOption)
 	serverOptions = append(serverOptions, options...)
 	m := mux.NewRouter()
 
+	m.Methods("GET").Path("/user").Handler(httptransport.NewServer(
+		endpoints.ListUserEndpoint,
+		DecodeHTTPListUserZeroRequest,
+		EncodeHTTPGenericResponse,
+		serverOptions...,
+	))
+
 	m.Methods("GET").Path("/user/{ID}").Handler(httptransport.NewServer(
 		endpoints.GetUserEndpoint,
 		DecodeHTTPGetUserZeroRequest,
@@ -152,6 +159,66 @@ func (h httpError) Headers() http.Header {
 }
 
 // Server Decode
+
+// DecodeHTTPListUserZeroRequest is a transport/http.DecodeRequestFunc that
+// decodes a JSON-encoded listuser request from the HTTP request
+// body. Primarily useful in a server.
+func DecodeHTTPListUserZeroRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	defer r.Body.Close()
+	var req pb.ListUserRequest
+	buf, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "cannot read body of http request")
+	}
+	if len(buf) > 0 {
+		// AllowUnknownFields stops the unmarshaler from failing if the JSON contains unknown fields.
+		unmarshaller := jsonpb.Unmarshaler{
+			AllowUnknownFields: true,
+		}
+		if err = unmarshaller.Unmarshal(bytes.NewBuffer(buf), &req); err != nil {
+			const size = 8196
+			if len(buf) > size {
+				buf = buf[:size]
+			}
+			return nil, httpError{errors.Wrapf(err, "request body '%s': cannot parse non-json request body", buf),
+				http.StatusBadRequest,
+				nil,
+			}
+		}
+	}
+
+	pathParams := mux.Vars(r)
+	_ = pathParams
+
+	queryParams := r.URL.Query()
+	_ = queryParams
+
+	if OffsetListUserStrArr, ok := queryParams["offset"]; ok {
+		OffsetListUserStr := OffsetListUserStrArr[0]
+		OffsetListUser, err := strconv.ParseUint(OffsetListUserStr, 10, 32)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("Error while extracting OffsetListUser from query, queryParams: %v", queryParams))
+		}
+		req.Offset = uint32(OffsetListUser)
+	}
+
+	if LimitListUserStrArr, ok := queryParams["limit"]; ok {
+		LimitListUserStr := LimitListUserStrArr[0]
+		LimitListUser, err := strconv.ParseUint(LimitListUserStr, 10, 32)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("Error while extracting LimitListUser from query, queryParams: %v", queryParams))
+		}
+		req.Limit = uint32(LimitListUser)
+	}
+
+	if SearchListUserStrArr, ok := queryParams["search"]; ok {
+		SearchListUserStr := SearchListUserStrArr[0]
+		SearchListUser := SearchListUserStr
+		req.Search = SearchListUser
+	}
+
+	return &req, err
+}
 
 // DecodeHTTPGetUserZeroRequest is a transport/http.DecodeRequestFunc that
 // decodes a JSON-encoded getuser request from the HTTP request

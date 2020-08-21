@@ -36,6 +36,19 @@ func New(conn *grpc.ClientConn, options ...ClientOption) (pb.UserServer, error) 
 		grpctransport.ClientBefore(
 			contextValuesToGRPCMetadata(cc.headers)),
 	}
+	var listuserEndpoint endpoint.Endpoint
+	{
+		listuserEndpoint = grpctransport.NewClient(
+			conn,
+			"user.User",
+			"ListUser",
+			EncodeGRPCListUserRequest,
+			DecodeGRPCListUserResponse,
+			pb.ListUserResponse{},
+			clientOptions...,
+		).Endpoint()
+	}
+
 	var getuserEndpoint endpoint.Endpoint
 	{
 		getuserEndpoint = grpctransport.NewClient(
@@ -89,6 +102,7 @@ func New(conn *grpc.ClientConn, options ...ClientOption) (pb.UserServer, error) 
 	}
 
 	return svc.Endpoints{
+		ListUserEndpoint:   listuserEndpoint,
 		GetUserEndpoint:    getuserEndpoint,
 		CreateUserEndpoint: createuserEndpoint,
 		UpdateUserEndpoint: updateuserEndpoint,
@@ -97,6 +111,13 @@ func New(conn *grpc.ClientConn, options ...ClientOption) (pb.UserServer, error) 
 }
 
 // GRPC Client Decode
+
+// DecodeGRPCListUserResponse is a transport/grpc.DecodeResponseFunc that converts a
+// gRPC listuser reply to a user-domain listuser response. Primarily useful in a client.
+func DecodeGRPCListUserResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
+	reply := grpcReply.(*pb.ListUserResponse)
+	return reply, nil
+}
 
 // DecodeGRPCGetUserResponse is a transport/grpc.DecodeResponseFunc that converts a
 // gRPC getuser reply to a user-domain getuser response. Primarily useful in a client.
@@ -127,6 +148,13 @@ func DecodeGRPCDeleteUserResponse(_ context.Context, grpcReply interface{}) (int
 }
 
 // GRPC Client Encode
+
+// EncodeGRPCListUserRequest is a transport/grpc.EncodeRequestFunc that converts a
+// user-domain listuser request to a gRPC listuser request. Primarily useful in a client.
+func EncodeGRPCListUserRequest(_ context.Context, request interface{}) (interface{}, error) {
+	req := request.(*pb.ListUserRequest)
+	return req, nil
+}
 
 // EncodeGRPCGetUserRequest is a transport/grpc.EncodeRequestFunc that converts a
 // user-domain getuser request to a gRPC getuser request. Primarily useful in a client.

@@ -63,6 +63,7 @@ func NewEndpoints() svc.Endpoints {
 
 	// Endpoint domain.
 	var (
+		listuserEndpoint   = svc.MakeListUserEndpoint(service)
 		getuserEndpoint    = svc.MakeGetUserEndpoint(service)
 		createuserEndpoint = svc.MakeCreateUserEndpoint(service)
 		updateuserEndpoint = svc.MakeUpdateUserEndpoint(service)
@@ -70,6 +71,7 @@ func NewEndpoints() svc.Endpoints {
 	)
 
 	endpoints := svc.Endpoints{
+		ListUserEndpoint:   listuserEndpoint,
 		GetUserEndpoint:    getuserEndpoint,
 		CreateUserEndpoint: createuserEndpoint,
 		UpdateUserEndpoint: updateuserEndpoint,

@@ -55,6 +55,19 @@ func (c *MysqlClient) Close() error {
 	return err
 }
 
+func (c *MysqlClient) ListUser(conn *gorm.DB, offset uint32, limit uint32, search string) (*[]User, error) {
+	var users []User
+	str := "%" + search + "%"
+	err := conn.Offset(offset).Limit(limit).
+		Unscoped().
+		Where("first_name LIKE ?", str).
+		Or("last_name LIKE ?", str).
+		Or("email LIKE ?", str).
+		Or("status LIKE ?", str).
+		Find(&users).Error
+	return &users, err
+}
+
 func (c *MysqlClient) GetUser(conn *gorm.DB, id uint64) (*User, error) {
 	var user User
 	err := conn.Where("id = ?", id).Unscoped().Find(&user).Error
