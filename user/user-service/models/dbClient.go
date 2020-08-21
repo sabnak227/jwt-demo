@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/jinzhu/gorm"
 	"github.com/sabnak227/jwt-demo/user/user-service/config"
 	log "github.com/sirupsen/logrus"
 )
@@ -8,12 +9,13 @@ import (
 // DBClient db connection interface
 type DBClient interface {
 	OpenCon(config config.Config, logger *log.Logger) error
+	GetConn() *gorm.DB
 	Migrate()
 	Close() error
-	GetUser(id uint64) (*User, error)
-	CheckEmailExists(email string) (*User, error)
-	CreateUser(user User) (*User, error)
-	Delete(id uint64) error
+	GetUser(conn *gorm.DB, id uint64) (*User, error)
+	CheckEmailExists(conn *gorm.DB, email string) (*User, error)
+	CreateUser(conn *gorm.DB, user User) (*User, error)
+	Delete(conn *gorm.DB, id uint64) error
 }
 
 // GormLogger struct

@@ -39,6 +39,10 @@ func (c *MysqlClient) OpenCon(config config.Config, logger *log.Logger) error {
 	return nil
 }
 
+func (c *MysqlClient) GetConn() *gorm.DB {
+	return c.conn
+}
+
 func (c *MysqlClient) Migrate() {
 	if c.config.AutoMigrate {
 		c.conn.AutoMigrate(&User{})
@@ -50,25 +54,25 @@ func (c *MysqlClient) Close() error {
 	return err
 }
 
-func (c *MysqlClient) GetUser(id uint64) (*User, error) {
+func (c *MysqlClient) GetUser(conn *gorm.DB, id uint64) (*User, error) {
 	var user User
-	err := c.conn.Where("id = ?", id).Find(&user).Error
+	err := conn.Where("id = ?", id).Find(&user).Error
 	return &user, err
 }
 
-func (c *MysqlClient) CheckEmailExists(email string) (*User, error) {
+func (c *MysqlClient) CheckEmailExists(conn *gorm.DB, email string) (*User, error) {
 	var user User
-	err := c.conn.Where("email = ?", email).Find(&user).Error
+	err := conn.Where("email = ?", email).Find(&user).Error
 	return &user, err
 }
 
-func (c *MysqlClient) CreateUser(user User) (*User, error) {
-	err := c.conn.Create(&user).Error
+func (c *MysqlClient) CreateUser(conn *gorm.DB, user User) (*User, error) {
+	err := conn.Create(&user).Error
 	return &user, err
 }
 
-func (c *MysqlClient) Delete(id uint64) error {
+func (c *MysqlClient) Delete(conn *gorm.DB, id uint64) error {
 	user := User{}
 	user.ID = uint(id)
-	return c.conn.Delete(&user).Error
+	return conn.Delete(&user).Error
 }

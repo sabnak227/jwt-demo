@@ -46,7 +46,7 @@ func UserUpdateMsgProcessor(msg amqp.Delivery) {
 }
 
 func createUser(user userModels.UserMsg) error {
-	return repo.CreateAuth(models.Auth{
+	return repo.CreateAuth(repo.GetConn(), models.Auth{
 		UserID:    user.UserId,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,

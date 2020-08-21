@@ -51,7 +51,7 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 	}
 
 	// verify user credentials in database
-	a, err := repo.AuthUser(in.Email, in.Password)
+	a, err := repo.AuthUser(repo.GetConn(), in.Email, in.Password)
 	if err != nil {
 		return &pb.LoginResponse{
 			Code:    constant.WrongPasswordCode,
@@ -118,7 +118,7 @@ func (s authService) CreateAuth(ctx context.Context, in *pb.CreateAuthRequest) (
 	}
 
 	// store in database
-	if err := repo.CreateAuth(models.Auth{
+	if err := repo.CreateAuth(repo.GetConn(), models.Auth{
 		UserID:    in.UserId,
 		FirstName: in.FirstName,
 		LastName:  in.LastName,

@@ -21,7 +21,7 @@ type userService struct{}
 func (s userService) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.GetUserResponse, error) {
 	logger.Infof("Getting user info for %d", in.ID)
 	var resp pb.GetUserResponse
-	u, err := repo.GetUser(in.ID)
+	u, err := repo.GetUser(repo.GetConn(), in.ID)
 	if err != nil {
 		logger.Error(err)
 		return &pb.GetUserResponse{
@@ -65,7 +65,7 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 	}
 
 	// verify if user already exists
-	exist, err := repo.CheckEmailExists(in.Email)
+	exist, err := repo.CheckEmailExists(repo.GetConn(), in.Email)
 	if err == nil && exist != nil {
 		return &pb.CreateUserResponse{
 			Code:    constant.ValidationError,
@@ -88,7 +88,7 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 		Phone:     in.Phone,
 	}
 
-	user, err := repo.CreateUser(u)
+	user, err := repo.CreateUser(repo.GetConn(), u)
 	if err != nil {
 		return &pb.CreateUserResponse{
 			Code:    constant.FailCode,
@@ -115,7 +115,7 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 func (s userService) DeleteUser(ctx context.Context, in *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
 	logger.Infof("deleting user: %d", in.ID)
 
-	user, err := repo.GetUser(in.ID)
+	user, err := repo.GetUser(repo.GetConn(), in.ID)
 	if err != nil {
 		return &pb.DeleteUserResponse{
 			Code:    constant.FailCode,
@@ -123,7 +123,7 @@ func (s userService) DeleteUser(ctx context.Context, in *pb.DeleteUserRequest) (
 		}, nil
 	}
 
-	if err := repo.Delete(in.ID); err != nil {
+	if err := repo.Delete(repo.GetConn(), in.ID); err != nil {
 		return &pb.DeleteUserResponse{
 			Code:    constant.FailCode,
 			Message: "Failed to delete user",

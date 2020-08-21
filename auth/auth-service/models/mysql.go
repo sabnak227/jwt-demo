@@ -41,6 +41,10 @@ func (c *MysqlClient) OpenCon(config config.Config, logger *log.Logger) error {
 	return nil
 }
 
+func (c *MysqlClient) GetConn() *gorm.DB {
+	return c.conn
+}
+
 func (c *MysqlClient) Migrate() {
 	if c.config.AutoMigrate {
 		c.conn.AutoMigrate(&Auth{})
@@ -52,9 +56,9 @@ func (c *MysqlClient) Close() error {
 	return err
 }
 
-func (c *MysqlClient) AuthUser(email string, password string)  (*Auth, error) {
+func (c *MysqlClient) AuthUser(conn *gorm.DB, email string, password string)  (*Auth, error) {
 	var auth Auth
-	if err := c.conn.Where("email = ?", email).First(&auth).Error; err != nil {
+	if err := conn.Where("email = ?", email).First(&auth).Error; err != nil {
 		return nil, err
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(auth.Password), []byte(password)) ; err != nil {
@@ -64,14 +68,14 @@ func (c *MysqlClient) AuthUser(email string, password string)  (*Auth, error) {
 }
 
 //CreateAuth upserts an auth entry to keep idempotence for microservice error handling
-func (c *MysqlClient) CreateAuth(auth Auth) error {
-	return c.conn.Where(Auth{
+func (c *MysqlClient) CreateAuth(conn *gorm.DB, auth Auth) error {
+	return conn.Where(Auth{
 		UserID:    auth.UserID,
 	}).Assign(auth).FirstOrCreate(&auth).Error
 }
 
-func (c *MysqlClient) DeleteAuth(userID uint64) error {
+func (c *MysqlClient) DeleteAuth(conn *gorm.DB, userID uint64) error {
 	auth := Auth{}
 	auth.UserID = userID
-	return c.conn.Delete(&auth).Error
+	return conn.Delete(&auth).Error
 }

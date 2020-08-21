@@ -300,6 +300,8 @@ github.com/sabnak227/jwt-demo/util v0.0.0-20200813020645-c7e09c0675bb h1:iQGqa3z
 github.com/sabnak227/jwt-demo/util v0.0.0-20200813020645-c7e09c0675bb/go.mod h1:+cwke8t9DowISl20cUr1l1UV8Sr1kdLMCXeyXYVTBcQ=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200819180714-17e952fb120e h1:1K/3gkZqZnRJceJ0cL2afaYOKlJvH+5aN59nJcOBDeQ=
 github.com/sabnak227/jwt-demo/util v0.0.0-20200819180714-17e952fb120e/go.mod h1:+cwke8t9DowISl20cUr1l1UV8Sr1kdLMCXeyXYVTBcQ=
+github.com/sabnak227/jwt-demo/util v0.0.0-20200820211533-9ff71d726337 h1:zbhZSl3WWWmzmUSWPyVAGj5BwmZV7758IKiUiobP7gY=
+github.com/sabnak227/jwt-demo/util v0.0.0-20200820211533-9ff71d726337/go.mod h1:+cwke8t9DowISl20cUr1l1UV8Sr1kdLMCXeyXYVTBcQ=
 github.com/samuel/go-zookeeper v0.0.0-20190923202752-2cc03de413da/go.mod h1:gi+0XIa01GRL2eRQVjQkKGqKF3SF9vZR/HnPullcV2E=
 github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529/go.mod h1:DxrIzT+xaE7yg65j358z/aeFdxmN0P9QXhEzd20vsDc=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/jinzhu/gorm"
 	"github.com/sabnak227/jwt-demo/auth/auth-service/config"
 	log "github.com/sirupsen/logrus"
 )
@@ -8,11 +9,12 @@ import (
 // DBClient db connection interface
 type DBClient interface {
 	OpenCon(config config.Config, logger *log.Logger) error
+	GetConn() *gorm.DB
 	Migrate()
 	Close() error
-	AuthUser(email string, password string) (*Auth, error)
-	CreateAuth(Auth) error
-	DeleteAuth(userID uint64) error
+	AuthUser(conn *gorm.DB, email string, password string) (*Auth, error)
+	CreateAuth(conn *gorm.DB, auth Auth) error
+	DeleteAuth(conn *gorm.DB, userID uint64) error
 }
 
 // GormLogger struct

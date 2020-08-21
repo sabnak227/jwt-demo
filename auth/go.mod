@@ -10,14 +10,17 @@ require (
 	github.com/gogo/protobuf v1.3.1
 	github.com/google/uuid v1.0.0
 	github.com/gorilla/mux v1.7.4
-	github.com/jinzhu/gorm v1.9.15
+	github.com/jinzhu/gorm v1.9.16
 	github.com/metaverse/truss v0.1.0
 	github.com/pkg/errors v0.9.1
-	github.com/sabnak227/jwt-demo/scope v0.0.0-20200819180714-17e952fb120e
-	github.com/sabnak227/jwt-demo/user v0.0.0-20200819180714-17e952fb120e
-	github.com/sabnak227/jwt-demo/util v0.0.0-20200819180714-17e952fb120e
+	github.com/sabnak227/jwt-demo/scope v0.0.0-20200820211533-9ff71d726337
+	github.com/sabnak227/jwt-demo/user v0.0.0-20200820211533-9ff71d726337
+	github.com/sabnak227/jwt-demo/util v0.0.0-20200820211533-9ff71d726337
 	github.com/sirupsen/logrus v1.6.0
 	github.com/streadway/amqp v1.0.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+	golang.org/x/net v0.0.0-20200813134508-3edf25e44fcc // indirect
+	golang.org/x/sys v0.0.0-20200821140526-fda516888d29 // indirect
+	google.golang.org/genproto v0.0.0-20200815001618-f69a88009b70 // indirect
 	google.golang.org/grpc v1.31.0
 )
