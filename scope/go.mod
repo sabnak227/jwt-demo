@@ -2,6 +2,8 @@ module github.com/sabnak227/jwt-demo/scope
 
 go 1.13
 
+replace github.com/sabnak227/jwt-demo/util => ../util
+
 require (
 	github.com/go-kit/kit v0.10.0
 	github.com/go-redis/redis/v8 v8.0.0-beta.7

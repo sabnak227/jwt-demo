@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
 
@@ -30,7 +31,7 @@ func (c *MysqlClient) OpenCon(config config.Config, logger *log.Logger) error {
 	)
 	db, err := gorm.Open(config.DBDriver, conStr)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to open db connection")
 	}
 	db.LogMode(true)
 	db.SetLogger(NewGormLogger(logger))
@@ -59,10 +60,10 @@ func (c *MysqlClient) Close() error {
 func (c *MysqlClient) AuthUser(conn *gorm.DB, email string, password string)  (*Auth, error) {
 	var auth Auth
 	if err := conn.Where("email = ?", email).First(&auth).Error; err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "cannot check auth exists")
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(auth.Password), []byte(password)) ; err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "cannot hash string")
 	}
 	return &auth, nil
 }

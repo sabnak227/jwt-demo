@@ -29,7 +29,7 @@ func (c *MysqlClient) OpenCon(config config.Config, logger *log.Logger) error {
 	)
 	db, err := gorm.Open(config.DBDriver, conStr)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to open db connection")
 	}
 	db.LogMode(true)
 	db.SetLogger(NewGormLogger(logger))
@@ -100,8 +100,7 @@ func (c *MysqlClient) Seed() {
 func (c *MysqlClient) seedRollPerms(conn *gorm.DB, role Role, perms []string) error{
 	roleDb, err := c.CreateRole(conn, role)
 	if err != nil {
-		c.logger.Fatalf("Failed to create role, err: %s", err)
-		return err
+		return errors.Wrap(err, "failed to create role")
 	}
 
 	for i := 0; i < len(perms); i++  {
@@ -110,12 +109,10 @@ func (c *MysqlClient) seedRollPerms(conn *gorm.DB, role Role, perms []string) er
 		}
 		permDb, err := c.CreatePermission(conn, perm)
 		if err != nil {
-			c.logger.Fatalf("Failed to create permission, err: %s", err)
-			return err
+			return errors.Wrap(err, "failed to create permission")
 		}
 		if err := c.AttachPerm(conn, *roleDb, *permDb); err != nil {
-			c.logger.Fatalf("Failed to attach permission to role, err: %s", err)
-			return err
+			return errors.Wrap(err, "failed to attach permission to role")
 		}
 	}
 	return nil
@@ -126,7 +123,7 @@ func (c *MysqlClient) GetPerms(conn *gorm.DB, userID uint64) ([]string, error) {
 	if err := conn.Preload("Role.Permissions").
 		Where("user_id = ?", userID).
 		Find(&userRole).Error; err != nil {
-		return []string{}, err
+		return []string{}, errors.Wrap(err, "failed to query user permissions")
 	}
 
 	perms := userRole.Role.Permissions

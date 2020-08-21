@@ -8,7 +8,7 @@ import (
 	"github.com/sabnak227/jwt-demo/scope"
 	"github.com/sabnak227/jwt-demo/user"
 	"github.com/sabnak227/jwt-demo/util/constant"
-	"github.com/sabnak227/jwt-demo/util/helper"
+	"github.com/sabnak227/jwt-demo/util/errors"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -42,47 +42,30 @@ func (s authService) Login(ctx context.Context, in *pb.LoginRequest) (*pb.LoginR
 	}
 	// request body validation
 	if err := i.Validate(); err != nil {
-		errors, _ := helper.BuildErrorResponse(err)
-		return &pb.LoginResponse{
-			Code:    constant.ValidationError,
-			Message: "Validation error",
-			Errors:  errors,
-		}, nil
+		return nil, errors.NewResponseError(err, "Validation error")
 	}
 
 	// verify user credentials in database
 	a, err := repo.AuthUser(repo.GetConn(), in.Email, in.Password)
 	if err != nil {
-		return &pb.LoginResponse{
-			Code:    constant.WrongPasswordCode,
-			Message: "Wrong email and password combination",
-		}, nil
+		return nil, errors.NewResponseError(err, "Wrong email and password combination").SetErrorCode(constant.WrongPasswordCode)
 	}
 
 	// get user info from other services
 	u, sc, err := getUserInfo(ctx, a.UserID)
 	if err != nil {
-		return &pb.LoginResponse{
-			Code:    constant.FailCode,
-			Message: err.Error(),
-		}, nil
+		return nil, errors.NewResponseError(err, "Failed getting user info")
 	}
 
 	// generate jwt token
 	tokenDetail, err := tokenAdapter.GenToken(sc.Scopes, u.User, sc.Scopes)
 	if err != nil {
-		return &pb.LoginResponse{
-			Code:    constant.FailCode,
-			Message: "Failed generating auth token",
-		}, nil
+		return nil, errors.NewResponseError(err, "Failed generating auth token")
 	}
 
 	// set session info
 	if err := session.SetToken(a.UserID, tokenDetail, u.User, sc.Scopes); err != nil {
-		return &pb.LoginResponse{
-			Code:    constant.FailCode,
-			Message: fmt.Sprintf("Failed to create session, err: %s", err),
-		}, nil
+		return nil, errors.NewResponseError(err, "Failed to create session")
 	}
 
 	return &pb.LoginResponse{
@@ -100,21 +83,13 @@ func (s authService) CreateAuth(ctx context.Context, in *pb.CreateAuthRequest) (
 	}
 	// request body validation
 	if err := i.Validate(); err != nil {
-		errors, _ := helper.BuildErrorResponse(err)
-		return &pb.CreateAuthResponse{
-			Code:    constant.ValidationError,
-			Message: "Validation error",
-			Errors:  errors,
-		}, nil
+		return nil, errors.NewResponseError(err, "Validation error")
 	}
 
 	// hashing password
 	hash, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return &pb.CreateAuthResponse{
-			Code:    constant.FailCode,
-			Message: "Failed to hash password",
-		}, nil
+		return nil, errors.NewResponseError(err, "Failed to hash password")
 	}
 
 	// store in database
@@ -125,10 +100,7 @@ func (s authService) CreateAuth(ctx context.Context, in *pb.CreateAuthRequest) (
 		Email:     in.Email,
 		Password:  string(hash),
 	}); err != nil {
-		return &pb.CreateAuthResponse{
-			Code:    constant.WrongPasswordCode,
-			Message: "Failed to create the authentication entry",
-		}, nil
+		return nil, errors.NewResponseError(err, "Failed to create the authentication entry").SetErrorCode(constant.WrongPasswordCode)
 	}
 
 	return &pb.CreateAuthResponse{
@@ -144,31 +116,19 @@ func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.Re
 	}
 	// request body validation
 	if err := i.Validate(); err != nil {
-		errors, _ := helper.BuildErrorResponse(err)
-		return &pb.RefreshResponse{
-			Code:    constant.ValidationError,
-			Message: "Validation error",
-			Errors:  errors,
-		}, nil
+		return nil, errors.NewResponseError(err, "Validation error")
 	}
 
 	// verify if token is valid or not
 	refreshUUID, err := tokenAdapter.VerifyToken(in.RefreshToken)
 	if err != nil {
-		return &pb.RefreshResponse{
-			Code:    constant.FailCode,
-			Message: fmt.Sprintf("Failed refresh token, %s", err),
-		}, nil
+		return nil, errors.NewResponseError(err, "Failed refresh token").SetErrorCode(constant.FailRefreshToken)
 	}
 
 	// get userid from session using uuid returned previously
 	userID, err := session.GetUserIdByRefreshUUID(refreshUUID)
 	if err != nil {
-		logger.Infof("err %s", err)
-		return &pb.RefreshResponse{
-			Code:    constant.FailCode,
-			Message: "Session expiried, please login again",
-		}, nil
+		return nil, errors.NewResponseError(err, "Session expired, please login again").SetErrorCode(constant.SessionExpired)
 	}
 
 	// get userinfo detail from cache
@@ -178,10 +138,7 @@ func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.Re
 		// get user info from other services
 		uRes, scRes, err := getUserInfo(ctx, userID)
 		if err != nil || uRes == nil {
-			return &pb.RefreshResponse{
-				Code:    constant.FailCode,
-				Message: infoErr.Error(),
-			}, nil
+			return nil, errors.NewResponseError(infoErr, "Failed get user info")
 		}
 		u = uRes.User
 		sc = scRes.Scopes
@@ -190,18 +147,12 @@ func (s authService) Refresh(ctx context.Context, in *pb.RefreshRequest) (*pb.Re
 	// generate new jwt token
 	tokenDetail, err := tokenAdapter.GenToken(sc, u, sc)
 	if err != nil {
-		return &pb.RefreshResponse{
-			Code:    constant.FailCode,
-			Message: "Failed generating auth token",
-		}, nil
+		return nil, errors.NewResponseError(err, "Failed generating auth token")
 	}
 
 	// set session info
 	if err := session.SetToken(userID, tokenDetail, u, sc); err != nil {
-		return &pb.RefreshResponse{
-			Code:    constant.FailCode,
-			Message: "Failed to create session",
-		}, nil
+		return nil, errors.NewResponseError(err, "Failed to create session")
 	}
 
 	return &pb.RefreshResponse{

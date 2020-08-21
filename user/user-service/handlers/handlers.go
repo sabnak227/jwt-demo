@@ -7,7 +7,8 @@ import (
 	"github.com/sabnak227/jwt-demo/user/user-service/models"
 	amqpAdapter "github.com/sabnak227/jwt-demo/util/amqp"
 	"github.com/sabnak227/jwt-demo/util/constant"
-	"github.com/sabnak227/jwt-demo/util/helper"
+	"github.com/sabnak227/jwt-demo/util/errors"
+	"net/http"
 )
 
 // NewService returns a naïve, stateless implementation of Service.
@@ -23,11 +24,7 @@ func (s userService) GetUser(ctx context.Context, in *pb.GetUserRequest) (*pb.Ge
 	var resp pb.GetUserResponse
 	u, err := repo.GetUser(repo.GetConn(), in.ID)
 	if err != nil {
-		logger.Error(err)
-		return &pb.GetUserResponse{
-			Code:    constant.UserNotFound,
-			Message: "User not found",
-		}, nil
+		return nil, errors.NewResponseError(err, "User not found").SetErrorCode(constant.UserNotFound).SetStatusCode(http.StatusNotFound)
 	}
 
 	resp = pb.GetUserResponse{
@@ -56,21 +53,13 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 	}
 	// request body validation
 	if err := i.Validate(); err != nil {
-		errors, _ := helper.BuildErrorResponse(err)
-		return &pb.CreateUserResponse{
-			Code:    constant.ValidationError,
-			Message: "Validation error",
-			Errors:  errors,
-		}, nil
+		return nil, errors.NewResponseError(err, "Validation error")
 	}
 
 	// verify if user already exists
 	exist, err := repo.CheckEmailExists(repo.GetConn(), in.Email)
 	if err == nil && exist != nil {
-		return &pb.CreateUserResponse{
-			Code:    constant.ValidationError,
-			Message: "user already exist",
-		}, nil
+		return nil, errors.NewResponseError(err, "User already exist").SetErrorCode(constant.UserExists)
 	}
 	logger.Infof("creating user: %s", in.Email)
 
@@ -90,10 +79,7 @@ func (s userService) CreateUser(ctx context.Context, in *pb.CreateUserRequest) (
 
 	user, err := repo.CreateUser(repo.GetConn(), u)
 	if err != nil {
-		return &pb.CreateUserResponse{
-			Code:    constant.FailCode,
-			Message: "Failed to create user",
-		}, nil
+		return nil, errors.NewResponseError(err, "Failed to create user")
 	}
 
 	// publish user creation via amqp
@@ -117,17 +103,11 @@ func (s userService) DeleteUser(ctx context.Context, in *pb.DeleteUserRequest) (
 
 	user, err := repo.GetUser(repo.GetConn(), in.ID)
 	if err != nil {
-		return &pb.DeleteUserResponse{
-			Code:    constant.FailCode,
-			Message: "Failed to delete user",
-		}, nil
+		return nil, errors.NewResponseError(err, "Failed to delete user")
 	}
 
 	if err := repo.Delete(repo.GetConn(), in.ID); err != nil {
-		return &pb.DeleteUserResponse{
-			Code:    constant.FailCode,
-			Message: "Failed to delete user",
-		}, nil
+		return nil, errors.NewResponseError(err, "Failed to create user")
 	}
 
 	// publish user deletion via amqp

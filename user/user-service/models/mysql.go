@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/jinzhu/gorm"
@@ -28,7 +29,7 @@ func (c *MysqlClient) OpenCon(config config.Config, logger *log.Logger) error {
 	)
 	db, err := gorm.Open(config.DBDriver, conStr)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to open db connection")
 	}
 	db.LogMode(true)
 	db.SetLogger(NewGormLogger(logger))

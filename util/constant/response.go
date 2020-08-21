@@ -1,15 +1,18 @@
 package constant
 
 const (
-	SuccessCode = int32(1000)
-	FailCode = int32(2000)
-	WrongPasswordCode = int32(123123)
-	UserNotFound = int32(12324)
-	ScopeNotFound = int32(1345345)
-	ValidationError = int32(232343423)
+	SuccessCode = 1000
+	FailCode = 2000
+	FailRefreshToken = 12314234
+	SessionExpired = 123123
+	WrongPasswordCode = 123123
+	UserNotFound = 123123
+	UserExists = 123123
+	ScopeNotFound = 123123
+	ValidationError = 123123
 
-	ValidationUndefined = int32(345346)
-	Required = int32(345345)
+	ValidationUndefined = 123123
+	Required = 132123
 
 )
 
